@@ -17,7 +17,7 @@ class FlutterTomtomNavigationAndroidPlugin: FlutterPlugin, MethodCallHandler {
   private lateinit var channel : MethodChannel
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_tomtom_navigation_android")
+    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_tomtom_navigation")
     channel.setMethodCallHandler(this)
   }
 
