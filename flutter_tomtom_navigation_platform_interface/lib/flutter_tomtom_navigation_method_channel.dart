@@ -1,5 +1,5 @@
+import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface%20copy.dart';
 
 /// An implementation of [FlutterTomtomNavigationPlatform] that uses method channels.
 class MethodChannelFlutterTomtomNavigation

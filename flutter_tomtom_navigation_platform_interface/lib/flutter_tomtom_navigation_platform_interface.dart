@@ -1,4 +1,3 @@
-
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_tomtom_navigation_method_channel.dart';
@@ -9,7 +8,8 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static FlutterTomtomNavigationPlatform _instance = MethodChannelFlutterTomtomNavigation();
+  static FlutterTomtomNavigationPlatform _instance =
+      MethodChannelFlutterTomtomNavigation();
 
   /// The default instance of [FlutterTomtomNavigationPlatform] to use.
   ///
