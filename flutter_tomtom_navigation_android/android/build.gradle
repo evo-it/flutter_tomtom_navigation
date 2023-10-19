@@ -46,12 +46,29 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
     }
+
+    
+
+     packagingOptions {
+        jniLibs.pickFirsts.add("lib/**/libc++_shared.so")
+    }
+
 
     dependencies {
         testImplementation 'org.jetbrains.kotlin:kotlin-test'
         testImplementation 'org.mockito:mockito-core:5.0.0'
+
+        def version = "0.25.0"
+        implementation "com.tomtom.sdk.maps:map-display:$version"
+        implementation "com.tomtom.sdk.routing:route-planner-online:$version"
+        implementation "com.tomtom.sdk.location:provider-android:$version"
+        implementation "com.tomtom.sdk.location:provider-simulation:$version"
+        implementation "com.tomtom.sdk.navigation:route-replanner-online:$version"
+        implementation "com.tomtom.sdk.location:provider-map-matched:$version"
+        implementation "com.tomtom.sdk.navigation:navigation-online:$version"
+        implementation "com.tomtom.sdk.navigation:ui:$version"
     }
 
     testOptions {
