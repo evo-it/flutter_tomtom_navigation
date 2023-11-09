@@ -9,7 +9,11 @@ import 'package:flutter_tomtom_navigation/tomtom_navigation.dart';
 const apiKey = String.fromEnvironment('apiKey');
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MaterialApp(
+    title: 'TomTom Navigation',
+    debugShowCheckedModeBanner: false,
+    home: MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -54,20 +58,26 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Column(
-            children: [
-              const Expanded(child: TomtomNavigation(apiKey: apiKey)),
-              Text('Running on: $_platformVersion\n'),
-            ],
-          ),
+    final mapKey = apiKey.isNotEmpty ? apiKey : 'SU9NKKWKyEVmZpuJ1gDrETFXLtWGdWzA';
+    final nav = Expanded(child: TomtomNavigation(apiKey: mapKey));
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Plugin example app'),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            OutlinedButton(
+              onPressed: () => showDialog(
+                  context: context,
+                  builder: (context) => Column(children: [nav])),
+              child: const Text('Open map in dialog'),
+            ),
+            nav,
+            Text('Running on: $_platformVersion\n'),
+          ],
         ),
       ),
-    );
+    ) ;
   }
 }
