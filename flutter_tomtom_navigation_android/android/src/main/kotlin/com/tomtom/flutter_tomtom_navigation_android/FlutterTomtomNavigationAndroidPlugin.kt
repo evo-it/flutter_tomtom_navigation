@@ -18,6 +18,9 @@ class FlutterTomtomNavigationAndroidPlugin: FlutterPlugin, MethodCallHandler {
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_tomtom_navigation")
     channel.setMethodCallHandler(this)
+
+    // Register the Flutter TomTom Navigation View
+    flutterPluginBinding.platformViewRegistry.registerViewFactory("<tomtom-navigation>", FlutterTomtomNavigationViewFactory())
   }
 
   override fun onMethodCall(call: MethodCall, result: Result) {

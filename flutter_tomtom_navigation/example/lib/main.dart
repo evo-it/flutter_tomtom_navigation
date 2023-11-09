@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_tomtom_navigation/flutter_tomtom_navigation.dart';
+import 'package:flutter_tomtom_navigation/tomtom_navigation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,7 +33,8 @@ class _MyAppState extends State<MyApp> {
     // We also handle the message potentially returning null.
     try {
       platformVersion =
-          await _flutterTomtomNavigationPlugin.getPlatformVersion() ?? 'Unknown platform version';
+          await _flutterTomtomNavigationPlugin.getPlatformVersion() ??
+              'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -55,7 +57,16 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            children: [
+              Text('Running on: $_platformVersion\n'),
+              const SizedBox(
+                width: 100,
+                height: 100,
+                child: TomtomNavigation(),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_tomtom_navigation_method_channel.dart';
@@ -26,5 +27,10 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
 
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
+  }
+
+  /// Build the TomtomNavigationView.
+  Widget buildView() {
+    throw UnimplementedError('buildView() has not been implemented.');
   }
 }
