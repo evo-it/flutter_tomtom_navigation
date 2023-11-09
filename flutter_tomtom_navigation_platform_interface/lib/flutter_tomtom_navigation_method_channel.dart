@@ -36,7 +36,7 @@ class MethodChannelFlutterTomtomNavigation
         );
       },
       onCreatePlatformView: (params) {
-        return PlatformViewsService.initSurfaceAndroidView(
+        return PlatformViewsService.initExpensiveAndroidView(
           id: params.id,
           viewType: viewType,
           layoutDirection: TextDirection.ltr,
