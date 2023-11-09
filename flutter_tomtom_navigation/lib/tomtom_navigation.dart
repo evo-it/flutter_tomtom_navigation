@@ -5,7 +5,9 @@ import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navi
 /// and navigation interface to the user,
 /// and allows the user to navigate using TomToms native SDKs.
 class TomtomNavigation extends StatefulWidget {
-  const TomtomNavigation({super.key});
+  const TomtomNavigation({required this.apiKey, super.key});
+
+  final String apiKey;
 
   @override
   State<TomtomNavigation> createState() => _TomtomNavigationState();
@@ -14,6 +16,6 @@ class TomtomNavigation extends StatefulWidget {
 class _TomtomNavigationState extends State<TomtomNavigation> {
   @override
   Widget build(BuildContext context) {
-    return FlutterTomtomNavigationPlatform.instance.buildView('SU9NKKWKyEVmZpuJ1gDrETFXLtWGdWzA');
+    return FlutterTomtomNavigationPlatform.instance.buildView(widget.apiKey);
   }
 }

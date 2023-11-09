@@ -5,6 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_tomtom_navigation/flutter_tomtom_navigation.dart';
 import 'package:flutter_tomtom_navigation/tomtom_navigation.dart';
 
+// Get the API key from the environment
+const apiKey = String.fromEnvironment('apiKey');
+
 void main() {
   runApp(const MyApp());
 }
@@ -59,9 +62,7 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Column(
             children: [
-              const Expanded(
-                child: TomtomNavigation(),
-              ),
+              const Expanded(child: TomtomNavigation(apiKey: apiKey)),
               Text('Running on: $_platformVersion\n'),
             ],
           ),
