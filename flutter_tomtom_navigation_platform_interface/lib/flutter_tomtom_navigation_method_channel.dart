@@ -19,11 +19,13 @@ class MethodChannelFlutterTomtomNavigation
   }
 
   @override
-  Widget buildView() {
+  Widget buildView(String apiKey) {
     // This is used in the platform side to register the view.
     const String viewType = '<tomtom-navigation>';
     // Pass parameters to the platform side.
-    const Map<String, dynamic> creationParams = <String, dynamic>{};
+    Map<String, dynamic> creationParams = <String, dynamic>{
+      'apiKey': apiKey,
+    };
 
     return PlatformViewLink(
       surfaceFactory: (context, controller) {

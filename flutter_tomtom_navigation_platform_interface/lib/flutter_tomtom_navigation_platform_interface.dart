@@ -26,11 +26,11 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
   }
 
   Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+    throw UnimplementedError( 'platformVersion() has not been implemented.');
   }
 
   /// Build the TomtomNavigationView.
-  Widget buildView() {
+  Widget buildView(String apiKey) {
     throw UnimplementedError('buildView() has not been implemented.');
   }
 }

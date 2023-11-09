@@ -59,12 +59,10 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Column(
             children: [
-              Text('Running on: $_platformVersion\n'),
-              const SizedBox(
-                width: 100,
-                height: 100,
+              const Expanded(
                 child: TomtomNavigation(),
               ),
+              Text('Running on: $_platformVersion\n'),
             ],
           ),
         ),
