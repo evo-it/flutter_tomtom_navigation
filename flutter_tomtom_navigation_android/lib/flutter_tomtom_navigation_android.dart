@@ -3,9 +3,19 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_method_channel.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface.dart';
 
-class FlutterTomtomNavigationAndroid extends FlutterTomtomNavigationPlatform {
+class FlutterTomtomNavigationAndroid extends MethodChannelFlutterTomtomNavigation {
+  FlutterTomtomNavigationAndroid() {
+    FlutterTomtomNavigationPlatform.instance = this;
+  }
+
+  /// Registers this class as the default instance of [FlutterTomtomNavigationPlatform].
+  static void registerWith() {
+    FlutterTomtomNavigationPlatform.instance = FlutterTomtomNavigationAndroid();
+  }
+
   @override
   Future<String?> getPlatformVersion() {
     return FlutterTomtomNavigationPlatform.instance.getPlatformVersion();
@@ -29,7 +39,7 @@ class FlutterTomtomNavigationAndroid extends FlutterTomtomNavigationPlatform {
         );
       },
       onCreatePlatformView: (params) {
-        return PlatformViewsService.initSurfaceAndroidView(
+        return PlatformViewsService.initExpensiveAndroidView(
           id: params.id,
           viewType: viewType,
           layoutDirection: TextDirection.ltr,

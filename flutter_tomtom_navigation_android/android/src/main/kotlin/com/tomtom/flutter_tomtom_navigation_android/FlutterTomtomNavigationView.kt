@@ -7,14 +7,11 @@ import android.content.pm.PackageManager
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
-import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnAttach
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentContainer
 import androidx.fragment.app.FragmentContainerView
 import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.GeoPoint
@@ -65,16 +62,27 @@ import com.tomtom.sdk.routing.options.guidance.ProgressPoints
 import com.tomtom.sdk.routing.route.Route
 import com.tomtom.sdk.vehicle.DefaultVehicleProvider
 import com.tomtom.sdk.vehicle.Vehicle
+import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.platform.PlatformView
+import java.lang.IllegalArgumentException
 import kotlin.random.Random
 
 class FlutterTomtomNavigationView(
     context: Context,
     id: Int,
     creationParams: Map<String?, Any?>?
-) : PlatformView {
+) : PlatformView, MethodCallHandler {
     private val context: Context
     private val apiKey: String
+
+    /// The MethodChannel that will the communication between Flutter and native Android
+    ///
+    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
+    /// when the Flutter Engine is detached from the Activity
+    private var channel: MethodChannel
 
     // The relative layout contains the mapview (and navigation view),
     // stacked on top of each other.
@@ -97,15 +105,14 @@ class FlutterTomtomNavigationView(
 
     // Other SDK objects that do not have their own lifecycle
     private var mapFragment: MapFragment
-    private lateinit var navigationFragment: NavigationFragment
+    private var navigationFragment: NavigationFragment
     private lateinit var onLocationUpdateListener: OnLocationUpdateListener
     private var route: Route? = null
     private lateinit var routePlanningOptions: RoutePlanningOptions
-
-    private var padding = 0
+    private var useSimulation: Boolean = true
 
     override fun dispose() {
-        tomTomMap.setLocationProvider(null)
+        channel.setMethodCallHandler(null)
 
         tomTomNavigation.close()
         routeReplanner.close()
@@ -117,8 +124,18 @@ class FlutterTomtomNavigationView(
     init {
         this.context = context
 
+        if (creationParams.isNullOrEmpty()) {
+            throw IllegalArgumentException("No creation parameters provided to the FlutterTomtomNavigationView")
+        }
+
         // Get the API key from the creation params
-        apiKey = creationParams?.get("apiKey") as String
+        apiKey = creationParams["apiKey"] as String
+
+        // Get the binary messenger from the creation params
+        val binaryMessenger =
+            creationParams["binaryMessenger"] as BinaryMessenger
+        channel = MethodChannel(binaryMessenger, "flutter_tomtom_navigation")
+        channel.setMethodCallHandler(this)
 
         // The root view is a RelativeLayout
         relativeLayout = RelativeLayout(context)
@@ -142,7 +159,10 @@ class FlutterTomtomNavigationView(
         navigationFragmentContainer = FragmentContainerView(context)
         navigationFragmentContainer.id = Random.nextInt()
         navigationFragmentContainer.foregroundGravity = Gravity.BOTTOM
-        val params = RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        val params = RelativeLayout.LayoutParams(
+            LayoutParams.MATCH_PARENT,
+            LayoutParams.MATCH_PARENT
+        )
         navigationFragmentContainer.layoutParams = params
 
         // Hide it by default
@@ -248,11 +268,14 @@ class FlutterTomtomNavigationView(
         // zoom to current location at city level
         onLocationUpdateListener = OnLocationUpdateListener { location ->
             tomTomMap.moveCamera(CameraOptions(location.position, zoom = 8.0))
-            locationProvider.removeOnLocationUpdateListener(onLocationUpdateListener)
+            locationProvider.removeOnLocationUpdateListener(
+                onLocationUpdateListener
+            )
         }
         locationProvider.addOnLocationUpdateListener(onLocationUpdateListener)
         tomTomMap.setLocationProvider(locationProvider)
-        val locationMarker = LocationMarkerOptions(type = LocationMarkerOptions.Type.Pointer)
+        val locationMarker =
+            LocationMarkerOptions(type = LocationMarkerOptions.Type.Pointer)
         tomTomMap.enableLocationMarker(locationMarker)
     }
 
@@ -283,7 +306,8 @@ class FlutterTomtomNavigationView(
     /**
      * Checks whether navigation is currently running.
      */
-    private fun isNavigationRunning(): Boolean = tomTomNavigation.navigationSnapshot != null
+    private fun isNavigationRunning(): Boolean =
+        tomTomNavigation.navigationSnapshot != null
 
 
     /**
@@ -294,7 +318,8 @@ class FlutterTomtomNavigationView(
     private val routeClickListener = RouteClickListener {
         if (!isNavigationRunning()) {
             route?.let { route ->
-                mapFragment.currentLocationButton.visibilityPolicy = CurrentLocationButton.VisibilityPolicy.Invisible
+                mapFragment.currentLocationButton.visibilityPolicy =
+                    CurrentLocationButton.VisibilityPolicy.Invisible
                 startNavigation(route)
             }
         }
@@ -311,7 +336,8 @@ class FlutterTomtomNavigationView(
     private fun calculateRouteTo(destination: GeoPoint) {
         val userLocation =
             tomTomMap.currentLocation?.position ?: return
-        val itinerary = Itinerary(origin = userLocation, destination = destination)
+        val itinerary =
+            Itinerary(origin = userLocation, destination = destination)
         routePlanningOptions = RoutePlanningOptions(
             itinerary = itinerary,
             guidanceOptions = GuidanceOptions(
@@ -368,7 +394,8 @@ class FlutterTomtomNavigationView(
      * Note that during navigation, you need to update the progress property of the drawn route to display the next instructions.
      */
     private fun Route.mapInstructions(): List<Instruction> {
-        val routeInstructions = legs.flatMap { routeLeg -> routeLeg.instructions }
+        val routeInstructions =
+            legs.flatMap { routeLeg -> routeLeg.instructions }
         return routeInstructions.map {
             Instruction(
                 routeOffset = it.routeOffset,
@@ -385,7 +412,7 @@ class FlutterTomtomNavigationView(
      * Note that you have to set the previously-created TomTom Navigation object to the NavigationFragment before using it.
      */
 
-    private fun startNavigation(route: Route) {
+    private fun startNavigation(route: Route, useSimulation: Boolean = true) {
         showNavigation()
         navigationFragment.setTomTomNavigation(tomTomNavigation)
         val routePlan = RoutePlan(route, routePlanningOptions)
@@ -393,6 +420,8 @@ class FlutterTomtomNavigationView(
         navigationFragment.addNavigationListener(navigationListener)
         tomTomNavigation.addProgressUpdatedListener(progressUpdatedListener)
         tomTomNavigation.addRouteUpdatedListener(routeUpdatedListener)
+
+        this.useSimulation = useSimulation
     }
 
     /**
@@ -402,28 +431,34 @@ class FlutterTomtomNavigationView(
      * - Once navigation is started, the camera is set to follow the user position, and the location indicator is changed to a chevron. To match raw location updates to the routes, use MapMatchedLocationProvider and set it to the TomTomMap.
      * - Set the bottom padding on the map. The padding sets a safe area of the MapView in which user interaction is not received. It is used to uncover the chevron in the navigation panel.
      */
-    private val navigationListener = object : NavigationFragment.NavigationListener {
-        override fun onStarted() {
-            tomTomMap.addCameraChangeListener(cameraChangeListener)
-            tomTomMap.cameraTrackingMode = CameraTrackingMode.FollowRoute
-            tomTomMap.enableLocationMarker(
-                LocationMarkerOptions(
-                    LocationMarkerOptions.Type.Chevron)
-            )
-            setMapMatchedLocationProvider()
-            setSimulationLocationProviderToNavigation(route!!)
-            setMapNavigationPadding()
-        }
+    private val navigationListener =
+        object : NavigationFragment.NavigationListener {
+            override fun onStarted() {
+                println("navigation started")
+                tomTomMap.addCameraChangeListener(cameraChangeListener)
+                tomTomMap.cameraTrackingMode = CameraTrackingMode.FollowRoute
+                tomTomMap.enableLocationMarker(
+                    LocationMarkerOptions(
+                        LocationMarkerOptions.Type.Chevron
+                    )
+                )
+                setMapMatchedLocationProvider()
+                if (useSimulation) {
+                    setSimulationLocationProviderToNavigation(route!!)
+                }
+                setMapNavigationPadding()
+            }
 
-        override fun onFailed(failure: NavigationFailure) {
-            Toast.makeText(context, failure.message, Toast.LENGTH_SHORT).show()
-            stopNavigation()
-        }
+            override fun onFailed(failure: NavigationFailure) {
+                Toast.makeText(context, failure.message, Toast.LENGTH_SHORT)
+                    .show()
+                stopNavigation()
+            }
 
-        override fun onStopped() {
-            stopNavigation()
+            override fun onStopped() {
+                stopNavigation()
+            }
         }
-    }
 
     private val progressUpdatedListener = ProgressUpdatedListener {
         tomTomMap.routes.first().progress = it.distanceAlongRoute
@@ -447,7 +482,8 @@ class FlutterTomtomNavigationView(
     private fun setSimulationLocationProviderToNavigation(route: Route) {
         val routeGeoLocations = route.geometry.map { GeoLocation(it) }
         val simulationStrategy = InterpolationStrategy(routeGeoLocations)
-        locationProvider = SimulationLocationProvider.create(strategy = simulationStrategy)
+        locationProvider =
+            SimulationLocationProvider.create(strategy = simulationStrategy)
         tomTomNavigation.locationProvider = locationProvider
         locationProvider.enable()
     }
@@ -466,7 +502,8 @@ class FlutterTomtomNavigationView(
         tomTomMap.cameraTrackingMode = CameraTrackingMode.None
         tomTomMap.enableLocationMarker(
             LocationMarkerOptions(
-                LocationMarkerOptions.Type.Pointer)
+                LocationMarkerOptions.Type.Pointer
+            )
         )
         resetMapPadding()
         navigationFragment.removeNavigationListener(navigationListener)
@@ -482,13 +519,15 @@ class FlutterTomtomNavigationView(
      * Set the bottom padding on the map. The padding sets a safe area of the MapView in which user interaction is not received. It is used to uncover the chevron in the navigation panel.
      */
     private fun setMapNavigationPadding() {
-        val paddingBottom = 240 // resources.getDimensionPixelOffset(R.dimen.map_padding_bottom)
+        val paddingBottom =
+            240 // resources.getDimensionPixelOffset(R.dimen.map_padding_bottom)
         val padding = Padding(0, 0, 0, paddingBottom)
         setPadding(padding)
     }
 
     private fun setPadding(padding: Padding) {
-        val scale: Float = context.getFragmentActivityOrThrow().resources.displayMetrics.density
+        val scale: Float =
+            context.getFragmentActivityOrThrow().resources.displayMetrics.density
 
         val paddingInPixels = Padding(
             top = (padding.top * scale).toInt(),
@@ -509,7 +548,8 @@ class FlutterTomtomNavigationView(
      * To match raw location updates to the routes, use MapMatchedLocationProvider and set it to the TomTomMap.
      */
     private fun setMapMatchedLocationProvider() {
-        val mapMatchedLocationProvider = MapMatchedLocationProvider(tomTomNavigation)
+        val mapMatchedLocationProvider =
+            MapMatchedLocationProvider(tomTomNavigation)
         tomTomMap.setLocationProvider(mapMatchedLocationProvider)
         mapMatchedLocationProvider.enable()
     }
@@ -534,15 +574,54 @@ class FlutterTomtomNavigationView(
         }
     }
 
-    private fun areLocationPermissionsGranted() = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
+    private fun areLocationPermissionsGranted() =
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
     companion object {
         private const val ZOOM_TO_ROUTE_PADDING = 100
+    }
+
+    /**
+     * Handle different method calls from Flutter to the navigation view.
+     */
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        println("Called method ${call.method}...")
+
+        when (call.method) {
+            "planRoute" -> {
+                // Same thing that is attached to the MapLongClickListener in the example
+                clearMap()
+                calculateRouteTo(
+                    GeoPoint(
+                        call.argument<Double>("latitude")!!,
+                        call.argument<Double>("longitude")!!
+                    )
+                )
+            }
+            "startNavigation" -> {
+                val useSimulation = call.argument<Boolean>("useSimulation")!!
+
+                // Same thing that is attached to the RouteClickListener in the example
+                if (!isNavigationRunning()) {
+                    route?.let { route ->
+                        mapFragment.currentLocationButton.visibilityPolicy =
+                            CurrentLocationButton.VisibilityPolicy.Invisible
+                        startNavigation(route, useSimulation)
+                    }
+                }
+            }
+            "stopNavigation" -> {
+                stopNavigation()
+            }
+            else -> {
+                result.notImplemented()
+            }
+        }
     }
 }
