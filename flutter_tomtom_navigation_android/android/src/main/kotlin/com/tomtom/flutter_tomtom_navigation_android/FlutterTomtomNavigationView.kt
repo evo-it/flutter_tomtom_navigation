@@ -154,36 +154,6 @@ class FlutterTomtomNavigationView(
         }
         relativeLayout.addView(navigationFragmentContainer)
 
-        // Button for testing purposes
-        val button = Button(context)
-        button.text = "Toggle navigation view"
-        button.setOnClickListener {
-//            if(navigationFragmentContainer.visibility == View.VISIBLE) {
-//                hideNavigation()
-//            } else {
-//                showNavigation()
-//            }
-            if (padding == 0) {
-                padding = 200
-                tomTomMap.cameraTrackingMode = CameraTrackingMode.FollowRoute
-                tomTomMap.enableLocationMarker(
-                    LocationMarkerOptions(
-                        LocationMarkerOptions.Type.Chevron)
-                )
-                setPadding(Padding(0, 0, 0, padding))
-            } else {
-                padding = 0
-                tomTomMap.cameraTrackingMode = CameraTrackingMode.None
-                tomTomMap.enableLocationMarker(
-                    LocationMarkerOptions(
-                        LocationMarkerOptions.Type.Pointer)
-                )
-                setPadding(Padding(0, 0, 0, padding))
-            }
-            setPadding(Padding(0, 0, 0, padding))
-        }
-        relativeLayout.addView(button)
-
         initLocationProvider()
         initRouting()
         initNavigation()
@@ -512,7 +482,7 @@ class FlutterTomtomNavigationView(
      * Set the bottom padding on the map. The padding sets a safe area of the MapView in which user interaction is not received. It is used to uncover the chevron in the navigation panel.
      */
     private fun setMapNavigationPadding() {
-        val paddingBottom = 280 // resources.getDimensionPixelOffset(R.dimen.map_padding_bottom)
+        val paddingBottom = 240 // resources.getDimensionPixelOffset(R.dimen.map_padding_bottom)
         val padding = Padding(0, 0, 0, paddingBottom)
         setPadding(padding)
     }
@@ -552,41 +522,17 @@ class FlutterTomtomNavigationView(
         tomTomMap.clear()
     }
 
-//    private fun requestLocationPermission() {
-//        locationPermissionRequest.launch(
-//            arrayOf(
-//                Manifest.permission.ACCESS_FINE_LOCATION,
-//                Manifest.permission.ACCESS_COARSE_LOCATION
-//            )
-//        )
-//    }
-
     private val cameraChangeListener by lazy {
         CameraChangeListener {
-//            val cameraTrackingMode = tomTomMap.cameraTrackingMode
-//            if (cameraTrackingMode == CameraTrackingMode.FollowRoute) {
-//                navigationFragment.navigationView.showSpeedView()
-//            } else {
-//                navigationFragment.navigationView.hideSpeedView()
-//            }
+            // TODO(Frank): This does not do anything. Instead, we hide and show the whole navigation view.
+            val cameraTrackingMode = tomTomMap.cameraTrackingMode
+            if (cameraTrackingMode == CameraTrackingMode.FollowRoute) {
+                navigationFragment.navigationView.showSpeedView()
+            } else {
+                navigationFragment.navigationView.hideSpeedView()
+            }
         }
     }
-
-//    private val locationPermissionRequest = context.getFragmentActivityOrThrow().registerForActivityResult(
-//        ActivityResultContracts.RequestMultiplePermissions()
-//    ) { permissions ->
-//        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true &&
-//            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-//        ) {
-//            showUserLocation()
-//        } else {
-//            Toast.makeText(
-//                context,
-//                "No Location permissions!", //getString(R.string.location_permission_denied),
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }
-//    }
 
     private fun areLocationPermissionsGranted() = ContextCompat.checkSelfPermission(
         context,
