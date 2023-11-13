@@ -39,6 +39,9 @@ class _MyAppState extends State<MyApp> {
         setState(() => eta = dt);
       }
     });
+    nav.registerDestinationArrivalEventListener((value) {
+      print('Destination reached!');
+    });
   }
 
   @override

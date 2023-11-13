@@ -13,9 +13,8 @@ import 'package:flutter_tomtom_navigation_platform_interface/routing/route_plann
 /// An implementation of [FlutterTomtomNavigationPlatform] that uses method channels.
 class MethodChannelFlutterTomtomNavigation
     extends FlutterTomtomNavigationPlatform {
-
   MethodChannelFlutterTomtomNavigation() {
-    _nativeEventSubscription = nativeEventsListener!.listen(_onProgressData);
+    nativeEventsListener!.listen(_onProgressData);
   }
 
   /// The method and event channels used to interact with the native platform.
@@ -26,9 +25,7 @@ class MethodChannelFlutterTomtomNavigation
   ValueSetter<dynamic>? _onRouteEvent;
   ValueSetter<dynamic>? _onPlannedRouteEvent;
   ValueSetter<dynamic>? _onNavigationEvent;
-
-  // callbacks from the native code
-  late StreamSubscription<NativeEvent>? _nativeEventSubscription;
+  ValueSetter<dynamic>? _onDestinationArrivalEvent;
 
   @override
   Future<String?> getPlatformVersion() async {
@@ -36,8 +33,6 @@ class MethodChannelFlutterTomtomNavigation
         await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }
-
-  // buildView should be overridden by each platform!
 
   @override
   Future<void> planRoute(RoutePlanningOptions options) async {
@@ -59,14 +54,16 @@ class MethodChannelFlutterTomtomNavigation
     await methodChannel.invokeMethod('stopNavigation');
   }
 
+  // buildView should be overridden by each platform!
   // TODO move this into the platform-specific platform interfaces...
   @override
-  Widget buildView(String apiKey) {
+  Widget buildView(String apiKey, bool debug) {
     // This is used in the platform side to register the view.
     const String viewType = '<tomtom-navigation>';
     // Pass parameters to the platform side.
     Map<String, dynamic> creationParams = <String, dynamic>{
       'apiKey': apiKey,
+      'debug': debug,
     };
 
     return PlatformViewLink(
@@ -102,20 +99,23 @@ class MethodChannelFlutterTomtomNavigation
   }
 
   @override
-  Future registerRouteEventListener(ValueSetter<dynamic> listener) async {
+  void registerRouteEventListener(ValueSetter<dynamic> listener) async {
     _onRouteEvent = listener;
   }
 
   @override
-  Future registerPlannedRouteEventListener(
-      ValueSetter<dynamic> listener) async {
+  void registerPlannedRouteEventListener(ValueSetter<dynamic> listener) {
     _onPlannedRouteEvent = listener;
   }
 
   @override
-  Future registerNavigationEventListener(
-      ValueSetter<dynamic> listener) async {
+  void registerNavigationEventListener(ValueSetter<dynamic> listener) {
     _onNavigationEvent = listener;
+  }
+
+  @override
+  void registerDestinationArrivalEventListener(ValueSetter<dynamic> listener) {
+    _onDestinationArrivalEvent = listener;
   }
 
   NativeEvent _parseNativeEvent(String event) {
@@ -125,21 +125,18 @@ class MethodChannelFlutterTomtomNavigation
 
   _onProgressData(NativeEvent event) {
     //TODO(Matyas): Clean up to/from JSONs
-    if (event.nativeEventType.isRouteUpdate) {
-      _onRouteEvent?.call(event.data);
-
-      return;
-    }
-
-    if (event.nativeEventType.isRoutePlanned) {
-      _onPlannedRouteEvent?.call(event.data);
-
-      return;
-    }
-
-    if (event.nativeEventType.isNavigationUpdate) {
-      final statusInt = jsonDecode(event.data)['navigationStatus'] as int;
-      _onNavigationEvent?.call(statusInt);
+    switch (event.nativeEventType) {
+      case NativeEventType.routePlanned:
+        _onPlannedRouteEvent?.call(event.data);
+      case NativeEventType.routeUpdate:
+        _onRouteEvent?.call(event.data);
+      case NativeEventType.navigationUpdate:
+        final statusInt = jsonDecode(event.data)['navigationStatus'] as int;
+        _onNavigationEvent?.call(statusInt);
+      case NativeEventType.destinationArrival:
+        _onDestinationArrivalEvent?.call(event.data);
+      case NativeEventType.unknown:
+        print("Got unexpected stream event $event");
     }
   }
 }

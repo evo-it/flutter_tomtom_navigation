@@ -7,13 +7,14 @@ import 'package:flutter_tomtom_navigation_platform_interface/routing/route_plann
 /// and navigation interface to the user,
 /// and allows the user to navigate using TomToms native SDKs.
 class TomtomNavigation extends StatelessWidget {
-  const TomtomNavigation({required this.apiKey, super.key});
+  const TomtomNavigation({required this.apiKey, this.debug = false, super.key});
 
   final String apiKey;
+  final bool debug;
 
   @override
   Widget build(BuildContext context) {
-    return FlutterTomtomNavigationPlatform.instance.buildView(apiKey);
+    return FlutterTomtomNavigationPlatform.instance.buildView(apiKey, debug);
   }
 
   Future<void> planRoute(
@@ -51,5 +52,12 @@ class TomtomNavigation extends StatelessWidget {
   ) {
     FlutterTomtomNavigationPlatform.instance
         .registerPlannedRouteEventListener(onPlannedRouteEvent);
+  }
+
+  void registerDestinationArrivalEventListener(
+    void Function(dynamic) onDestinationArrivalEvent,
+  ) {
+    FlutterTomtomNavigationPlatform.instance
+        .registerDestinationArrivalEventListener(onDestinationArrivalEvent);
   }
 }

@@ -36,6 +36,7 @@ import com.tomtom.sdk.map.display.route.RouteClickListener
 import com.tomtom.sdk.map.display.route.RouteOptions
 import com.tomtom.sdk.map.display.ui.MapFragment
 import com.tomtom.sdk.map.display.ui.currentlocation.CurrentLocationButton
+import com.tomtom.sdk.navigation.DestinationArrivalListener
 import com.tomtom.sdk.navigation.NavigationFailure
 import com.tomtom.sdk.navigation.ProgressUpdatedListener
 import com.tomtom.sdk.navigation.RoutePlan
@@ -87,7 +88,6 @@ class FlutterTomtomNavigationView(
     /// when the Flutter Engine is detached from the Activity
     private var channel: MethodChannel
     private val publish: (String) -> (Unit)
-//    private var eventChannel: EventChannel
 
     // The relative layout contains the mapview (and navigation view),
     // stacked on top of each other.
@@ -134,6 +134,7 @@ class FlutterTomtomNavigationView(
 
         // Get the API key from the creation params
         apiKey = creationParams["apiKey"] as String
+        val debug = creationParams["debug"] as Boolean
 
         // Get the binary messenger from the creation params
         val binaryMessenger =
@@ -188,7 +189,7 @@ class FlutterTomtomNavigationView(
         mapFragment.getMapAsync {
             tomTomMap = it
             enableUserLocation()
-            setUpMapListeners()
+            if (debug) setUpMapListeners()
         }
     }
 
@@ -369,7 +370,10 @@ class FlutterTomtomNavigationView(
         override fun onSuccess(result: RoutePlanningResponse) {
             val routePlanningJson = Gson().toJson(result)
             val json =
-                appendNavigationUpdateStatusToJson(routePlanningJson, NativeEventType.ROUTE_PLANNED)
+                appendNavigationUpdateStatusToJson(
+                    routePlanningJson,
+                    NativeEventType.ROUTE_PLANNED
+                )
             publish(json)
 
             route = result.routes.first()
@@ -432,7 +436,9 @@ class FlutterTomtomNavigationView(
         navigationFragment.addNavigationListener(navigationListener)
         tomTomNavigation.addProgressUpdatedListener(progressUpdatedListener)
         tomTomNavigation.addRouteUpdatedListener(routeUpdatedListener)
-
+        tomTomNavigation.addDestinationArrivalListener(
+            destinationArrivalListener
+        )
         this.useSimulation = useSimulation
     }
 
@@ -447,7 +453,7 @@ class FlutterTomtomNavigationView(
         object : NavigationFragment.NavigationListener {
             override fun onStarted() {
                 println("navigation started")
-                sendNavigationStatusUpdate(NavigationStatus.RUNNING);
+                sendNavigationStatusUpdate(NavigationStatus.RUNNING)
 
                 tomTomMap.addCameraChangeListener(cameraChangeListener)
                 tomTomMap.cameraTrackingMode = CameraTrackingMode.FollowRoute
@@ -462,7 +468,7 @@ class FlutterTomtomNavigationView(
             }
 
             override fun onFailed(failure: NavigationFailure) {
-                sendNavigationStatusUpdate(NavigationStatus.FAILED);
+                sendNavigationStatusUpdate(NavigationStatus.FAILED)
 
                 Toast.makeText(context, failure.message, Toast.LENGTH_SHORT)
                     .show()
@@ -470,7 +476,8 @@ class FlutterTomtomNavigationView(
             }
 
             override fun onStopped() {
-                sendNavigationStatusUpdate(NavigationStatus.STOPPED);
+                sendNavigationStatusUpdate(NavigationStatus.STOPPED)
+                println("stopped!")
                 stopNavigation()
             }
         }
@@ -490,6 +497,16 @@ class FlutterTomtomNavigationView(
                 drawRoute(route)
             }
         }
+    }
+
+    private val destinationArrivalListener = DestinationArrivalListener {
+        // Send event
+        val route = "{\"routeId\": \"${it.id}\"}"
+        val json = appendNavigationUpdateStatusToJson(
+            route,
+            NativeEventType.DESTINATION_ARRIVAL
+        )
+        publish(json)
     }
 
     /**
@@ -623,6 +640,7 @@ class FlutterTomtomNavigationView(
                     )
                 )
             }
+
             "startNavigation" -> {
                 val useSimulation = call.argument<Boolean>("useSimulation")!!
 
@@ -635,9 +653,11 @@ class FlutterTomtomNavigationView(
                     }
                 }
             }
+
             "stopNavigation" -> {
                 stopNavigation()
             }
+
             else -> {
                 result.notImplemented()
             }
@@ -658,7 +678,10 @@ class FlutterTomtomNavigationView(
                 "}"
 
         val response =
-            appendNavigationUpdateStatusToJson(jsonString, NativeEventType.NAVIGATION_UPDATE);
+            appendNavigationUpdateStatusToJson(
+                jsonString,
+                NativeEventType.NAVIGATION_UPDATE
+            );
 
         publish(response)
     }
@@ -666,14 +689,18 @@ class FlutterTomtomNavigationView(
     private fun sendRouteUpdateEvent(event: RouteProgress) {
         val result = Gson().toJson(event)
 
-        val response = appendNavigationUpdateStatusToJson(result, NativeEventType.ROUTE_UPDATE)
-
-        println("Android ${event.remainingTime.inWholeMilliseconds}")
+        val response = appendNavigationUpdateStatusToJson(
+            result,
+            NativeEventType.ROUTE_UPDATE
+        )
         publish(response)
     }
 
     // Adds the navigation Status to any Json string
-    private fun appendNavigationUpdateStatusToJson(json: String, status: NativeEventType): String {
+    private fun appendNavigationUpdateStatusToJson(
+        json: String,
+        status: NativeEventType
+    ): String {
         val newJsonObject = JsonObject();
         newJsonObject.addProperty("nativeEventType", status.value)
         newJsonObject.addProperty("data", json)
@@ -688,6 +715,7 @@ enum class NativeEventType(val value: Int) {
     ROUTE_UPDATE(1),
     ROUTE_PLANNED(2),
     NAVIGATION_UPDATE(3),
+    DESTINATION_ARRIVAL(4),
 }
 
 enum class NavigationStatus(val value: Int) {

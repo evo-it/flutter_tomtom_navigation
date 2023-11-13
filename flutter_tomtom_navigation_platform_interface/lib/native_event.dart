@@ -2,7 +2,13 @@ import 'dart:convert';
 
 /// This represent all the event possibilities from the native code
 
-enum NativeEventType { unknown, navigationUpdate, routeUpdate, routePlanned }
+enum NativeEventType {
+  unknown,
+  navigationUpdate,
+  routeUpdate,
+  routePlanned,
+  destinationArrival
+}
 
 extension NativeEventExtension on NativeEventType {
   int get value {
@@ -15,32 +21,26 @@ extension NativeEventExtension on NativeEventType {
         return 2;
       case NativeEventType.navigationUpdate:
         return 3;
-      default:
-        return -1;
+      case NativeEventType.destinationArrival:
+        return 4;
     }
   }
 
   static NativeEventType fromValue(int value) {
     switch (value) {
-      case 0:
-        return NativeEventType.unknown;
       case 1:
         return NativeEventType.routeUpdate;
       case 2:
         return NativeEventType.routePlanned;
       case 3:
         return NativeEventType.navigationUpdate;
+      case 4:
+        return NativeEventType.destinationArrival;
+      case 0:
       default:
         return NativeEventType.unknown;
     }
   }
-
-//
-
-  bool get isRouteUpdate => this == NativeEventType.routeUpdate;
-  bool get isRoutePlanned => this == NativeEventType.routePlanned;
-  bool get isNavigationUpdate => this == NativeEventType.navigationUpdate;
-  bool get isUnknown => this == NativeEventType.unknown;
 }
 
 class NativeEvent {
@@ -52,22 +52,13 @@ class NativeEvent {
   final NativeEventType nativeEventType;
   final String data;
 
-  // Map<String, dynamic> toMap() {
-  //   return {
-  //     'nativeEventType': NativeEventType.value,
-  //     'data': data,
-  //   };
-  // }
-
   factory NativeEvent.fromMap(Map<String, dynamic> map) {
     return NativeEvent(
       nativeEventType:
-      NativeEventExtension.fromValue(map['nativeEventType'] as int),
+          NativeEventExtension.fromValue(map['nativeEventType'] as int),
       data: map['data'] ?? '',
     );
   }
-
-  // String toJson() => json.encode(toMap());
 
   factory NativeEvent.fromJson(String source) =>
       NativeEvent.fromMap(json.decode(source));

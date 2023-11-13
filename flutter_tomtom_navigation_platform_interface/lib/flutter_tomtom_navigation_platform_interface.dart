@@ -31,7 +31,7 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
   }
 
   /// Build the TomtomNavigationView.
-  Widget buildView(String apiKey) {
+  Widget buildView(String apiKey, bool debug) {
     throw UnimplementedError('buildView() has not been implemented.');
   }
 
@@ -49,21 +49,26 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
     throw UnimplementedError('stopNavigation() has not been implemented.');
   }
 
-  Future<dynamic> registerRouteEventListener(
-      ValueSetter<dynamic> listener) {
+  void registerRouteEventListener(ValueSetter<dynamic> listener) {
     throw UnimplementedError(
         'registerRouteEventListener() has not been implemented.');
   }
 
-  Future<dynamic> registerPlannedRouteEventListener(
+  void registerPlannedRouteEventListener(
       ValueSetter<dynamic> listener) {
     throw UnimplementedError(
         'registerPlannedRouteEventListener() has not been implemented.');
   }
 
-  Future<dynamic> registerNavigationEventListener(
+  void registerNavigationEventListener(
       ValueSetter<dynamic> listener) {
     throw UnimplementedError(
         'registerNavigationEventListener() has not been implemented.');
+  }
+
+  void registerDestinationArrivalEventListener(
+      ValueSetter<dynamic> listener) {
+    throw UnimplementedError(
+        'registerDestinationArrivalEventListener() has not been implemented.');
   }
 }
