@@ -1,17 +1,34 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/native_event.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
 
 /// An implementation of [FlutterTomtomNavigationPlatform] that uses method channels.
 class MethodChannelFlutterTomtomNavigation
     extends FlutterTomtomNavigationPlatform {
-  /// The method channel used to interact with the native platform.
+
+  MethodChannelFlutterTomtomNavigation() {
+    _nativeEventSubscription = nativeEventsListener!.listen(_onProgressData);
+  }
+
+  /// The method and event channels used to interact with the native platform.
   final methodChannel = const MethodChannel('flutter_tomtom_navigation');
-  final eventChannel = const EventChannel('flutter_tomtom_navigation');
+  final eventChannel = const EventChannel('flutter_tomtom_navigation/updates');
+
+  // Callbacks to the client
+  ValueSetter<dynamic>? _onRouteEvent;
+  ValueSetter<dynamic>? _onPlannedRouteEvent;
+  ValueSetter<dynamic>? _onNavigationEvent;
+
+  // callbacks from the native code
+  late StreamSubscription<NativeEvent>? _nativeEventSubscription;
 
   @override
   Future<String?> getPlatformVersion() async {
@@ -76,5 +93,53 @@ class MethodChannelFlutterTomtomNavigation
       },
       viewType: viewType,
     );
+  }
+
+  Stream<NativeEvent>? get nativeEventsListener {
+    return eventChannel
+        .receiveBroadcastStream()
+        .map((dynamic event) => _parseNativeEvent(event as String));
+  }
+
+  @override
+  Future registerRouteEventListener(ValueSetter<dynamic> listener) async {
+    _onRouteEvent = listener;
+  }
+
+  @override
+  Future registerPlannedRouteEventListener(
+      ValueSetter<dynamic> listener) async {
+    _onPlannedRouteEvent = listener;
+  }
+
+  @override
+  Future registerNavigationEventListener(
+      ValueSetter<dynamic> listener) async {
+    _onNavigationEvent = listener;
+  }
+
+  NativeEvent _parseNativeEvent(String event) {
+    final eventObject = NativeEvent.fromJson(event);
+    return eventObject;
+  }
+
+  _onProgressData(NativeEvent event) {
+    //TODO(Matyas): Clean up to/from JSONs
+    if (event.nativeEventType.isRouteUpdate) {
+      _onRouteEvent?.call(event.data);
+
+      return;
+    }
+
+    if (event.nativeEventType.isRoutePlanned) {
+      _onPlannedRouteEvent?.call(event.data);
+
+      return;
+    }
+
+    if (event.nativeEventType.isNavigationUpdate) {
+      final statusInt = jsonDecode(event.data)['navigationStatus'] as int;
+      _onNavigationEvent?.call(statusInt);
+    }
   }
 }

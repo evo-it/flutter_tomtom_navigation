@@ -6,10 +6,12 @@ import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
-class FlutterTomtomNavigationViewFactory(binaryMessenger: BinaryMessenger) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+class FlutterTomtomNavigationViewFactory(binaryMessenger: BinaryMessenger, publish: (String) -> (Unit)) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     private val binaryMessenger: BinaryMessenger
+    private val publish: (String) -> (Unit)
     init {
         this.binaryMessenger = binaryMessenger
+        this.publish = publish
     }
 
     override fun create(
@@ -26,6 +28,7 @@ class FlutterTomtomNavigationViewFactory(binaryMessenger: BinaryMessenger) : Pla
             }
         }
         creationParams["binaryMessenger"] = binaryMessenger
+        creationParams["publish"] = publish
         return FlutterTomtomNavigationView(context, viewId, creationParams)
     }
 

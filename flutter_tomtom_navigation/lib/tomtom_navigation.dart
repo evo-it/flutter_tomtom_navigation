@@ -31,4 +31,25 @@ class TomtomNavigation extends StatelessWidget {
   Future<void> stopNavigation() async {
     await FlutterTomtomNavigationPlatform.instance.stopNavigation();
   }
+
+  void registerNavigationEventListener(
+    void Function(dynamic) onNavigationEvent,
+  ) {
+    FlutterTomtomNavigationPlatform.instance
+        .registerNavigationEventListener(onNavigationEvent);
+  }
+
+  void registerRouteEventListener(
+    void Function(dynamic) onRouteEvent,
+  ) {
+    FlutterTomtomNavigationPlatform.instance
+        .registerRouteEventListener(onRouteEvent);
+  }
+
+  void registerPlannedRouteEventListener(
+    void Function(dynamic) onPlannedRouteEvent,
+  ) {
+    FlutterTomtomNavigationPlatform.instance
+        .registerPlannedRouteEventListener(onPlannedRouteEvent);
+  }
 }

@@ -13,6 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.doOnAttach
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.GeoPoint
 import com.tomtom.sdk.location.LocationProvider
@@ -42,6 +44,7 @@ import com.tomtom.sdk.navigation.RouteUpdatedListener
 import com.tomtom.sdk.navigation.TomTomNavigation
 import com.tomtom.sdk.navigation.online.Configuration
 import com.tomtom.sdk.navigation.online.OnlineTomTomNavigationFactory
+import com.tomtom.sdk.navigation.progress.RouteProgress
 import com.tomtom.sdk.navigation.routereplanner.RouteReplanner
 import com.tomtom.sdk.navigation.routereplanner.online.OnlineRouteReplannerFactory
 import com.tomtom.sdk.navigation.ui.NavigationFragment
@@ -83,6 +86,8 @@ class FlutterTomtomNavigationView(
     /// This local reference serves to register the plugin with the Flutter Engine and unregister it
     /// when the Flutter Engine is detached from the Activity
     private var channel: MethodChannel
+    private val publish: (String) -> (Unit)
+//    private var eventChannel: EventChannel
 
     // The relative layout contains the mapview (and navigation view),
     // stacked on top of each other.
@@ -118,7 +123,6 @@ class FlutterTomtomNavigationView(
         routeReplanner.close()
 
         routePlanner.close()
-        locationProvider.close()
     }
 
     init {
@@ -136,6 +140,9 @@ class FlutterTomtomNavigationView(
             creationParams["binaryMessenger"] as BinaryMessenger
         channel = MethodChannel(binaryMessenger, "flutter_tomtom_navigation")
         channel.setMethodCallHandler(this)
+
+        @Suppress("UNCHECKED_CAST")
+        publish = creationParams["publish"] as (String) -> (Unit)
 
         // The root view is a RelativeLayout
         relativeLayout = RelativeLayout(context)
@@ -360,6 +367,11 @@ class FlutterTomtomNavigationView(
      */
     private val routePlanningCallback = object : RoutePlanningCallback {
         override fun onSuccess(result: RoutePlanningResponse) {
+            val routePlanningJson = Gson().toJson(result)
+            val json =
+                appendNavigationUpdateStatusToJson(routePlanningJson, NativeEventType.ROUTE_PLANNED)
+            publish(json)
+
             route = result.routes.first()
             drawRoute(route!!)
             tomTomMap.zoomToRoutes(ZOOM_TO_ROUTE_PADDING)
@@ -435,6 +447,8 @@ class FlutterTomtomNavigationView(
         object : NavigationFragment.NavigationListener {
             override fun onStarted() {
                 println("navigation started")
+                sendNavigationStatusUpdate(NavigationStatus.RUNNING);
+
                 tomTomMap.addCameraChangeListener(cameraChangeListener)
                 tomTomMap.cameraTrackingMode = CameraTrackingMode.FollowRoute
                 tomTomMap.enableLocationMarker(
@@ -448,18 +462,22 @@ class FlutterTomtomNavigationView(
             }
 
             override fun onFailed(failure: NavigationFailure) {
+                sendNavigationStatusUpdate(NavigationStatus.FAILED);
+
                 Toast.makeText(context, failure.message, Toast.LENGTH_SHORT)
                     .show()
                 stopNavigation()
             }
 
             override fun onStopped() {
+                sendNavigationStatusUpdate(NavigationStatus.STOPPED);
                 stopNavigation()
             }
         }
 
     private val progressUpdatedListener = ProgressUpdatedListener {
         tomTomMap.routes.first().progress = it.distanceAlongRoute
+        sendRouteUpdateEvent(it)
     }
 
     private val routeUpdatedListener by lazy {
@@ -478,13 +496,12 @@ class FlutterTomtomNavigationView(
      * Use the SimulationLocationProvider for testing purposes.
      */
     private fun setLocationProviderToNavigation(route: Route) {
-        if (useSimulation) {
+        locationProvider = if (useSimulation) {
             val routeGeoLocations = route.geometry.map { GeoLocation(it) }
             val simulationStrategy = InterpolationStrategy(routeGeoLocations)
-            locationProvider =
-                SimulationLocationProvider.create(strategy = simulationStrategy)
+            SimulationLocationProvider.create(strategy = simulationStrategy)
         } else {
-            locationProvider = AndroidLocationProvider(context)
+            AndroidLocationProvider(context)
         }
         tomTomNavigation.locationProvider = locationProvider
         locationProvider.enable()
@@ -626,4 +643,56 @@ class FlutterTomtomNavigationView(
             }
         }
     }
+
+//    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+//        eventSink = events
+//    }
+//
+//    override fun onCancel(arguments: Any?) {
+//        eventSink = null
+//    }
+
+    private fun sendNavigationStatusUpdate(status: NavigationStatus) {
+        val jsonString = "{" +
+                "  \"navigationStatus\": ${status.value}" +
+                "}"
+
+        val response =
+            appendNavigationUpdateStatusToJson(jsonString, NativeEventType.NAVIGATION_UPDATE);
+
+        publish(response)
+    }
+
+    private fun sendRouteUpdateEvent(event: RouteProgress) {
+        val result = Gson().toJson(event)
+
+        val response = appendNavigationUpdateStatusToJson(result, NativeEventType.ROUTE_UPDATE)
+
+        println("Android ${event.remainingTime.inWholeMilliseconds}")
+        publish(response)
+    }
+
+    // Adds the navigation Status to any Json string
+    private fun appendNavigationUpdateStatusToJson(json: String, status: NativeEventType): String {
+        val newJsonObject = JsonObject();
+        newJsonObject.addProperty("nativeEventType", status.value)
+        newJsonObject.addProperty("data", json)
+
+        return newJsonObject.toString()
+    }
+}
+
+// This should represent the communication between the native code and dart plugin
+enum class NativeEventType(val value: Int) {
+    UNKNOWN(0),
+    ROUTE_UPDATE(1),
+    ROUTE_PLANNED(2),
+    NAVIGATION_UPDATE(3),
+}
+
+enum class NavigationStatus(val value: Int) {
+    UNKNOWN(0),
+    RUNNING(1),
+    STOPPED(2),
+    FAILED(3)
 }

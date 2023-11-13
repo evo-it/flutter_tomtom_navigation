@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tomtom_navigation/tomtom_navigation.dart';
 
 // Get the API key from the environment
-const apiKey = String.fromEnvironment('apiKey');
+const apiKey = String.fromEnvironment('apiKey', defaultValue: 'SU9NKKWKyEVmZpuJ1gDrETFXLtWGdWzA');
 
 void main() {
   runApp(MaterialApp(
@@ -21,11 +23,26 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final nav = const TomtomNavigation(apiKey: apiKey);
+  DateTime? eta;
+
+  @override
+  void initState() {
+    super.initState();
+    nav.registerRouteEventListener((value) {
+      // It's currently a JSON String, get the desired value from it
+      final map = jsonDecode(value) as Map;
+      final remainingHalfNanos = map["remainingTime"];
+      if (remainingHalfNanos is int) {
+        // Duration from Kotlin is sent in half-nanoseconds
+        final dt = DateTime.now().add(Duration(microseconds: (remainingHalfNanos/1000/2).round()));
+        setState(() => eta = dt);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final mapKey =
-        apiKey.isNotEmpty ? apiKey : 'SU9NKKWKyEVmZpuJ1gDrETFXLtWGdWzA';
-    final nav = TomtomNavigation(apiKey: mapKey);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Plugin example app'),
@@ -33,6 +50,8 @@ class _MyAppState extends State<MyApp> {
       body: Center(
         child: Column(
           children: [
+            if (eta != null)
+              Text('ETA: $eta'),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(

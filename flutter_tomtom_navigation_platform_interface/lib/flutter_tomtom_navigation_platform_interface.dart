@@ -48,4 +48,22 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
   Future<void> stopNavigation() {
     throw UnimplementedError('stopNavigation() has not been implemented.');
   }
+
+  Future<dynamic> registerRouteEventListener(
+      ValueSetter<dynamic> listener) {
+    throw UnimplementedError(
+        'registerRouteEventListener() has not been implemented.');
+  }
+
+  Future<dynamic> registerPlannedRouteEventListener(
+      ValueSetter<dynamic> listener) {
+    throw UnimplementedError(
+        'registerPlannedRouteEventListener() has not been implemented.');
+  }
+
+  Future<dynamic> registerNavigationEventListener(
+      ValueSetter<dynamic> listener) {
+    throw UnimplementedError(
+        'registerNavigationEventListener() has not been implemented.');
+  }
 }
