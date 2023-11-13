@@ -443,9 +443,7 @@ class FlutterTomtomNavigationView(
                     )
                 )
                 setMapMatchedLocationProvider()
-                if (useSimulation) {
-                    setSimulationLocationProviderToNavigation(route!!)
-                }
+                setLocationProviderToNavigation(route!!)
                 setMapNavigationPadding()
             }
 
@@ -479,11 +477,15 @@ class FlutterTomtomNavigationView(
     /**
      * Use the SimulationLocationProvider for testing purposes.
      */
-    private fun setSimulationLocationProviderToNavigation(route: Route) {
-        val routeGeoLocations = route.geometry.map { GeoLocation(it) }
-        val simulationStrategy = InterpolationStrategy(routeGeoLocations)
-        locationProvider =
-            SimulationLocationProvider.create(strategy = simulationStrategy)
+    private fun setLocationProviderToNavigation(route: Route) {
+        if (useSimulation) {
+            val routeGeoLocations = route.geometry.map { GeoLocation(it) }
+            val simulationStrategy = InterpolationStrategy(routeGeoLocations)
+            locationProvider =
+                SimulationLocationProvider.create(strategy = simulationStrategy)
+        } else {
+            locationProvider = AndroidLocationProvider(context)
+        }
         tomTomNavigation.locationProvider = locationProvider
         locationProvider.enable()
     }
