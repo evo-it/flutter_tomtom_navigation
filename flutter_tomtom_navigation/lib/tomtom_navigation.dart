@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tomtom_navigation_android/flutter_tomtom_navigation_android.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
 
@@ -18,10 +17,8 @@ class TomtomNavigation extends StatelessWidget {
   }
 
   Future<void> planRoute(
-      {required double latitude, required double longitude}) async {
-    await FlutterTomtomNavigationPlatform.instance.planRoute(
-      RoutePlanningOptions(GeoPoint(latitude, longitude)),
-    );
+      {required RoutePlanningOptions routePlanningOptions}) async {
+    await FlutterTomtomNavigationPlatform.instance.planRoute(routePlanningOptions);
   }
 
   Future<void> startNavigation({bool useSimulation = true}) async {

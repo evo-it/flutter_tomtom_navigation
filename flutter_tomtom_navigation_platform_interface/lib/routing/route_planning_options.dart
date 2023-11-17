@@ -1,13 +1,16 @@
 // TODO Use actual (scraped) RoutePlanningOptions instead.
+import 'package:flutter_tomtom_navigation_platform_interface/routing/itinerary_point.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'route_planning_options.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class RoutePlanningOptions {
-  RoutePlanningOptions(this.destination);
+  const RoutePlanningOptions({required this.destination});
 
-  final GeoPoint destination;
-}
+  final ItineraryPoint destination;
 
-class GeoPoint {
-  GeoPoint(this.latitude, this.longitude);
+  Map<String, dynamic> toJson() => _$RoutePlanningOptionsToJson(this);
 
-  final double latitude;
-  final double longitude;
+  factory RoutePlanningOptions.fromJson(Map<String, dynamic> json) => _$RoutePlanningOptionsFromJson(json);
 }

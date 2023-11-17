@@ -8,8 +8,6 @@ import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navi
 
 class FlutterTomtomNavigationAndroid
     extends MethodChannelFlutterTomtomNavigation {
-  static final FlutterTomtomNavigationPlatform instance =
-      FlutterTomtomNavigationAndroid();
 
   /// Registers this class as the default instance of [FlutterTomtomNavigationPlatform].
   static void registerWith() {

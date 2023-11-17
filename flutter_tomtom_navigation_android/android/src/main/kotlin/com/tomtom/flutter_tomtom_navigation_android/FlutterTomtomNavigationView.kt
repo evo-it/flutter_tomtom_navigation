@@ -15,10 +15,12 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.tomtom.sdk.location.EntryType
 import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.GeoPoint
 import com.tomtom.sdk.location.LocationProvider
 import com.tomtom.sdk.location.OnLocationUpdateListener
+import com.tomtom.sdk.location.Place
 import com.tomtom.sdk.location.android.AndroidLocationProvider
 import com.tomtom.sdk.location.mapmatched.MapMatchedLocationProvider
 import com.tomtom.sdk.location.simulation.SimulationLocationProvider
@@ -56,6 +58,7 @@ import com.tomtom.sdk.routing.RoutePlanningResponse
 import com.tomtom.sdk.routing.RoutingFailure
 import com.tomtom.sdk.routing.online.OnlineRoutePlanner
 import com.tomtom.sdk.routing.options.Itinerary
+import com.tomtom.sdk.routing.options.ItineraryPoint
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.options.guidance.AnnouncementPoints
 import com.tomtom.sdk.routing.options.guidance.ExtendedSections
@@ -360,6 +363,18 @@ class FlutterTomtomNavigationView(
         routePlanner.planRoute(routePlanningOptions, routePlanningCallback)
     }
 
+    private fun calculateRoute(destination: ItineraryPoint) {
+        val userLocation =
+            tomTomMap.currentLocation?.position ?: return
+        routePlanningOptions = RoutePlanningOptions(
+            itinerary = Itinerary(
+                origin = ItineraryPoint(place = Place(coordinate = userLocation)),
+                destination = destination,
+            )
+        )
+        routePlanner.planRoute(routePlanningOptions, routePlanningCallback)
+    }
+
     /**
      * The RoutePlanningCallback itself has two methods.
      * - The first method is triggered if the request fails.
@@ -530,7 +545,6 @@ class FlutterTomtomNavigationView(
      * Don’t forget to reset any map settings that were changed, such as camera tracking, location marker, and map padding.
      */
     private fun stopNavigation() {
-
         navigationFragment.stopNavigation()
         mapFragment.currentLocationButton.visibilityPolicy =
             CurrentLocationButton.VisibilityPolicy.InvisibleWhenRecentered
@@ -631,14 +645,14 @@ class FlutterTomtomNavigationView(
 
         when (call.method) {
             "planRoute" -> {
-                // Same thing that is attached to the MapLongClickListener in the example
+                val gson = Gson()
+                println(call.argument<String>("destination"))
+
+                println(gson.toJson(ItineraryPoint(place = Place(coordinate = GeoPoint(52.0, 4.43)))))
+                val destination = gson.fromJson(call.argument<String>("destination"), ItineraryPoint::class.java)
+                println("Destination: $destination")
                 clearMap()
-                calculateRouteTo(
-                    GeoPoint(
-                        call.argument<Double>("latitude")!!,
-                        call.argument<Double>("longitude")!!
-                    )
-                )
+                calculateRoute(destination)
             }
 
             "startNavigation" -> {

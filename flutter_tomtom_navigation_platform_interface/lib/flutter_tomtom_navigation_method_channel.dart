@@ -37,8 +37,7 @@ class MethodChannelFlutterTomtomNavigation
   @override
   Future<void> planRoute(RoutePlanningOptions options) async {
     await methodChannel.invokeMethod('planRoute', {
-      'latitude': options.destination.latitude,
-      'longitude': options.destination.longitude,
+      'destination': jsonEncode(options.destination),
     });
   }
 
