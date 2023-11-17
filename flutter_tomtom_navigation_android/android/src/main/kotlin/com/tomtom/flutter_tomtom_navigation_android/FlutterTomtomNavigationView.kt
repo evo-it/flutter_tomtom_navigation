@@ -15,13 +15,10 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.tomtom.quantity.Speed
-import com.tomtom.sdk.location.EntryType
 import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.GeoPoint
 import com.tomtom.sdk.location.LocationProvider
 import com.tomtom.sdk.location.OnLocationUpdateListener
-import com.tomtom.sdk.location.Place
 import com.tomtom.sdk.location.android.AndroidLocationProvider
 import com.tomtom.sdk.location.mapmatched.MapMatchedLocationProvider
 import com.tomtom.sdk.location.simulation.SimulationLocationProvider
@@ -62,7 +59,6 @@ import com.tomtom.sdk.routing.RoutePlanningResponse
 import com.tomtom.sdk.routing.RoutingFailure
 import com.tomtom.sdk.routing.online.OnlineRoutePlanner
 import com.tomtom.sdk.routing.options.Itinerary
-import com.tomtom.sdk.routing.options.ItineraryPoint
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.options.guidance.AnnouncementPoints
 import com.tomtom.sdk.routing.options.guidance.ExtendedSections
@@ -134,6 +130,7 @@ class FlutterTomtomNavigationView(
 
     init {
         this.context = context
+        println("Init navigation view with id $id")
 
         if (creationParams.isNullOrEmpty()) {
             throw IllegalArgumentException("No creation parameters provided to the FlutterTomtomNavigationView")
@@ -371,18 +368,6 @@ class FlutterTomtomNavigationView(
         routePlanner.planRoute(routePlanningOptions, routePlanningCallback)
     }
 
-    private fun calculateRoute(destination: ItineraryPoint) {
-        val userLocation =
-            tomTomMap.currentLocation?.position ?: return
-        routePlanningOptions = RoutePlanningOptions(
-            itinerary = Itinerary(
-                origin = ItineraryPoint(place = Place(coordinate = userLocation)),
-                destination = destination,
-            )
-        )
-        routePlanner.planRoute(routePlanningOptions, routePlanningCallback)
-    }
-
     /**
      * The RoutePlanningCallback itself has two methods.
      * - The first method is triggered if the request fails.
@@ -577,7 +562,9 @@ class FlutterTomtomNavigationView(
     }
 
     private val styleLoadingCallback = object : StyleLoadingCallback {
-        override fun onSuccess() {}
+        override fun onSuccess() {
+            tomTomMap.hideVehicleRestrictions()
+        }
         override fun onFailure(failure: LoadingStyleFailure) {}
     }
 
@@ -626,6 +613,7 @@ class FlutterTomtomNavigationView(
      */
     private fun clearMap() {
         tomTomMap.clear()
+        tomTomMap.hideVehicleRestrictions()
     }
 
     private val cameraChangeListener by lazy {
@@ -711,7 +699,7 @@ class FlutterTomtomNavigationView(
             appendNavigationUpdateStatusToJson(
                 jsonString,
                 NativeEventType.NAVIGATION_UPDATE
-            );
+            )
 
         publish(response)
     }
@@ -731,7 +719,7 @@ class FlutterTomtomNavigationView(
         json: String,
         status: NativeEventType
     ): String {
-        val newJsonObject = JsonObject();
+        val newJsonObject = JsonObject()
         newJsonObject.addProperty("nativeEventType", status.value)
         newJsonObject.addProperty("data", json)
 
@@ -741,7 +729,6 @@ class FlutterTomtomNavigationView(
 
 // This should represent the communication between the native code and dart plugin
 enum class NativeEventType(val value: Int) {
-    UNKNOWN(0),
     ROUTE_UPDATE(1),
     ROUTE_PLANNED(2),
     NAVIGATION_UPDATE(3),
@@ -749,7 +736,6 @@ enum class NativeEventType(val value: Int) {
 }
 
 enum class NavigationStatus(val value: Int) {
-    UNKNOWN(0),
     RUNNING(1),
     STOPPED(2),
     FAILED(3)
