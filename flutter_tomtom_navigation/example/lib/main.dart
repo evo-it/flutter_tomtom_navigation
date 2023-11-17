@@ -5,8 +5,10 @@ import 'package:flutter_tomtom_navigation/tomtom_navigation.dart';
 import 'package:flutter_tomtom_navigation/route_planning_options.dart';
 
 // Get the API key from the environment
-const apiKey = String.fromEnvironment('apiKey',
-    defaultValue: 'SU9NKKWKyEVmZpuJ1gDrETFXLtWGdWzA');
+const apiKey = String.fromEnvironment(
+  'apiKey',
+  defaultValue: '<fallback-tomtom-api-key>',
+);
 
 void main() {
   runApp(MaterialApp(
