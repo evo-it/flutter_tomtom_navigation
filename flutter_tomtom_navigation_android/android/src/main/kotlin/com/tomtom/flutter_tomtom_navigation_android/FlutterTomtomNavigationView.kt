@@ -36,6 +36,7 @@ import com.tomtom.sdk.map.display.location.LocationMarkerOptions
 import com.tomtom.sdk.map.display.route.Instruction
 import com.tomtom.sdk.map.display.route.RouteClickListener
 import com.tomtom.sdk.map.display.route.RouteOptions
+import com.tomtom.sdk.map.display.style.StandardStyles
 import com.tomtom.sdk.map.display.ui.MapFragment
 import com.tomtom.sdk.map.display.ui.currentlocation.CurrentLocationButton
 import com.tomtom.sdk.navigation.DestinationArrivalListener
@@ -645,14 +646,11 @@ class FlutterTomtomNavigationView(
 
         when (call.method) {
             "planRoute" -> {
-                val gson = Gson()
-                println(call.argument<String>("destination"))
-
-                println(gson.toJson(ItineraryPoint(place = Place(coordinate = GeoPoint(52.0, 4.43)))))
-                val destination = gson.fromJson(call.argument<String>("destination"), ItineraryPoint::class.java)
-                println("Destination: $destination")
+                val userLocation =
+                    tomTomMap.currentLocation?.position ?: return
+                routePlanningOptions = RoutePlanningOptionsDeserializer.deserialize(call.arguments as Map<*, *>, userLocation)
                 clearMap()
-                calculateRoute(destination)
+                routePlanner.planRoute(routePlanningOptions, routePlanningCallback)
             }
 
             "startNavigation" -> {

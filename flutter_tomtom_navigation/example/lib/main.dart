@@ -25,7 +25,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final nav = const TomtomNavigation(apiKey: apiKey);
+  final nav = const TomtomNavigation(apiKey: apiKey, debug: true);
   DateTime? eta;
 
   @override
@@ -55,6 +55,7 @@ class _MyAppState extends State<MyApp> {
           coordinate: GeoPoint(latitude: 52.014609, longitude: 4.442599),
         ),
       ),
+      vehicleType: VehicleType.truck,
     );
 
     return Scaffold(

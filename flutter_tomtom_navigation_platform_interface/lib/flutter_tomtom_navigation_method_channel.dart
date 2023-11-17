@@ -38,6 +38,8 @@ class MethodChannelFlutterTomtomNavigation
   Future<void> planRoute(RoutePlanningOptions options) async {
     await methodChannel.invokeMethod('planRoute', {
       'destination': jsonEncode(options.destination),
+      'vehicleDimensions': jsonEncode(options.vehicleDimensions),
+      'vehicleType': options.vehicleType.value,
     });
   }
 
