@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_tomtom_navigation_method_channel.dart';
@@ -26,5 +28,47 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
 
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
+  }
+
+  /// Build the TomtomNavigationView.
+  Widget buildView(String apiKey, bool debug) {
+    throw UnimplementedError('buildView() has not been implemented.');
+  }
+
+  /// Plan a route, given the provided RoutePlanningOptions.
+  Future<void> planRoute(RoutePlanningOptions options) {
+    throw UnimplementedError('planRoute() has not been implemented.');
+  }
+
+  /// Start navigating. Depending on [useSimulation] a MapMatched or simulated location provider is used.
+  Future<void> startNavigation(bool useSimulation) {
+    throw UnimplementedError('startNavigation() has not been implemented.');
+  }
+
+  Future<void> stopNavigation() {
+    throw UnimplementedError('stopNavigation() has not been implemented.');
+  }
+
+  void registerRouteEventListener(ValueSetter<dynamic> listener) {
+    throw UnimplementedError(
+        'registerRouteEventListener() has not been implemented.');
+  }
+
+  void registerPlannedRouteEventListener(
+      ValueSetter<dynamic> listener) {
+    throw UnimplementedError(
+        'registerPlannedRouteEventListener() has not been implemented.');
+  }
+
+  void registerNavigationEventListener(
+      ValueSetter<dynamic> listener) {
+    throw UnimplementedError(
+        'registerNavigationEventListener() has not been implemented.');
+  }
+
+  void registerDestinationArrivalEventListener(
+      ValueSetter<dynamic> listener) {
+    throw UnimplementedError(
+        'registerDestinationArrivalEventListener() has not been implemented.');
   }
 }

@@ -1,4 +1,3 @@
-
 buildscript {
     ext.kotlin_version = '1.7.10'
     repositories {
@@ -7,34 +6,16 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0'
+        classpath 'com.android.tools.build:gradle:8.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
-
-def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
-def properties = new Properties()
-
-assert localPropertiesFile.exists()
-localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
-
-def tomtomEmail = properties.getProperty("tomtom.email")
-def tomtomPassword = properties.getProperty("tomtom.password")
-
-
-logger.info("tomtomEmail: $tomtomEmail")
-logger.info("tomtomPassword: $tomtomPassword")
-
 
 allprojects {
     repositories {
         google()
         mavenCentral()
         maven {
-            credentials {
-                username = tomtomEmail
-                password = tomtomPassword
-            }
             url = uri("https://repositories.tomtom.com/artifactory/sdk-maven")
         }
     }

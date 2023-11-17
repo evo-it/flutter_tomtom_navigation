@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0'
+        classpath 'com.android.tools.build:gradle:7.3.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -29,7 +29,7 @@ android {
         namespace 'com.tomtom.flutter_tomtom_navigation_android'
     }
 
-    compileSdkVersion 33
+    compileSdk 33
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -59,8 +59,11 @@ android {
     dependencies {
         testImplementation 'org.jetbrains.kotlin:kotlin-test'
         testImplementation 'org.mockito:mockito-core:5.0.0'
+        implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+        implementation 'com.google.android.material:material:1.9.0'
+        implementation 'com.google.code.gson:gson:2.10.1'
 
-        def version = "0.25.0"
+        def version = "0.36.0"
         implementation "com.tomtom.sdk.maps:map-display:$version"
         implementation "com.tomtom.sdk.routing:route-planner-online:$version"
         implementation "com.tomtom.sdk.location:provider-android:$version"
@@ -82,4 +85,8 @@ android {
             }
         }
     }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 }

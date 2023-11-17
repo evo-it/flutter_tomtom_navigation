@@ -1,11 +1,22 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
+import 'dart:convert';
 
-import 'package:flutter/services.dart';
-import 'package:flutter_tomtom_navigation/flutter_tomtom_navigation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_tomtom_navigation/tomtom_navigation.dart';
+import 'package:flutter_tomtom_navigation/route_planning_options.dart';
+
+// Get the API key from the environment
+const apiKey = String.fromEnvironment(
+  'apiKey',
+  defaultValue: '<fallback-tomtom-api-key>',
+);
 
 void main() {
-  runApp(const MyApp());
+  runApp(MaterialApp(
+    theme: ThemeData(useMaterial3: true),
+    title: 'TomTom Navigation',
+    debugShowCheckedModeBanner: false,
+    home: const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -16,46 +27,87 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-  final _flutterTomtomNavigationPlugin = FlutterTomtomNavigation();
+  final nav = const TomtomNavigation(apiKey: apiKey, debug: true);
+  DateTime? eta;
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await _flutterTomtomNavigationPlugin.getPlatformVersion() ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
+    nav.registerRouteEventListener((value) {
+      // It's currently a JSON String, get the desired value from it
+      final map = jsonDecode(value) as Map;
+      final remainingHalfNanos = map["remainingTime"];
+      if (remainingHalfNanos is int) {
+        // Duration from Kotlin is sent in half-nanoseconds
+        final dt = DateTime.now().add(
+            Duration(microseconds: (remainingHalfNanos / 1000 / 2).round()));
+        setState(() => eta = dt);
+      }
+    });
+    nav.registerDestinationArrivalEventListener((value) {
+      print('Destination reached!');
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
+    final routePlanningOptions = RoutePlanningOptions(
+      destination: ItineraryPoint(
+        place: Place(
+          coordinate: GeoPoint(latitude: 52.011747, longitude: 4.359328),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+      ),
+      vehicleType: VehicleType.truck,
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Plugin example app'),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            if (eta != null) Text('ETA: $eta'),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  const SizedBox(width: 4),
+                  OutlinedButton(
+                    onPressed: () => showDialog(
+                        context: context,
+                        builder: (context) =>
+                            Column(children: [Expanded(child: nav)])),
+                    child: const Text('Open map in dialog'),
+                  ),
+                  const SizedBox(width: 4),
+                  OutlinedButton(
+                    onPressed: () => nav.planRoute(
+                      routePlanningOptions: routePlanningOptions,
+                    ),
+                    child: const Text('Plan route'),
+                  ),
+                  const SizedBox(width: 4),
+                  OutlinedButton(
+                    onPressed: () => nav.startNavigation(useSimulation: true),
+                    child: const Text('Start Navigation (sim)'),
+                  ),
+                  const SizedBox(width: 4),
+                  OutlinedButton(
+                    onPressed: () => nav.startNavigation(useSimulation: false),
+                    child: const Text('Start Navigation (real)'),
+                  ),
+                  const SizedBox(width: 4),
+                  OutlinedButton(
+                    onPressed: () => nav.stopNavigation(),
+                    child: const Text('Stop Navigation'),
+                  ),
+                  const SizedBox(width: 4),
+                ],
+              ),
+            ),
+            Expanded(child: nav),
+          ],
         ),
       ),
     );
