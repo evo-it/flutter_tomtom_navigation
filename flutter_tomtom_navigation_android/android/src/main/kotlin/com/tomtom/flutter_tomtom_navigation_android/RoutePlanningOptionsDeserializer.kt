@@ -6,6 +6,12 @@ import com.tomtom.sdk.location.Place
 import com.tomtom.sdk.routing.options.Itinerary
 import com.tomtom.sdk.routing.options.ItineraryPoint
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
+import com.tomtom.sdk.routing.options.guidance.AnnouncementPoints
+import com.tomtom.sdk.routing.options.guidance.ExtendedSections
+import com.tomtom.sdk.routing.options.guidance.GuidanceOptions
+import com.tomtom.sdk.routing.options.guidance.InstructionPhoneticsType
+import com.tomtom.sdk.routing.options.guidance.InstructionType
+import com.tomtom.sdk.routing.options.guidance.ProgressPoints
 import com.tomtom.sdk.vehicle.Vehicle
 import com.tomtom.sdk.vehicle.VehicleDimensions
 import com.tomtom.sdk.vehicle.VehicleType
@@ -41,16 +47,26 @@ class RoutePlanningOptionsDeserializer {
                 ) else null
             val vehicle = getVehicle(vehicleType, vehicleDimensions)
 
-            println("vehicle is $vehicle")
+            println("Traveling from $currentLocation to ${destination.place.coordinate}")
             return RoutePlanningOptions(
                 itinerary = Itinerary(
                     origin = origin,
-                    destination = destination
+                    destination = destination,
+                ),
+                guidanceOptions = GuidanceOptions(
+                    instructionType = InstructionType.Text,
+                    phoneticsType = InstructionPhoneticsType.Ipa,
+                    announcementPoints = AnnouncementPoints.All,
+                    extendedSections = ExtendedSections.All,
+                    progressPoints = ProgressPoints.All
                 ),
                 vehicle = vehicle,
             )
         }
 
+        /**
+         * TODO Can we read these from the [VehicleType] value class instead?
+         */
         private fun getVehicle(
             vehicleType: Int,
             dimensions: VehicleDimensions?

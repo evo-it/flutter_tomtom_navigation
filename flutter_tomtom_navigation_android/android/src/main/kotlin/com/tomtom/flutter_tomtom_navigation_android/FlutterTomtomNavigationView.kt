@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.tomtom.quantity.Speed
 import com.tomtom.sdk.location.EntryType
 import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.GeoPoint
@@ -36,7 +37,9 @@ import com.tomtom.sdk.map.display.location.LocationMarkerOptions
 import com.tomtom.sdk.map.display.route.Instruction
 import com.tomtom.sdk.map.display.route.RouteClickListener
 import com.tomtom.sdk.map.display.route.RouteOptions
+import com.tomtom.sdk.map.display.style.LoadingStyleFailure
 import com.tomtom.sdk.map.display.style.StandardStyles
+import com.tomtom.sdk.map.display.style.StyleLoadingCallback
 import com.tomtom.sdk.map.display.ui.MapFragment
 import com.tomtom.sdk.map.display.ui.currentlocation.CurrentLocationButton
 import com.tomtom.sdk.navigation.DestinationArrivalListener
@@ -194,6 +197,10 @@ class FlutterTomtomNavigationView(
             tomTomMap = it
             enableUserLocation()
             if (debug) setUpMapListeners()
+            tomTomMap.loadStyle(
+                StandardStyles.VEHICLE_RESTRICTIONS,
+                styleLoadingCallback,
+            )
         }
     }
 
@@ -560,10 +567,18 @@ class FlutterTomtomNavigationView(
         navigationFragment.removeNavigationListener(navigationListener)
         tomTomNavigation.removeProgressUpdatedListener(progressUpdatedListener)
         tomTomNavigation.removeRouteUpdatedListener(routeUpdatedListener)
+        tomTomNavigation.removeDestinationArrivalListener(
+            destinationArrivalListener
+        )
         clearMap()
         hideNavigation()
         initLocationProvider()
         enableUserLocation()
+    }
+
+    private val styleLoadingCallback = object : StyleLoadingCallback {
+        override fun onSuccess() {}
+        override fun onFailure(failure: LoadingStyleFailure) {}
     }
 
     /**
@@ -648,9 +663,20 @@ class FlutterTomtomNavigationView(
             "planRoute" -> {
                 val userLocation =
                     tomTomMap.currentLocation?.position ?: return
-                routePlanningOptions = RoutePlanningOptionsDeserializer.deserialize(call.arguments as Map<*, *>, userLocation)
+                routePlanningOptions =
+                    RoutePlanningOptionsDeserializer.deserialize(
+                        call.arguments as Map<*, *>,
+                        userLocation
+                    )
                 clearMap()
-                routePlanner.planRoute(routePlanningOptions, routePlanningCallback)
+
+                // Show the vehicle restrictions that apply for the current vehicle
+                // TODO do we want to make this optional? Is this what "showLayer" can be used for?
+                tomTomMap.showVehicleRestrictions(routePlanningOptions.vehicle)
+                routePlanner.planRoute(
+                    routePlanningOptions,
+                    routePlanningCallback
+                )
             }
 
             "startNavigation" -> {
@@ -675,14 +701,6 @@ class FlutterTomtomNavigationView(
             }
         }
     }
-
-//    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-//        eventSink = events
-//    }
-//
-//    override fun onCancel(arguments: Any?) {
-//        eventSink = null
-//    }
 
     private fun sendNavigationStatusUpdate(status: NavigationStatus) {
         val jsonString = "{" +

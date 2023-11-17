@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
     final routePlanningOptions = RoutePlanningOptions(
       destination: ItineraryPoint(
         place: Place(
-          coordinate: GeoPoint(latitude: 52.014609, longitude: 4.442599),
+          coordinate: GeoPoint(latitude: 52.011747, longitude: 4.359328),
         ),
       ),
       vehicleType: VehicleType.truck,
