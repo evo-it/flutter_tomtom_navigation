@@ -58,6 +58,14 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       vehicleType: VehicleType.truck,
+      vehicleDimensions: VehicleDimensions(
+        height: Distance.meters(3.5),
+        width: Distance.meters(2.5),
+        length: Distance.meters(12),
+        axleWeight: Weight.metricTons(6),
+        weight: Weight.metricTons(6),
+        numberOfAxles: 3,
+      ),
     );
 
     return Scaffold(

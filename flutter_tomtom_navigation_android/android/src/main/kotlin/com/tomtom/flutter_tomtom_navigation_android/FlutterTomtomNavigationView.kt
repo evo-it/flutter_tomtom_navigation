@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.tomtom.quantity.Weight
 import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.GeoPoint
 import com.tomtom.sdk.location.LocationProvider
@@ -129,6 +130,7 @@ class FlutterTomtomNavigationView(
     }
 
     init {
+        Weight
         this.context = context
         println("Init navigation view with id $id")
 
