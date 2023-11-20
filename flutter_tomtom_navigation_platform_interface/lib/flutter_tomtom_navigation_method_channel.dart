@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/native_event.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/navigation/route_progress.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
 
 /// An implementation of [FlutterTomtomNavigationPlatform] that uses method channels.
@@ -22,7 +23,7 @@ class MethodChannelFlutterTomtomNavigation
   final eventChannel = const EventChannel('flutter_tomtom_navigation/updates');
 
   // Callbacks to the client
-  ValueSetter<dynamic>? _onRouteEvent;
+  ValueSetter<RouteProgress>? _onRouteEvent;
   ValueSetter<dynamic>? _onPlannedRouteEvent;
   ValueSetter<dynamic>? _onNavigationEvent;
   ValueSetter<dynamic>? _onDestinationArrivalEvent;
@@ -102,7 +103,7 @@ class MethodChannelFlutterTomtomNavigation
   }
 
   @override
-  void registerRouteEventListener(ValueSetter<dynamic> listener) async {
+  void registerRouteEventListener(ValueSetter<RouteProgress> listener) async {
     _onRouteEvent = listener;
   }
 
@@ -132,7 +133,7 @@ class MethodChannelFlutterTomtomNavigation
       case NativeEventType.routePlanned:
         _onPlannedRouteEvent?.call(event.data);
       case NativeEventType.routeUpdate:
-        _onRouteEvent?.call(event.data);
+        _onRouteEvent?.call(RouteProgress.fromJson(jsonDecode(event.data)));
       case NativeEventType.navigationUpdate:
         final statusInt = jsonDecode(event.data)['navigationStatus'] as int;
         _onNavigationEvent?.call(statusInt);

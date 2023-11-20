@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/navigation/route_progress.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -49,7 +50,7 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
     throw UnimplementedError('stopNavigation() has not been implemented.');
   }
 
-  void registerRouteEventListener(ValueSetter<dynamic> listener) {
+  void registerRouteEventListener(ValueSetter<RouteProgress> listener) {
     throw UnimplementedError(
         'registerRouteEventListener() has not been implemented.');
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface.dart';
-import 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
+import 'package:flutter_tomtom_navigation/routing.dart';
+import 'package:flutter_tomtom_navigation/navigation.dart';
 
 /// The TomtomNavigation widget, which is used to show a map
 /// and navigation interface to the user,
@@ -38,7 +39,7 @@ class TomtomNavigation extends StatelessWidget {
   }
 
   void registerRouteEventListener(
-    void Function(dynamic) onRouteEvent,
+    void Function(RouteProgress) onRouteEvent,
   ) {
     FlutterTomtomNavigationPlatform.instance
         .registerRouteEventListener(onRouteEvent);

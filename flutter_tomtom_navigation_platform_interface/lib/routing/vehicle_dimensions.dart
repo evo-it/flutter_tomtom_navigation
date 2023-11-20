@@ -6,7 +6,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'vehicle_dimensions.g.dart';
 
-
 @JsonSerializable(explicitToJson: true)
 class VehicleDimensions {
 	VehicleDimensions({

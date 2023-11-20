@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tomtom_navigation/quantity.dart';
+import 'package:flutter_tomtom_navigation/routing.dart';
 import 'package:flutter_tomtom_navigation/tomtom_navigation.dart';
-import 'package:flutter_tomtom_navigation/route_planning_options.dart';
 
 // Get the API key from the environment
 const apiKey = String.fromEnvironment(
@@ -34,15 +35,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     nav.registerRouteEventListener((value) {
-      // It's currently a JSON String, get the desired value from it
-      final map = jsonDecode(value) as Map;
-      final remainingHalfNanos = map["remainingTime"];
-      if (remainingHalfNanos is int) {
-        // Duration from Kotlin is sent in half-nanoseconds
-        final dt = DateTime.now().add(
-            Duration(microseconds: (remainingHalfNanos / 1000 / 2).round()));
-        setState(() => eta = dt);
-      }
+      setState(() => eta = DateTime.now().add(value.remainingTime));
     });
     nav.registerDestinationArrivalEventListener((value) {
       print('Destination reached!');

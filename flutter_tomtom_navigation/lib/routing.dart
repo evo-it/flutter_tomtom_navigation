@@ -15,6 +15,3 @@ export 'package:flutter_tomtom_navigation_platform_interface/routing/type.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/vehicle_dimensions.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/vehicle_type.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/vignettes.dart';
-
-export 'package:flutter_tomtom_navigation_platform_interface/quantity/distance.dart';
-export 'package:flutter_tomtom_navigation_platform_interface/quantity/weight.dart';

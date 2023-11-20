@@ -130,7 +130,6 @@ class FlutterTomtomNavigationView(
     }
 
     init {
-        Weight
         this.context = context
         println("Init navigation view with id $id")
 
