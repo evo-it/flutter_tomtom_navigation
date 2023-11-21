@@ -1,25 +1,20 @@
 import 'package:flutter_tomtom_navigation_platform_interface/quantity/speed.dart';
-import 'package:flutter_tomtom_navigation_platform_interface/vehicle/adr_tunnel_restriction_code.dart';
-import 'package:flutter_tomtom_navigation_platform_interface/vehicle/cargo_capable.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/vehicle/motorized.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/vehicle/vehicle.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/vehicle/vehicle_dimensions.dart';
-import 'package:flutter_tomtom_navigation_platform_interface/vehicle/vehicle_load_type.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/vehicle/vehicle_type.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'truck.g.dart';
+part 'motorcycle.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class Truck extends Vehicle with Motorized, CargoCapable {
-  const Truck({
+class Motorcycle extends Vehicle with Motorized {
+  const Motorcycle({
     super.maxSpeed,
     this.isCommercial = false,
     this.dimensions,
-    this.loadType = const {},
-    this.adrTunnelRestrictionCode,
     this.modelId,
-  }) : super(VehicleType.truck);
+  }) : super(VehicleType.motorcycle);
 
   @override
   final bool isCommercial;
@@ -31,13 +26,7 @@ class Truck extends Vehicle with Motorized, CargoCapable {
   final String? modelId;
 
   @override
-  final AdrTunnelRestrictionCode? adrTunnelRestrictionCode;
+  Map<String, dynamic> toJson() => _$MotorcycleToJson(this);
 
-  @override
-  final Set<VehicleLoadType> loadType;
-
-  @override
-  Map<String, dynamic> toJson() => _$TruckToJson(this);
-
-  factory Truck.fromJson(Map<String, dynamic> json) => _$TruckFromJson(json);
+  factory Motorcycle.fromJson(Map<String, dynamic> json) => _$MotorcycleFromJson(json);
 }

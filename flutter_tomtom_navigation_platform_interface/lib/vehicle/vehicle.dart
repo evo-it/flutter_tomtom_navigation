@@ -10,6 +10,8 @@ abstract class Vehicle {
   const Vehicle(this.type, {this.maxSpeed});
 
   final Speed? maxSpeed;
+  static const pedestrianSpeedKmh = 5;
+  static const bicycleSpeedKmh = 20;
 
   @JsonKey(includeToJson: true)
   final VehicleType type;
