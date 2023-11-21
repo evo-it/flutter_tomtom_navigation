@@ -6,7 +6,11 @@ import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
+import com.tomtom.flutter_tomtom_navigation_android.type_adapters.RouteTypeAdapter
+import com.tomtom.flutter_tomtom_navigation_android.type_adapters.VehicleDeserializer
+import com.tomtom.flutter_tomtom_navigation_android.type_adapters.VehicleTypeAdapter
 import com.tomtom.quantity.Distance
+import com.tomtom.quantity.Speed
 import com.tomtom.sdk.location.GeoPoint
 import com.tomtom.sdk.location.Place
 import com.tomtom.sdk.navigation.horizon.elements.vehiclerestriction.VehicleRestrictionData
@@ -32,59 +36,83 @@ import java.io.IOException
 class RoutePlanningOptionsDeserializer {
     companion object {
         fun deserialize(
-            arguments: Map<*, *>,
+            arguments: String,
             currentLocation: GeoPoint
         ): RoutePlanningOptions {
-            println(arguments["vehicleDimensions"])
-            println(Gson().toJson(VehicleDimensions(height = Distance.meters(4), width = Distance.meters(4), length = Distance.meters(12))))
-            Distance
+            println(Gson().toJson(Vehicle.Car(modelId = "Focus")))
+            println(
+                Gson().toJson(
+                    Vehicle.Truck(
+                        maxSpeed = Speed.Companion.kilometersPerHour(
+                            80
+                        )
+                    )
+                )
+            )
 
             val builder = GsonBuilder()
-            builder.registerTypeAdapter(RouteType::class.java, RouteTypeAdapter())
+            builder.registerTypeAdapter(
+                RouteType::class.java,
+                RouteTypeAdapter(),
+            )
+            builder.registerTypeAdapter(
+                Vehicle::class.java,
+                VehicleDeserializer(),
+            )
             val gson = builder.create()
 
-            // The itinerary
-            if (!arguments.containsKey("destination")
-                || !arguments.containsKey("vehicleType")
-                || !arguments.containsKey("costModel")
-            ) {
-                throw IllegalArgumentException("Required arguments not passed when planning a route: ${arguments.keys}!");
-            }
-            val origin = ItineraryPoint(Place(currentLocation))
-            val destination = gson.fromJson(
-                arguments["destination"] as String,
-                ItineraryPoint::class.java
-            )
-//            val origin = GeoPoint(51.450751, 5.003712)
-//            val destination = GeoPoint(51.421169, 5.096239)
+            println("Android options is $arguments")
+            val opt = gson.fromJson(arguments, RoutePlanningOptions::class.java)
+            println("Deserialized to $opt")
 
-            // The vehicle (and dimensions)
-            val vehicleType = arguments["vehicleType"] as Int
-            val vehicleDimensions =
-                if (arguments["vehicleDimensions"] != null) gson.fromJson(
-                    arguments["vehicleDimensions"] as String,
-                    VehicleDimensions::class.java
-                ) else null
-            val vehicle = getVehicle(vehicleType, vehicleDimensions)
-            println(arguments["costModel"])
-            val costModel = gson.fromJson(
-                arguments["costModel"] as String,
-                CostModel::class.java
-            )
+//            // The itinerary
+//            if (!arguments.containsKey("destination")
+//                || !arguments.containsKey("vehicleType")
+//                || !arguments.containsKey("costModel")
+//            ) {
+//                throw IllegalArgumentException("Required arguments not passed when planning a route: ${arguments.keys}!");
+//            }
+//            val origin = ItineraryPoint(Place(currentLocation))
+//            val destination = gson.fromJson(
+//                arguments["destination"] as String,
+//                ItineraryPoint::class.java
+//            )
+////            val origin = GeoPoint(51.450751, 5.003712)
+////            val destination = GeoPoint(51.421169, 5.096239)
+//
+//            // The vehicle (and dimensions)
+//            val vehicleType = arguments["vehicleType"] as Int
+//            val vehicleDimensions =
+//                if (arguments["vehicleDimensions"] != null) gson.fromJson(
+//                    arguments["vehicleDimensions"] as String,
+//                    VehicleDimensions::class.java
+//                ) else null
+//            val vehicle = getVehicle(vehicleType, vehicleDimensions)
+//            println(arguments["costModel"])
+//            val costModel = gson.fromJson(
+//                arguments["costModel"] as String,
+//                CostModel::class.java
+//            )
+//            return RoutePlanningOptions(
+//                itinerary = Itinerary(
+//                    origin = origin,
+//                    destination = destination,
+//                ),
+//                costModel = costModel,
+//                guidanceOptions = GuidanceOptions(
+//                    instructionType = InstructionType.Text,
+//                    phoneticsType = InstructionPhoneticsType.Ipa,
+//                    announcementPoints = AnnouncementPoints.All,
+//                    extendedSections = ExtendedSections.All,
+//                    progressPoints = ProgressPoints.All
+//                ),
+//                vehicle = vehicle,
+//            )
             return RoutePlanningOptions(
                 itinerary = Itinerary(
-                    origin = origin,
-                    destination = destination,
-                ),
-                costModel = costModel,
-                guidanceOptions = GuidanceOptions(
-                    instructionType = InstructionType.Text,
-                    phoneticsType = InstructionPhoneticsType.Ipa,
-                    announcementPoints = AnnouncementPoints.All,
-                    extendedSections = ExtendedSections.All,
-                    progressPoints = ProgressPoints.All
-                ),
-                vehicle = vehicle,
+                    origin = currentLocation,
+                    destination = GeoPoint(52.2, 4.38),
+                )
             )
         }
 
@@ -112,49 +140,3 @@ class RoutePlanningOptionsDeserializer {
         }
     }
 }
-
-class RouteTypeAdapter : TypeAdapter<RouteType>() {
-    override fun write(out: JsonWriter, value: RouteType?) {
-        out.value(value.toString())
-    }
-
-    override fun read(`in`: JsonReader): RouteType {
-        if (`in`.peek() == JsonToken.NULL) {
-            `in`.nextNull()
-            return RouteType.Fast
-        }
-        val type = `in`.nextString()
-        return when (type) {
-            "Fast" -> RouteType.Fast
-            "Short" -> RouteType.Short
-            "Efficient" -> RouteType.Efficient
-            "Thrilling" -> RouteType.Thrilling()
-            else -> RouteType.Fast
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
