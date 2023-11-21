@@ -2,22 +2,27 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'vehicle_load_type.g.dart';
 
-@JsonEnum(alwaysCreate: true, valueField: 'value')
-enum VehicleLoadType {
-  unHazmatClass1(0),
-  unHazmatClass2(1),
-  unHazmatClass3(2),
-  unHazmatClass4(3),
-  unHazmatClass5(4),
-  unHazmatClass6(5),
-  unHazmatClass7(6),
-  unHazmatClass8(7),
-  unHazmatClass9(8),
-  otherHazmatExplosive(9),
-  otherHazmatGeneral(10),
-  otherHazmatHarmfulToWater(11);
+@JsonSerializable(explicitToJson: true)
+class VehicleLoadType {
+  static const unHazmatClass1 = VehicleLoadType(0);
+  static const unHazmatClass2 = VehicleLoadType(1);
+  static const unHazmatClass3 = VehicleLoadType(2);
+  static const unHazmatClass4 = VehicleLoadType(3);
+  static const unHazmatClass5 = VehicleLoadType(4);
+  static const unHazmatClass6 = VehicleLoadType(5);
+  static const unHazmatClass7 = VehicleLoadType(6);
+  static const unHazmatClass8 = VehicleLoadType(7);
+  static const unHazmatClass9 = VehicleLoadType(8);
+  static const otherHazmatExplosive = VehicleLoadType(9);
+  static const otherHazmatGeneral = VehicleLoadType(10);
+  static const otherHazmatHarmfulToWater = VehicleLoadType(11);
 
   const VehicleLoadType(this.value);
 
   final int value;
+
+  Map<String, dynamic> toJson() => _$VehicleLoadTypeToJson(this);
+
+  factory VehicleLoadType.fromJson(Map<String, dynamic> json) =>
+      _$VehicleLoadTypeFromJson(json);
 }

@@ -47,25 +47,40 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final routePlanningOptions = RoutePlanningOptions(
+      costModel: CostModel(
+        routeType: RouteType.short,
+        considerTraffic: ConsiderTraffic.no,
+        avoidOptions: AvoidOptions(avoidTypes: {
+          AvoidType.lowEmissionZones,
+          AvoidType.motorways,
+        }),
+      ),
       itinerary: Itinerary(
         origin: ItineraryPoint(
             place: Place(
-          coordinate: GeoPoint(latitude: 52.0, longitude: 4.45),
+          coordinate: GeoPoint(latitude: 52.065434, longitude: 5.124378),
         )),
         destination: ItineraryPoint(
             place: Place(
-          coordinate: GeoPoint(latitude: 52.011747, longitude: 4.359328),
+          coordinate: GeoPoint(latitude: 52.129523, longitude: 5.100088),
         )),
       ),
       vehicle: Truck(
+        maxSpeed: Speed.kilometersPerHour(130),
         dimensions: VehicleDimensions(
-            height: Distance.meters(3.5),
-            width: Distance.meters(2.5),
-            length: Distance.meters(12),
-            axleWeight: Weight.metricTons(6),
-            weight: Weight.metricTons(6),
-            numberOfAxles: 3,
+          height: Distance.meters(3.5),
+          width: Distance.meters(2.5),
+          length: Distance.meters(12),
+          axleWeight: Weight.metricTons(6),
+          weight: Weight.metricTons(4),
+          numberOfAxles: 3,
         ),
+        adrTunnelRestrictionCode: AdrTunnelRestrictionCode.C,
+        loadType: {
+          VehicleLoadType.otherHazmatExplosive,
+          VehicleLoadType.unHazmatClass2,
+          VehicleLoadType.otherHazmatHarmfulToWater,
+        },
       ),
     );
 
