@@ -1,7 +1,5 @@
-/// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/location/model/com.tomtom.sdk.location/-geo-bounding-box/index.html
+// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/location/model/com.tomtom.sdk.location/-geo-bounding-box/index.html
 
-import 'geo_point.dart';
-import 'geo_point.dart';
 import 'geo_point.dart';
 import 'package:json_annotation/json_annotation.dart';
 

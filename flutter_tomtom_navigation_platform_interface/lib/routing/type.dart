@@ -1,8 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'type.g.dart';
-
-@JsonEnum(valueField: 'type', alwaysCreate: true)
+@JsonEnum(valueField: 'type')
 enum Type {
   bookmarkHome(0),
   bookmarkWork(1),

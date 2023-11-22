@@ -1,4 +1,4 @@
-/// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/vehicle/model/com.tomtom.sdk.vehicle/-vehicle/index.html
+// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/vehicle/model/com.tomtom.sdk.vehicle/-vehicle/index.html
 
 import 'package:flutter_tomtom_navigation_platform_interface/quantity/speed.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/vehicle/bicycle.dart';

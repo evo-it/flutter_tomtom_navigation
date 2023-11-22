@@ -1,4 +1,4 @@
-/// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/routing/model/com.tomtom.sdk.routing.options/-itinerary-point/index.html
+// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/routing/model/com.tomtom.sdk.routing.options/-itinerary-point/index.html
 
 import 'package:uuid/uuid.dart';
 

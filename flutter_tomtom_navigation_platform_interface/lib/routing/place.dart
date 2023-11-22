@@ -1,4 +1,4 @@
-/// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/location/model/com.tomtom.sdk.location/-place/index.html
+// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/location/model/com.tomtom.sdk.location/-place/index.html
 
 import 'address.dart';
 import 'geo_point.dart';

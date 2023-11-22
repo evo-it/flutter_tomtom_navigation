@@ -1,4 +1,4 @@
-/// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/navigation/navigation-engines/com.tomtom.sdk.navigation.progress/-route-progress/index.html
+// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/navigation/navigation-engines/com.tomtom.sdk.navigation.progress/-route-progress/index.html
 
 import 'package:flutter_tomtom_navigation_platform_interface/quantity/distance.dart';
 

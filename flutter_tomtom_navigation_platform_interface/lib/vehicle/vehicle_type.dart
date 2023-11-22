@@ -1,8 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'vehicle_type.g.dart';
-
-@JsonEnum(valueField: 'value', alwaysCreate: true)
+@JsonEnum(valueField: 'value')
 enum VehicleType {
   car(0),
   truck(1),

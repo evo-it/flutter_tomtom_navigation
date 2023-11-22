@@ -1,10 +1,8 @@
-/// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/location/model/com.tomtom.sdk.location/-entry-type/index.html
+// Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/location/model/com.tomtom.sdk.location/-entry-type/index.html
 
 import 'package:json_annotation/json_annotation.dart';
 
-part 'entry_type.g.dart';
-
-@JsonEnum(valueField: 'type', alwaysCreate: true)
+@JsonEnum(valueField: 'type')
 enum EntryType {
   main(0),
   minor(1);
