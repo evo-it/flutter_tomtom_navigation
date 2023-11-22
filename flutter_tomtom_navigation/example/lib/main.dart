@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tomtom_navigation/maps.dart';
 import 'package:flutter_tomtom_navigation/quantity.dart';
 import 'package:flutter_tomtom_navigation/routing.dart';
 import 'package:flutter_tomtom_navigation/vehicle.dart';
@@ -8,7 +9,7 @@ import 'package:flutter_tomtom_navigation/tomtom_navigation.dart';
 // Get the API key from the environment
 const apiKey = String.fromEnvironment(
   'apiKey',
-  defaultValue: '<fallback-tomtom-api-key>',
+  defaultValue: 'SU9NKKWKyEVmZpuJ1gDrETFXLtWGdWzA', //'<fallback-tomtom-api-key>',
 );
 
 void main() {
@@ -28,7 +29,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final nav = const TomtomNavigation(apiKey: apiKey, debug: true);
+  final nav = TomtomNavigation(
+    mapOptions: MapOptions(mapKey: apiKey, cameraOptions: CameraOptions(
+      position: GeoPoint(latitude: 52.1, longitude: 5.3),
+      zoom: 6,
+    )),
+    debug: true,
+  );
   DateTime? eta;
 
   @override

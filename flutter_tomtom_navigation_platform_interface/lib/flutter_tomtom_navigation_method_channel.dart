@@ -7,9 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/maps/map_options.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/native_event.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/navigation/navigation_status.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/navigation/route_progress.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/routing/summary.dart' as tt;
 
 /// An implementation of [FlutterTomtomNavigationPlatform] that uses method channels.
 class MethodChannelFlutterTomtomNavigation
@@ -24,8 +27,8 @@ class MethodChannelFlutterTomtomNavigation
 
   // Callbacks to the client
   ValueSetter<RouteProgress>? _onRouteEvent;
-  ValueSetter<dynamic>? _onPlannedRouteEvent;
-  ValueSetter<dynamic>? _onNavigationEvent;
+  ValueSetter<tt.Summary>? _onPlannedRouteEvent;
+  ValueSetter<NavigationStatus>? _onNavigationEvent;
   ValueSetter<dynamic>? _onDestinationArrivalEvent;
 
   @override
@@ -55,12 +58,12 @@ class MethodChannelFlutterTomtomNavigation
   // buildView should be overridden by each platform!
   // TODO move this into the platform-specific platform interfaces...
   @override
-  Widget buildView(String apiKey, bool debug) {
+  Widget buildView(MapOptions mapOptions, bool debug) {
     // This is used in the platform side to register the view.
     const String viewType = '<tomtom-navigation>';
     // Pass parameters to the platform side.
     Map<String, dynamic> creationParams = <String, dynamic>{
-      'apiKey': apiKey,
+      'mapOptions': jsonEncode(mapOptions),
       'debug': debug,
     };
 
@@ -102,12 +105,12 @@ class MethodChannelFlutterTomtomNavigation
   }
 
   @override
-  void registerPlannedRouteEventListener(ValueSetter<dynamic> listener) {
+  void registerPlannedRouteEventListener(ValueSetter<tt.Summary> listener) {
     _onPlannedRouteEvent = listener;
   }
 
   @override
-  void registerNavigationEventListener(ValueSetter<dynamic> listener) {
+  void registerNavigationEventListener(ValueSetter<NavigationStatus> listener) {
     _onNavigationEvent = listener;
   }
 
@@ -125,12 +128,13 @@ class MethodChannelFlutterTomtomNavigation
     //TODO(Matyas): Clean up to/from JSONs
     switch (event.nativeEventType) {
       case NativeEventType.routePlanned:
-        _onPlannedRouteEvent?.call(event.data);
+        _onPlannedRouteEvent?.call(tt.Summary.fromJson(jsonDecode(event.data)));
       case NativeEventType.routeUpdate:
         _onRouteEvent?.call(RouteProgress.fromJson(jsonDecode(event.data)));
       case NativeEventType.navigationUpdate:
         final statusInt = jsonDecode(event.data)['navigationStatus'] as int;
-        _onNavigationEvent?.call(statusInt);
+        final status = NavigationStatus.values.firstWhere((element) => element.value == statusInt, orElse: () => NavigationStatus.unknown);
+        _onNavigationEvent?.call(status);
       case NativeEventType.destinationArrival:
         _onDestinationArrivalEvent?.call(event.data);
       case NativeEventType.unknown:

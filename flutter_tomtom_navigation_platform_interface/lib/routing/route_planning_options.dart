@@ -1,5 +1,7 @@
 // Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/routing/model/com.tomtom.sdk.routing.options/-route-planning-options/index.html
 
+import 'package:flutter_tomtom_navigation_platform_interface/vehicle/car.dart';
+
 import 'cost_model.dart';
 import 'itinerary.dart';
 import '../vehicle/vehicle.dart';
@@ -18,7 +20,7 @@ class RoutePlanningOptions {
 		// this.alternativeRoutesOptions, /// Default value AlternativeRoutesOptions? = null,
 		// this.guidanceOptions, /// Default value GuidanceOptions? = null,
 		// th	is.routeLegOptions = const [], /// Default value List<RouteLegOptions> = emptyList(),
-		required this.vehicle,/// Default value Vehicle = Vehicle.Car(),
+		this.vehicle = const Car(),/// Default value Vehicle = Vehicle.Car(),
 		// this.chargingOptions, /// Default value ChargingOptions? = null,
 		// this.queryOptions, /// Default value QueryOptions? = null,
 		// this.waypointOptimization, /// Default value WaypointOptimization? = null,

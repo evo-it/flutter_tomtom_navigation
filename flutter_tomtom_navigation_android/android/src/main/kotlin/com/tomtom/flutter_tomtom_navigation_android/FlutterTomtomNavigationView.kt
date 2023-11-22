@@ -32,12 +32,14 @@ import com.tomtom.sdk.map.display.camera.CameraTrackingMode
 import com.tomtom.sdk.map.display.common.screen.Padding
 import com.tomtom.sdk.map.display.gesture.MapLongClickListener
 import com.tomtom.sdk.map.display.location.LocationMarkerOptions
+import com.tomtom.sdk.map.display.map.OnlineCachePolicy
 import com.tomtom.sdk.map.display.route.Instruction
 import com.tomtom.sdk.map.display.route.RouteClickListener
 import com.tomtom.sdk.map.display.route.RouteOptions
 import com.tomtom.sdk.map.display.style.LoadingStyleFailure
 import com.tomtom.sdk.map.display.style.StandardStyles
 import com.tomtom.sdk.map.display.style.StyleLoadingCallback
+import com.tomtom.sdk.map.display.style.StyleMode
 import com.tomtom.sdk.map.display.ui.MapFragment
 import com.tomtom.sdk.map.display.ui.currentlocation.CurrentLocationButton
 import com.tomtom.sdk.navigation.DestinationArrivalListener
@@ -115,7 +117,8 @@ class FlutterTomtomNavigationView(
     // Other SDK objects that do not have their own lifecycle
     private var mapFragment: MapFragment
     private var navigationFragment: NavigationFragment
-    private lateinit var onLocationUpdateListener: OnLocationUpdateListener
+
+    //    private lateinit var onLocationUpdateListener: OnLocationUpdateListener
     private var route: Route? = null
     private lateinit var routePlanningOptions: RoutePlanningOptions
     private var useSimulation: Boolean = true
@@ -138,7 +141,21 @@ class FlutterTomtomNavigationView(
         }
 
         // Get the API key from the creation params
-        apiKey = creationParams["apiKey"] as String
+        val mapOptionsJson = creationParams["mapOptions"] as String
+        val rawMapOptions =
+            Gson().fromJson(mapOptionsJson, MapOptions::class.java)
+        println("${rawMapOptions.cameraOptions?.position}/${rawMapOptions.cameraOptions?.zoom} ($rawMapOptions)")
+        val mapOptions = rawMapOptions.copy(
+            rawMapOptions.mapKey,
+            cameraOptions = rawMapOptions.cameraOptions,
+            padding = rawMapOptions.padding,
+            mapStyle = rawMapOptions.mapStyle,
+            styleMode = rawMapOptions.styleMode,
+            onlineCachePolicy = OnlineCachePolicy.Default,
+            renderToTexture = rawMapOptions.renderToTexture,
+        )
+        println("Camera options is ${mapOptions.cameraOptions}")
+        apiKey = mapOptions.mapKey
         val debug = creationParams["debug"] as Boolean
 
         // Get the binary messenger from the creation params
@@ -150,11 +167,13 @@ class FlutterTomtomNavigationView(
         @Suppress("UNCHECKED_CAST")
         publish = creationParams["publish"] as (String) -> (Unit)
 
+        sendNavigationStatusUpdate(NavigationStatus.INITIALIZING)
+
         // The root view is a RelativeLayout
         relativeLayout = RelativeLayout(context)
 
         // This layout contains two views: the map view...
-        mapFragment = MapFragment.newInstance(MapOptions(mapKey = apiKey))
+        mapFragment = MapFragment.newInstance(mapOptions)
         mapFragmentContainer = FragmentContainerView(context)
         mapFragmentContainer.id = Random.nextInt()
         mapFragmentContainer.doOnAttach {
@@ -283,13 +302,13 @@ class FlutterTomtomNavigationView(
     private fun showUserLocation() {
         locationProvider.enable()
         // zoom to current location at city level
-        onLocationUpdateListener = OnLocationUpdateListener { location ->
-            tomTomMap.moveCamera(CameraOptions(location.position, zoom = 8.0))
-            locationProvider.removeOnLocationUpdateListener(
-                onLocationUpdateListener
-            )
-        }
-        locationProvider.addOnLocationUpdateListener(onLocationUpdateListener)
+//        onLocationUpdateListener = OnLocationUpdateListener { location ->
+//            tomTomMap.moveCamera(CameraOptions(location.position, zoom = 8.0))
+//            locationProvider.removeOnLocationUpdateListener(
+//                onLocationUpdateListener
+//            )
+//        }
+//        locationProvider.addOnLocationUpdateListener(onLocationUpdateListener)
         tomTomMap.setLocationProvider(locationProvider)
         val locationMarker =
             LocationMarkerOptions(type = LocationMarkerOptions.Type.Pointer)
@@ -377,10 +396,10 @@ class FlutterTomtomNavigationView(
      */
     private val routePlanningCallback = object : RoutePlanningCallback {
         override fun onSuccess(result: RoutePlanningResponse) {
-            val routePlanningJson = Gson().toJson(result)
+            val summaryJson = Gson().toJson(result.routes.first().summary)
             val json =
                 appendNavigationUpdateStatusToJson(
-                    routePlanningJson,
+                    summaryJson,
                     NativeEventType.ROUTE_PLANNED
                 )
             publish(json)
@@ -410,7 +429,10 @@ class FlutterTomtomNavigationView(
             instructions = instructions,
             routeOffset = route.routePoints.map { it.routeOffset }
         )
+        println("Adding route to map!")
         tomTomMap.addRoute(routeOptions)
+
+        println(tomTomMap.routes)
     }
 
     /**
@@ -492,7 +514,7 @@ class FlutterTomtomNavigationView(
         }
 
     private val progressUpdatedListener = ProgressUpdatedListener {
-        tomTomMap.routes.first().progress = it.distanceAlongRoute
+        tomTomMap.routes.firstOrNull()?.progress = it.distanceAlongRoute
         sendRouteUpdateEvent(it)
     }
 
@@ -565,7 +587,9 @@ class FlutterTomtomNavigationView(
     private val styleLoadingCallback = object : StyleLoadingCallback {
         override fun onSuccess() {
             tomTomMap.hideVehicleRestrictions()
+            sendNavigationStatusUpdate(NavigationStatus.READY)
         }
+
         override fun onFailure(failure: LoadingStyleFailure) {}
     }
 
@@ -650,6 +674,16 @@ class FlutterTomtomNavigationView(
 
         when (call.method) {
             "planRoute" -> {
+                val cameraOptions = CameraOptions(
+                    position = GeoPoint(52.1, 5.6),
+                    zoom = 1.0,
+                    tilt = 2.0,
+                    rotation = 3.0,
+                    fieldOfView = 4.0,
+                )
+                println(cameraOptions.position)
+                println(Gson().toJson(cameraOptions))
+
                 val userLocation =
                     tomTomMap.currentLocation?.position ?: return
                 routePlanningOptions =
@@ -737,7 +771,9 @@ enum class NativeEventType(val value: Int) {
 }
 
 enum class NavigationStatus(val value: Int) {
-    RUNNING(1),
-    STOPPED(2),
-    FAILED(3)
+    INITIALIZING(0),
+    READY(1),
+    RUNNING(2),
+    STOPPED(3),
+    FAILED(4),
 }

@@ -4,6 +4,9 @@ import com.google.gson.GsonBuilder
 import com.tomtom.flutter_tomtom_navigation_android.type_adapters.RouteTypeAdapter
 import com.tomtom.flutter_tomtom_navigation_android.type_adapters.VehicleDeserializer
 import com.tomtom.sdk.location.GeoPoint
+import com.tomtom.sdk.location.Place
+import com.tomtom.sdk.routing.options.Itinerary
+import com.tomtom.sdk.routing.options.ItineraryPoint
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.options.calculation.RouteType
 import com.tomtom.sdk.routing.options.guidance.AnnouncementPoints
@@ -42,7 +45,12 @@ class RoutePlanningOptionsDeserializer {
                     extendedSections = ExtendedSections.All,
                     progressPoints = ProgressPoints.All
                 ),
-                routeLegOptions = emptyList()
+                routeLegOptions = emptyList(),
+                itinerary = Itinerary(
+                    // For now, always replace the origin with the current location
+                    origin = ItineraryPoint(Place(currentLocation)),
+                    destination = opt.itinerary.destination
+                )
             )
         }
     }

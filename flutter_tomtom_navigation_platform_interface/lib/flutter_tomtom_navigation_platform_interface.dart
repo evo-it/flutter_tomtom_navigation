@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/navigation/route_progress.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/routing/summary.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_tomtom_navigation_method_channel.dart';
+import 'maps/map_options.dart';
+import 'navigation/navigation_status.dart';
 
 abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
   /// Constructs a FlutterTomtomNavigationPlatform.
@@ -32,7 +35,7 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
   }
 
   /// Build the TomtomNavigationView.
-  Widget buildView(String apiKey, bool debug) {
+  Widget buildView(MapOptions mapOptions, bool debug) {
     throw UnimplementedError('buildView() has not been implemented.');
   }
 
@@ -56,13 +59,13 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
   }
 
   void registerPlannedRouteEventListener(
-      ValueSetter<dynamic> listener) {
+      ValueSetter<Summary> listener) {
     throw UnimplementedError(
         'registerPlannedRouteEventListener() has not been implemented.');
   }
 
   void registerNavigationEventListener(
-      ValueSetter<dynamic> listener) {
+      ValueSetter<NavigationStatus> listener) {
     throw UnimplementedError(
         'registerNavigationEventListener() has not been implemented.');
   }

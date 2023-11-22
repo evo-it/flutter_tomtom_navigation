@@ -12,5 +12,6 @@ export 'package:flutter_tomtom_navigation_platform_interface/routing/itinerary.d
 export 'package:flutter_tomtom_navigation_platform_interface/routing/place.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/route_type.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/routing/summary.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/type.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/vignettes.dart';
