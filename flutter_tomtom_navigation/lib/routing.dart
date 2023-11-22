@@ -8,10 +8,9 @@ export 'package:flutter_tomtom_navigation_platform_interface/routing/entry_type.
 export 'package:flutter_tomtom_navigation_platform_interface/routing/geo_bounding_box.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/geo_point.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/itinerary_point.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/routing/itinerary.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/place.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/route_type.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/type.dart';
-export 'package:flutter_tomtom_navigation_platform_interface/routing/vehicle_dimensions.dart';
-export 'package:flutter_tomtom_navigation_platform_interface/routing/vehicle_type.dart';
 export 'package:flutter_tomtom_navigation_platform_interface/routing/vignettes.dart';

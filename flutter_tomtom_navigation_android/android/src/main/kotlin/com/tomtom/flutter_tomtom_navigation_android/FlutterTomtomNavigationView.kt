@@ -654,7 +654,7 @@ class FlutterTomtomNavigationView(
                     tomTomMap.currentLocation?.position ?: return
                 routePlanningOptions =
                     RoutePlanningOptionsDeserializer.deserialize(
-                        call.arguments as Map<*, *>,
+                        call.arguments as String,
                         userLocation
                     )
                 clearMap()

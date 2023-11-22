@@ -1,0 +1,13 @@
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/adr_tunnel_restriction_code.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/bicycle.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/bus.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/car.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/motorcycle.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/pedestrian.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/taxi.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/truck.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/van.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/vehicle.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/vehicle_dimensions.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/vehicle_load_type.dart';
+export 'package:flutter_tomtom_navigation_platform_interface/vehicle/vehicle_type.dart';

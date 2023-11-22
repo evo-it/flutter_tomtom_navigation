@@ -37,13 +37,7 @@ class MethodChannelFlutterTomtomNavigation
 
   @override
   Future<void> planRoute(RoutePlanningOptions options) async {
-    await methodChannel.invokeMethod('planRoute', {
-      'destination': jsonEncode(options.destination),
-      if (options.vehicleDimensions != null)
-        'vehicleDimensions': jsonEncode(options.vehicleDimensions!),
-      'vehicleType': options.vehicleType.value,
-      'costModel': jsonEncode(options.costModel),
-    });
+    await methodChannel.invokeMethod('planRoute', jsonEncode(options));
   }
 
   @override
