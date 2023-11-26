@@ -5,11 +5,13 @@ import 'package:flutter_tomtom_navigation/quantity.dart';
 import 'package:flutter_tomtom_navigation/routing.dart';
 import 'package:flutter_tomtom_navigation/vehicle.dart';
 import 'package:flutter_tomtom_navigation/tomtom_navigation.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 // Get the API key from the environment
 const apiKey = String.fromEnvironment(
   'apiKey',
-  defaultValue: 'SU9NKKWKyEVmZpuJ1gDrETFXLtWGdWzA', //'<fallback-tomtom-api-key>',
+  defaultValue:
+      'SU9NKKWKyEVmZpuJ1gDrETFXLtWGdWzA', //'<fallback-tomtom-api-key>',
 );
 
 void main() {
@@ -30,10 +32,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final nav = TomtomNavigation(
-    mapOptions: MapOptions(mapKey: apiKey, cameraOptions: CameraOptions(
-      position: GeoPoint(latitude: 52.1, longitude: 5.3),
-      zoom: 6,
-    )),
+    mapOptions: MapOptions(
+        mapKey: apiKey,
+        cameraOptions: CameraOptions(
+          position: GeoPoint(latitude: 52.1, longitude: 5.3),
+          zoom: 6,
+        )),
     debug: true,
   );
   DateTime? eta;
@@ -41,6 +45,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+
+    // Request permission location
+    Permission.location.request();
+
     nav.registerRouteEventListener((value) {
       setState(() => eta = DateTime.now().add(value.remainingTime));
     });

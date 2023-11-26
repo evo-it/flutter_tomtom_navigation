@@ -9,7 +9,7 @@ part 'route_progress.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class RouteProgress {
-  RouteProgress({
+  const RouteProgress({
     this.remainingTime = Duration.zero,
 
     /// Default value Duration = Duration.ZERO,
