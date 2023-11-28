@@ -7,7 +7,7 @@ part 'geo_point.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class GeoPoint {
-	GeoPoint({
+	const GeoPoint({
 		required this.latitude,/// Default value Double,
 		required this.longitude,/// Default value Double,
 	}); 

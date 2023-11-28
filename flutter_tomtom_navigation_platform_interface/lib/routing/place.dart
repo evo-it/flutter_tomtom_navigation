@@ -10,7 +10,7 @@ part 'place.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Place {
-  Place({
+  const Place({
     required this.coordinate,
 
     /// Default value GeoPoint,

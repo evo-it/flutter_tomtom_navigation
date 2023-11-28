@@ -12,7 +12,7 @@ part 'route_planning_options.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class RoutePlanningOptions {
-	RoutePlanningOptions({
+	const RoutePlanningOptions({
 		required this.itinerary,/// Default value Itinerary,
 		this.costModel = const CostModel(), /// Default value CostModel? = CostModel(),
 		this.departAt, /// Default value Date? = null,

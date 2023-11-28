@@ -7,7 +7,7 @@ part 'address.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Address {
-	Address({
+	const Address({
 		required this.streetNumber,/// Default value String = "",
 		required this.streetName,/// Default value String = "",
 		required this.municipalitySubdivision,/// Default value String = "",

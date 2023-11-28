@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final routePlanningOptions = RoutePlanningOptions(
-      costModel: CostModel(
+      costModel: const CostModel(
         routeType: RouteType.short,
         considerTraffic: ConsiderTraffic.no,
         avoidOptions: AvoidOptions(avoidTypes: {
@@ -72,12 +72,12 @@ class _MyAppState extends State<MyApp> {
       ),
       itinerary: Itinerary(
         origin: ItineraryPoint(
-            place: Place(
-          coordinate: GeoPoint(latitude: 52.065434, longitude: 5.124378),
+            place: const Place(
+          coordinate: GeoPoint(latitude: 52.013623, longitude: 4.442078),
         )),
         destination: ItineraryPoint(
-            place: Place(
-          coordinate: GeoPoint(latitude: 52.129523, longitude: 5.100088),
+            place: const Place(
+          coordinate: GeoPoint(latitude: 52.016115, longitude: 4.432598),
         )),
       ),
       vehicle: Truck(
@@ -86,8 +86,8 @@ class _MyAppState extends State<MyApp> {
           height: Distance.meters(3.5),
           width: Distance.meters(2.5),
           length: Distance.meters(12),
-          axleWeight: Weight.metricTons(6),
-          weight: Weight.metricTons(4),
+          axleWeight: Weight.metricTons(4),
+          weight: Weight.metricTons(12),
           numberOfAxles: 3,
         ),
         adrTunnelRestrictionCode: AdrTunnelRestrictionCode.C,

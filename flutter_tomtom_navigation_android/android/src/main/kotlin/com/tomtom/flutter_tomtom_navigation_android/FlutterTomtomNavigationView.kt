@@ -15,11 +15,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.tomtom.quantity.Weight
 import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.GeoPoint
 import com.tomtom.sdk.location.LocationProvider
-import com.tomtom.sdk.location.OnLocationUpdateListener
 import com.tomtom.sdk.location.android.AndroidLocationProvider
 import com.tomtom.sdk.location.mapmatched.MapMatchedLocationProvider
 import com.tomtom.sdk.location.simulation.SimulationLocationProvider
@@ -39,7 +37,6 @@ import com.tomtom.sdk.map.display.route.RouteOptions
 import com.tomtom.sdk.map.display.style.LoadingStyleFailure
 import com.tomtom.sdk.map.display.style.StandardStyles
 import com.tomtom.sdk.map.display.style.StyleLoadingCallback
-import com.tomtom.sdk.map.display.style.StyleMode
 import com.tomtom.sdk.map.display.ui.MapFragment
 import com.tomtom.sdk.map.display.ui.currentlocation.CurrentLocationButton
 import com.tomtom.sdk.navigation.DestinationArrivalListener
@@ -169,6 +166,10 @@ class FlutterTomtomNavigationView(
 
         sendNavigationStatusUpdate(NavigationStatus.INITIALIZING)
 
+        initLocationProvider()
+        initRouting()
+        initNavigation()
+
         // The root view is a RelativeLayout
         relativeLayout = RelativeLayout(context)
 
@@ -180,6 +181,18 @@ class FlutterTomtomNavigationView(
             val activity = it.context.getFragmentActivityOrThrow()
             activity.supportFragmentManager.findFragmentByTag("flutter_fragment")?.childFragmentManager?.beginTransaction()
                 ?.replace(it.id, mapFragment)?.commit()
+            sendNavigationStatusUpdate(NavigationStatus.MAP_LOADED)
+
+            mapFragment.getMapAsync { map ->
+                tomTomMap = map
+                enableUserLocation()
+                if (debug) setUpMapListeners()
+                tomTomMap.loadStyle(
+                    StandardStyles.VEHICLE_RESTRICTIONS,
+                    styleLoadingCallback,
+                )
+                sendNavigationStatusUpdate(NavigationStatus.RESTRICTIONS_LOADED)
+            }
         }
         relativeLayout.addView(mapFragmentContainer)
 
@@ -205,20 +218,6 @@ class FlutterTomtomNavigationView(
                 ?.replace(it.id, navigationFragment)?.commit()
         }
         relativeLayout.addView(navigationFragmentContainer)
-
-        initLocationProvider()
-        initRouting()
-        initNavigation()
-
-        mapFragment.getMapAsync {
-            tomTomMap = it
-            enableUserLocation()
-            if (debug) setUpMapListeners()
-            tomTomMap.loadStyle(
-                StandardStyles.VEHICLE_RESTRICTIONS,
-                styleLoadingCallback,
-            )
-        }
     }
 
     private fun Context.getFragmentActivityOrThrow(): FragmentActivity {
@@ -772,8 +771,10 @@ enum class NativeEventType(val value: Int) {
 
 enum class NavigationStatus(val value: Int) {
     INITIALIZING(0),
-    READY(1),
-    RUNNING(2),
-    STOPPED(3),
-    FAILED(4),
+    MAP_LOADED(1),
+    RESTRICTIONS_LOADED(2),
+    READY(3),
+    RUNNING(4),
+    STOPPED(5),
+    FAILED(6),
 }

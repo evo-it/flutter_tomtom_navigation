@@ -4,10 +4,12 @@ import 'package:json_annotation/json_annotation.dart';
 enum NavigationStatus {
   unknown(-1),
   initializing(0),
-  ready(1),
-  running(2),
-  stopped(3),
-  failed(4);
+  mapLoaded(1),
+  restrictionsLoaded(2),
+  ready(3),
+  running(4),
+  stopped(5),
+  failed(6);
 
   const NavigationStatus(this.value);
 
