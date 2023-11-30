@@ -18,6 +18,7 @@ import com.google.gson.JsonObject
 import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.GeoPoint
 import com.tomtom.sdk.location.LocationProvider
+import com.tomtom.sdk.location.OnLocationUpdateListener
 import com.tomtom.sdk.location.android.AndroidLocationProvider
 import com.tomtom.sdk.location.mapmatched.MapMatchedLocationProvider
 import com.tomtom.sdk.location.simulation.SimulationLocationProvider
@@ -114,12 +115,14 @@ class FlutterTomtomNavigationView(
     private var mapFragment: MapFragment
     private var navigationFragment: NavigationFragment
 
-    //    private lateinit var onLocationUpdateListener: OnLocationUpdateListener
+    private lateinit var onLocationUpdateListener: OnLocationUpdateListener
     private var route: Route? = null
     private lateinit var routePlanningOptions: RoutePlanningOptions
     private var useSimulation: Boolean = true
 
     override fun dispose() {
+        locationProvider.removeOnLocationUpdateListener(onLocationUpdateListener)
+
         channel.setMethodCallHandler(null)
 
         tomTomNavigation.close()
@@ -300,6 +303,16 @@ class FlutterTomtomNavigationView(
     private fun showUserLocation() {
         locationProvider.enable()
         // zoom to current location at city level
+        onLocationUpdateListener = OnLocationUpdateListener { location ->
+            val result = Gson().toJson(location)
+
+            val response = appendNavigationUpdateStatusToJson(
+                result,
+                NativeEventType.LOCATION_UPDATE,
+            )
+            publish(response)
+        }
+        locationProvider.addOnLocationUpdateListener(onLocationUpdateListener)
         tomTomMap.setLocationProvider(locationProvider)
         val locationMarker =
             LocationMarkerOptions(type = LocationMarkerOptions.Type.Pointer)
@@ -457,7 +470,9 @@ class FlutterTomtomNavigationView(
         navigationFragment.startNavigation(routePlan)
         navigationFragment.addNavigationListener(navigationListener)
         tomTomNavigation.addProgressUpdatedListener(progressUpdatedListener)
-        tomTomNavigation.addActiveRouteChangedListener(activeRouteChangedListener)
+        tomTomNavigation.addActiveRouteChangedListener(
+            activeRouteChangedListener
+        )
         tomTomNavigation.addDestinationArrivalListener(
             destinationArrivalListener
         )
@@ -560,7 +575,9 @@ class FlutterTomtomNavigationView(
         resetMapPadding()
         navigationFragment.removeNavigationListener(navigationListener)
         tomTomNavigation.removeProgressUpdatedListener(progressUpdatedListener)
-        tomTomNavigation.removeActiveRouteChangedListener(activeRouteChangedListener)
+        tomTomNavigation.removeActiveRouteChangedListener(
+            activeRouteChangedListener
+        )
         tomTomNavigation.removeDestinationArrivalListener(
             destinationArrivalListener
         )
@@ -754,6 +771,7 @@ enum class NativeEventType(val value: Int) {
     ROUTE_PLANNED(2),
     NAVIGATION_UPDATE(3),
     DESTINATION_ARRIVAL(4),
+    LOCATION_UPDATE(5),
 }
 
 enum class NavigationStatus(val value: Int) {
