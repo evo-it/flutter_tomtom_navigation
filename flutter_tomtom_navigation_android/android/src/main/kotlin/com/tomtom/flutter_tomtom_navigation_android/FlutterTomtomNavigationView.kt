@@ -39,12 +39,11 @@ import com.tomtom.sdk.map.display.style.StandardStyles
 import com.tomtom.sdk.map.display.style.StyleLoadingCallback
 import com.tomtom.sdk.map.display.ui.MapFragment
 import com.tomtom.sdk.map.display.ui.currentlocation.CurrentLocationButton
+import com.tomtom.sdk.navigation.ActiveRouteChangedListener
 import com.tomtom.sdk.navigation.DestinationArrivalListener
 import com.tomtom.sdk.navigation.NavigationFailure
 import com.tomtom.sdk.navigation.ProgressUpdatedListener
 import com.tomtom.sdk.navigation.RoutePlan
-import com.tomtom.sdk.navigation.RouteUpdateReason
-import com.tomtom.sdk.navigation.RouteUpdatedListener
 import com.tomtom.sdk.navigation.TomTomNavigation
 import com.tomtom.sdk.navigation.online.Configuration
 import com.tomtom.sdk.navigation.online.OnlineTomTomNavigationFactory
@@ -67,8 +66,8 @@ import com.tomtom.sdk.routing.options.guidance.InstructionPhoneticsType
 import com.tomtom.sdk.routing.options.guidance.InstructionType
 import com.tomtom.sdk.routing.options.guidance.ProgressPoints
 import com.tomtom.sdk.routing.route.Route
-import com.tomtom.sdk.vehicle.DefaultVehicleProvider
 import com.tomtom.sdk.vehicle.Vehicle
+import com.tomtom.sdk.vehicle.VehicleProviderFactory
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -274,7 +273,7 @@ class FlutterTomtomNavigationView(
             apiKey = apiKey,
             locationProvider = locationProvider,
             routeReplanner = routeReplanner,
-            vehicleProvider = DefaultVehicleProvider(vehicle = Vehicle.Car())
+            vehicleProvider = VehicleProviderFactory.create(vehicle = Vehicle.Car())
         )
         tomTomNavigation = OnlineTomTomNavigationFactory.create(configuration)
     }
@@ -301,13 +300,6 @@ class FlutterTomtomNavigationView(
     private fun showUserLocation() {
         locationProvider.enable()
         // zoom to current location at city level
-//        onLocationUpdateListener = OnLocationUpdateListener { location ->
-//            tomTomMap.moveCamera(CameraOptions(location.position, zoom = 8.0))
-//            locationProvider.removeOnLocationUpdateListener(
-//                onLocationUpdateListener
-//            )
-//        }
-//        locationProvider.addOnLocationUpdateListener(onLocationUpdateListener)
         tomTomMap.setLocationProvider(locationProvider)
         val locationMarker =
             LocationMarkerOptions(type = LocationMarkerOptions.Type.Pointer)
@@ -465,7 +457,7 @@ class FlutterTomtomNavigationView(
         navigationFragment.startNavigation(routePlan)
         navigationFragment.addNavigationListener(navigationListener)
         tomTomNavigation.addProgressUpdatedListener(progressUpdatedListener)
-        tomTomNavigation.addRouteUpdatedListener(routeUpdatedListener)
+        tomTomNavigation.addActiveRouteChangedListener(activeRouteChangedListener)
         tomTomNavigation.addDestinationArrivalListener(
             destinationArrivalListener
         )
@@ -517,15 +509,10 @@ class FlutterTomtomNavigationView(
         sendRouteUpdateEvent(it)
     }
 
-    private val routeUpdatedListener by lazy {
-        RouteUpdatedListener { route, updateReason ->
-            if (updateReason != RouteUpdateReason.Refresh &&
-                updateReason != RouteUpdateReason.Increment &&
-                updateReason != RouteUpdateReason.LanguageChange
-            ) {
-                tomTomMap.removeRoutes()
-                drawRoute(route)
-            }
+    private val activeRouteChangedListener by lazy {
+        ActiveRouteChangedListener { route ->
+            tomTomMap.removeRoutes()
+            drawRoute(route)
         }
     }
 
@@ -573,7 +560,7 @@ class FlutterTomtomNavigationView(
         resetMapPadding()
         navigationFragment.removeNavigationListener(navigationListener)
         tomTomNavigation.removeProgressUpdatedListener(progressUpdatedListener)
-        tomTomNavigation.removeRouteUpdatedListener(routeUpdatedListener)
+        tomTomNavigation.removeActiveRouteChangedListener(activeRouteChangedListener)
         tomTomNavigation.removeDestinationArrivalListener(
             destinationArrivalListener
         )
