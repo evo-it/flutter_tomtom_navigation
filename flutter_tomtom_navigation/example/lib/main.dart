@@ -31,7 +31,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final nav = TomtomNavigation(
+  final nav = const TomtomNavigation(
     mapOptions: MapOptions(
         mapKey: apiKey,
         cameraOptions: CameraOptions(
@@ -56,6 +56,9 @@ class _MyAppState extends State<MyApp> {
       if (kDebugMode) {
         print('Destination reached!');
       }
+    });
+    nav.registerLocationEventListener((value) {
+      // Do something when a new location is received
     });
   }
 

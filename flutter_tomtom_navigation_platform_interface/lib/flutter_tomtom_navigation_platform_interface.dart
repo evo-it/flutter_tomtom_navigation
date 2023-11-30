@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/location/geo_location.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/navigation/route_progress.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/summary.dart';
@@ -58,21 +59,23 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
         'registerRouteEventListener() has not been implemented.');
   }
 
-  void registerPlannedRouteEventListener(
-      ValueSetter<Summary> listener) {
+  void registerPlannedRouteEventListener(ValueSetter<Summary> listener) {
     throw UnimplementedError(
         'registerPlannedRouteEventListener() has not been implemented.');
   }
 
-  void registerNavigationEventListener(
-      ValueSetter<NavigationStatus> listener) {
+  void registerNavigationEventListener(ValueSetter<NavigationStatus> listener) {
     throw UnimplementedError(
         'registerNavigationEventListener() has not been implemented.');
   }
 
-  void registerDestinationArrivalEventListener(
-      ValueSetter<dynamic> listener) {
+  void registerDestinationArrivalEventListener(ValueSetter<dynamic> listener) {
     throw UnimplementedError(
         'registerDestinationArrivalEventListener() has not been implemented.');
+  }
+
+  void registerLocationEventListener(ValueSetter<GeoLocation> listener) {
+    throw UnimplementedError(
+        'registerLocationEventListener() has not been implemented.');
   }
 }

@@ -1,32 +1,19 @@
 import 'dart:convert';
 
 /// This represent all the event possibilities from the native code
-
 enum NativeEventType {
-  unknown,
-  navigationUpdate,
-  routeUpdate,
-  routePlanned,
-  destinationArrival
-}
+  unknown(0),
+  routeUpdate(1),
+  routePlanned(2),
+  navigationUpdate(3),
+  destinationArrival(4),
+  locationUpdate(5);
 
-extension NativeEventExtension on NativeEventType {
-  int get value {
-    switch (this) {
-      case NativeEventType.unknown:
-        return 0;
-      case NativeEventType.routeUpdate:
-        return 1;
-      case NativeEventType.routePlanned:
-        return 2;
-      case NativeEventType.navigationUpdate:
-        return 3;
-      case NativeEventType.destinationArrival:
-        return 4;
-    }
-  }
+  const NativeEventType(this.value);
 
-  static NativeEventType fromValue(int value) {
+  final int value;
+
+  factory NativeEventType.fromValue(int value) {
     switch (value) {
       case 1:
         return NativeEventType.routeUpdate;
@@ -36,6 +23,8 @@ extension NativeEventExtension on NativeEventType {
         return NativeEventType.navigationUpdate;
       case 4:
         return NativeEventType.destinationArrival;
+      case 5:
+        return NativeEventType.locationUpdate;
       case 0:
       default:
         return NativeEventType.unknown;
@@ -54,8 +43,7 @@ class NativeEvent {
 
   factory NativeEvent.fromMap(Map<String, dynamic> map) {
     return NativeEvent(
-      nativeEventType:
-          NativeEventExtension.fromValue(map['nativeEventType'] as int),
+      nativeEventType: NativeEventType.fromValue(map['nativeEventType'] as int),
       data: map['data'] ?? '',
     );
   }

@@ -14,6 +14,8 @@ import 'package:flutter_tomtom_navigation_platform_interface/navigation/route_pr
 import 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/summary.dart' as tt;
 
+import 'location/geo_location.dart';
+
 /// An implementation of [FlutterTomtomNavigationPlatform] that uses method channels.
 class MethodChannelFlutterTomtomNavigation
     extends FlutterTomtomNavigationPlatform {
@@ -30,6 +32,7 @@ class MethodChannelFlutterTomtomNavigation
   ValueSetter<tt.Summary>? _onPlannedRouteEvent;
   ValueSetter<NavigationStatus>? _onNavigationEvent;
   ValueSetter<dynamic>? _onDestinationArrivalEvent;
+  ValueSetter<GeoLocation>? _onLocationEvent;
 
   @override
   Future<String?> getPlatformVersion() async {
@@ -119,6 +122,11 @@ class MethodChannelFlutterTomtomNavigation
     _onDestinationArrivalEvent = listener;
   }
 
+  @override
+  void registerLocationEventListener(ValueSetter<GeoLocation> listener) {
+    _onLocationEvent = listener;
+  }
+
   NativeEvent _parseNativeEvent(String event) {
     final eventObject = NativeEvent.fromJson(event);
     return eventObject;
@@ -137,6 +145,8 @@ class MethodChannelFlutterTomtomNavigation
         _onNavigationEvent?.call(status);
       case NativeEventType.destinationArrival:
         _onDestinationArrivalEvent?.call(event.data);
+      case NativeEventType.locationUpdate:
+        _onLocationEvent?.call(GeoLocation.fromJson(jsonDecode(event.data)));
       case NativeEventType.unknown:
         print("Got unexpected stream event $event");
     }
