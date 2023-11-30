@@ -10,7 +10,7 @@ part 'itinerary.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Itinerary {
-	Itinerary({
+	const Itinerary({
 		required this.origin,/// Default value GeoPoint,
 		required this.destination,/// Default value GeoPoint,
 		this.waypoints = const [], /// Default value List<GeoPoint> = emptyList(),

@@ -7,7 +7,7 @@ part 'summary.g.dart';
 
 @JsonSerializable(createToJson: false)
 class Summary {
-  Summary({
+  const Summary({
     required this.length,
 
     /// Default value Distance,

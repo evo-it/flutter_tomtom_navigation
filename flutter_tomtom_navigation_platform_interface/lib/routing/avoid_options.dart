@@ -10,7 +10,7 @@ part 'avoid_options.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class AvoidOptions {
-	AvoidOptions({
+	const AvoidOptions({
 		this.avoidTypes = const {}, /// Default value Set<AvoidType> = emptySet(),
 		this.avoidAreas = const {}, /// Default value Set<GeoBoundingBox> = emptySet(),
 		this.vignettes, /// Default value Vignettes? = null,

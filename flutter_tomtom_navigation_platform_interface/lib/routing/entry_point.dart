@@ -9,7 +9,7 @@ part 'entry_point.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class EntryPoint {
-	EntryPoint({
+	const EntryPoint({
 		required this.type,/// Default value EntryType,
 		required this.position,/// Default value GeoPoint,
 	});

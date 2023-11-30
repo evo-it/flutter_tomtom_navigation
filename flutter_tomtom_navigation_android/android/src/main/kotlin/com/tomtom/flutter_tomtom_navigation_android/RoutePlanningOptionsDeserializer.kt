@@ -45,10 +45,10 @@ class RoutePlanningOptionsDeserializer {
                     extendedSections = ExtendedSections.All,
                     progressPoints = ProgressPoints.All
                 ),
-                routeLegOptions = emptyList(),
                 itinerary = Itinerary(
                     // For now, always replace the origin with the current location
                     origin = ItineraryPoint(Place(currentLocation)),
+                    waypoints = opt.itinerary.waypoints,
                     destination = opt.itinerary.destination
                 )
             )
