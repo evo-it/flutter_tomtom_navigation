@@ -1,8 +1,8 @@
 // Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/routing/model/com.tomtom.sdk.routing.options.calculation/-avoid-options/index.html
 
-import 'geo_bounding_box.dart';
-import 'avoid_type.dart';
-import 'vignettes.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/routing/avoid_type.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/routing/geo_bounding_box.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/routing/vignettes.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'avoid_options.g.dart';

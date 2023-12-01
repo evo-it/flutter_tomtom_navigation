@@ -1,6 +1,5 @@
 // Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/routing/model/com.tomtom.sdk.routing.route/-summary/index.html
 
-import 'package:flutter_tomtom_navigation_platform_interface/quantity/distance.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'summary.g.dart';
@@ -60,11 +59,11 @@ class Summary {
       Duration(microseconds: (halfNanos / 1000 / 2).round());
 
   static DateTime _dateTimeFromMap(Map<String, dynamic> map) => DateTime(
-        map['year'],
-        map['month'],
-        map['dayOfMonth'],
-        map['hourOfDay'],
-        map['minute'],
-        map['second'],
+        map['year'] as int,
+        map['month'] as int,
+        map['dayOfMonth'] as int,
+        map['hourOfDay'] as int,
+        map['minute'] as int,
+        map['second'] as int,
       );
 }

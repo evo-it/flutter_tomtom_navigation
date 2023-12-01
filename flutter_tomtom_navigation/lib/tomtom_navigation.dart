@@ -26,7 +26,7 @@ class TomtomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlutterTomtomNavigationPlatform.instance
-        .buildView(mapOptions, debug);
+        .buildView(mapOptions, debug: debug);
   }
 
   /// Synchronously plans a route
@@ -41,7 +41,7 @@ class TomtomNavigation extends StatelessWidget {
   /// Starts navigation with provided RoutePlan.
   Future<void> startNavigation({bool? useSimulation}) async {
     await FlutterTomtomNavigationPlatform.instance
-        .startNavigation(useSimulation ?? debug);
+        .startNavigation(useSimulation: useSimulation ?? debug);
   }
 
   /// Stops the navigation.

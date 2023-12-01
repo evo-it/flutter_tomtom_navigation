@@ -4,14 +4,16 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'padding.g.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(explicitToJson: true, constructor: '_')
 class Padding {
   const Padding({
     int padding = 0,
-  })  : top = padding,
+  }) : top = padding,
         left = padding,
         right = padding,
         bottom = padding;
+
+  const Padding._(this.top, this.left, this.right, this.bottom);
 
   @JsonKey(includeToJson: true, includeFromJson: true)
   final int bottom;
