@@ -156,6 +156,7 @@ class FlutterTomtomNavigationView(
         println("Camera options is ${mapOptions.cameraOptions}")
         apiKey = mapOptions.mapKey
         val debug = creationParams["debug"] as Boolean
+        println("Key: $apiKey")
 
         // Get the binary messenger from the creation params
         val binaryMessenger =

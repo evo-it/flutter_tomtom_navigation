@@ -1,11 +1,10 @@
 // Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/routing/model/com.tomtom.sdk.routing.options/-route-planning-options/index.html
 
+import 'package:flutter_tomtom_navigation_platform_interface/routing/cost_model.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/routing/itinerary.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/route_leg_options.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/vehicle/car.dart';
-
-import 'cost_model.dart';
-import 'itinerary.dart';
-import '../vehicle/vehicle.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/vehicle/vehicle.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'route_planning_options.g.dart';

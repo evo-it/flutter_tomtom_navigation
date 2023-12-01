@@ -2,7 +2,7 @@
 
 import 'package:flutter_tomtom_navigation_platform_interface/quantity/angle.dart';
 
-import 'itinerary_point.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/routing/itinerary_point.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'itinerary.g.dart';

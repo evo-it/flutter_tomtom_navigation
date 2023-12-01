@@ -17,11 +17,11 @@ abstract class Vignettes {
   Map<String, dynamic> toJson() => _$VignettesToJson(this);
 
   factory Vignettes.fromJson(Map<String, dynamic> json) {
-    final isAllow = (json["allowVignettes"] as List).isNotEmpty;
+    final isAllow = (json['allowVignettes'] as List).isNotEmpty;
     if (isAllow) {
-      return Allow(allowVignettes: json["allowVignettes"]);
+      return Allow(allowVignettes: json['allowVignettes'] as List<String>);
     }
-    return Avoid(avoidVignettes: json["allowVignettes"]);
+    return Avoid(avoidVignettes: json['allowVignettes'] as List<String>);
   }
 }
 

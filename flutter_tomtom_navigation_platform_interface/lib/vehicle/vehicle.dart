@@ -2,15 +2,14 @@
 
 import 'package:flutter_tomtom_navigation_platform_interface/quantity/speed.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/vehicle/bicycle.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/vehicle/bus.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/vehicle/car.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/vehicle/motorcycle.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/vehicle/pedestrian.dart';
-
-import 'bus.dart';
-import 'car.dart';
-import 'motorcycle.dart';
-import 'taxi.dart';
-import 'truck.dart';
-import 'van.dart';
-import 'vehicle_type.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/vehicle/taxi.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/vehicle/truck.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/vehicle/van.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/vehicle/vehicle_type.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 abstract class Vehicle {

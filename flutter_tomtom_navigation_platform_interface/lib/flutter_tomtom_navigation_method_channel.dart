@@ -7,16 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/location/geo_location.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/maps/map_options.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/native_event.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/navigation/navigation_status.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/navigation/route_progress.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/route_planning_options.dart';
-import 'package:flutter_tomtom_navigation_platform_interface/routing/summary.dart' as tt;
+import 'package:flutter_tomtom_navigation_platform_interface/routing/summary.dart'
+    as tt;
 
-import 'location/geo_location.dart';
-
-/// An implementation of [FlutterTomtomNavigationPlatform] that uses method channels.
+/// An implementation of [FlutterTomtomNavigationPlatform]
+/// that uses method channels.
 class MethodChannelFlutterTomtomNavigation
     extends FlutterTomtomNavigationPlatform {
   MethodChannelFlutterTomtomNavigation() {
@@ -47,7 +48,7 @@ class MethodChannelFlutterTomtomNavigation
   }
 
   @override
-  Future<void> startNavigation(bool useSimulation) async {
+  Future<void> startNavigation({required bool useSimulation}) async {
     await methodChannel.invokeMethod('startNavigation', {
       'useSimulation': useSimulation,
     });
@@ -59,13 +60,13 @@ class MethodChannelFlutterTomtomNavigation
   }
 
   // buildView should be overridden by each platform!
-  // TODO move this into the platform-specific platform interfaces...
+  // TODO(Frank): move this into the platform-specific platform interfaces...
   @override
-  Widget buildView(MapOptions mapOptions, bool debug) {
+  Widget buildView(MapOptions mapOptions, {required bool debug}) {
     // This is used in the platform side to register the view.
-    const String viewType = '<tomtom-navigation>';
+    const viewType = '<tomtom-navigation>';
     // Pass parameters to the platform side.
-    Map<String, dynamic> creationParams = <String, dynamic>{
+    final creationParams = <String, dynamic>{
       'mapOptions': jsonEncode(mapOptions),
       'debug': debug,
     };
@@ -103,7 +104,9 @@ class MethodChannelFlutterTomtomNavigation
   }
 
   @override
-  void registerRouteEventListener(ValueSetter<RouteProgress> listener) async {
+  Future<void> registerRouteEventListener(
+    ValueSetter<RouteProgress> listener,
+  ) async {
     _onRouteEvent = listener;
   }
 
@@ -132,23 +135,37 @@ class MethodChannelFlutterTomtomNavigation
     return eventObject;
   }
 
-  _onProgressData(NativeEvent event) {
-    //TODO(Matyas): Clean up to/from JSONs
+  void _onProgressData(NativeEvent event) {
+    // TODO(Matyas): Clean up to/from JSONs
     switch (event.nativeEventType) {
       case NativeEventType.routePlanned:
-        _onPlannedRouteEvent?.call(tt.Summary.fromJson(jsonDecode(event.data)));
+        _onPlannedRouteEvent?.call(
+          tt.Summary.fromJson(jsonDecode(event.data) as Map<String, dynamic>),
+        );
       case NativeEventType.routeUpdate:
-        _onRouteEvent?.call(RouteProgress.fromJson(jsonDecode(event.data)));
+        _onRouteEvent?.call(
+          RouteProgress.fromJson(
+            jsonDecode(event.data) as Map<String, dynamic>,
+          ),
+        );
       case NativeEventType.navigationUpdate:
-        final statusInt = jsonDecode(event.data)['navigationStatus'] as int;
-        final status = NavigationStatus.values.firstWhere((element) => element.value == statusInt, orElse: () => NavigationStatus.unknown);
+        final statusInt = (jsonDecode(event.data)
+            as Map<String, dynamic>)['navigationStatus'] as int;
+        final status = NavigationStatus.values.firstWhere(
+          (element) => element.value == statusInt,
+          orElse: () => NavigationStatus.unknown,
+        );
         _onNavigationEvent?.call(status);
       case NativeEventType.destinationArrival:
         _onDestinationArrivalEvent?.call(event.data);
       case NativeEventType.locationUpdate:
-        _onLocationEvent?.call(GeoLocation.fromJson(jsonDecode(event.data)));
+        _onLocationEvent?.call(
+          GeoLocation.fromJson(jsonDecode(event.data) as Map<String, dynamic>),
+        );
       case NativeEventType.unknown:
-        print("Got unexpected stream event $event");
+        if (kDebugMode) {
+          print('Got unexpected stream event $event');
+        }
     }
   }
 }
