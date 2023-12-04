@@ -9,8 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_tomtom_navigation:
-    path: ../
+  flutter_tomtom_navigation: ^0.0.1
   permission_handler: ^11.1.0
 
 dev_dependencies:
@@ -20,6 +19,13 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   very_good_analysis: ^5.1.0
+
+# While the package is not available on pub.dev, we need an overridden version from Github.
+dependency_overrides:
+  flutter_tomtom_navigation:
+    git:
+      url: https://github.com/MatyasK/flutter_tomtom_navigation.git
+      path: flutter_tomtom_navigation
 
 flutter:
   uses-material-design: true

@@ -10,12 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_tomtom_navigation_android:
-    path: ../flutter_tomtom_navigation_android
-  flutter_tomtom_navigation_ios:
-    path: ../flutter_tomtom_navigation_ios
-  flutter_tomtom_navigation_platform_interface:
-    path: ../flutter_tomtom_navigation_platform_interface  
+  flutter_tomtom_navigation_android: ^0.0.1
+  flutter_tomtom_navigation_ios: ^0.0.1
+  flutter_tomtom_navigation_platform_interface: ^0.0.1
 
 dev_dependencies:
   flutter_lints: ^3.0.1
@@ -24,6 +21,21 @@ dev_dependencies:
   plugin_platform_interface: ^2.1.7
   very_good_analysis: ^5.1.0
 
+# While the package is not available on pub.dev, we need an overridden version from Github.
+dependency_overrides:
+  flutter_tomtom_navigation_android:
+    git:
+      url: https://github.com/MatyasK/flutter_tomtom_navigation.git
+      path: flutter_tomtom_navigation_android
+  flutter_tomtom_navigation_ios:
+    git:
+      url: https://github.com/MatyasK/flutter_tomtom_navigation.git
+      path: flutter_tomtom_navigation_ios
+  flutter_tomtom_navigation_platform_interface:
+    git:
+      url: https://github.com/MatyasK/flutter_tomtom_navigation.git
+      path: flutter_tomtom_navigation_platform_interface
+
 flutter:
   plugin:
     platforms:
@@ -31,36 +43,3 @@ flutter:
         default_package: flutter_tomtom_navigation_android
       ios:
         default_package: flutter_tomtom_navigation_ios
-
-    
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  

@@ -91,28 +91,30 @@ packages:
   flutter_tomtom_navigation:
     dependency: "direct main"
     description:
-      path: ".."
-      relative: true
-    source: path
+      path: flutter_tomtom_navigation
+      ref: HEAD
+      resolved-ref: "3f572bb6d058eb5877b6b8643ca60893f49520fa"
+      url: "https://github.com/MatyasK/flutter_tomtom_navigation.git"
+    source: git
     version: "0.0.1"
   flutter_tomtom_navigation_android:
     dependency: transitive
     description:
-      path: "../../flutter_tomtom_navigation_android"
+      path: "../../../../../AppData/Local/Pub/Cache/git/flutter_tomtom_navigation-3f572bb6d058eb5877b6b8643ca60893f49520fa/flutter_tomtom_navigation_android"
       relative: true
     source: path
     version: "0.0.1"
   flutter_tomtom_navigation_ios:
     dependency: transitive
     description:
-      path: "../../flutter_tomtom_navigation_ios"
+      path: "../../../../../AppData/Local/Pub/Cache/git/flutter_tomtom_navigation-3f572bb6d058eb5877b6b8643ca60893f49520fa/flutter_tomtom_navigation_ios"
       relative: true
     source: path
     version: "0.0.1"
   flutter_tomtom_navigation_platform_interface:
     dependency: transitive
     description:
-      path: "../../flutter_tomtom_navigation_platform_interface"
+      path: "../../../../../AppData/Local/Pub/Cache/git/flutter_tomtom_navigation-3f572bb6d058eb5877b6b8643ca60893f49520fa/flutter_tomtom_navigation_platform_interface"
       relative: true
     source: path
     version: "1.0.0"
