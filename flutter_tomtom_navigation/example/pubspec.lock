@@ -96,21 +96,21 @@ packages:
     source: path
     version: "0.0.1"
   flutter_tomtom_navigation_android:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../../flutter_tomtom_navigation_android"
       relative: true
     source: path
     version: "0.0.1"
   flutter_tomtom_navigation_ios:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../../flutter_tomtom_navigation_ios"
       relative: true
     source: path
     version: "0.0.1"
   flutter_tomtom_navigation_platform_interface:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../../flutter_tomtom_navigation_platform_interface"
       relative: true

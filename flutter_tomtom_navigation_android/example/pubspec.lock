@@ -106,9 +106,11 @@ packages:
   flutter_tomtom_navigation_platform_interface:
     dependency: transitive
     description:
-      path: "../../flutter_tomtom_navigation_platform_interface"
-      relative: true
-    source: path
+      path: flutter_tomtom_navigation_platform_interface
+      ref: HEAD
+      resolved-ref: "3f572bb6d058eb5877b6b8643ca60893f49520fa"
+      url: "https://github.com/MatyasK/flutter_tomtom_navigation.git"
+    source: git
     version: "1.0.0"
   fuchsia_remote_debug_protocol:
     dependency: transitive

@@ -10,12 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_tomtom_navigation_android:
-    path: ../flutter_tomtom_navigation_android
-  flutter_tomtom_navigation_ios:
-    path: ../flutter_tomtom_navigation_ios
-  flutter_tomtom_navigation_platform_interface:
-    path: ../flutter_tomtom_navigation_platform_interface  
+  flutter_tomtom_navigation_android: ^0.0.1
+  flutter_tomtom_navigation_ios: ^0.0.1
+  flutter_tomtom_navigation_platform_interface: ^0.0.1
 
 dev_dependencies:
   flutter_lints: ^3.0.1
@@ -31,36 +28,3 @@ flutter:
         default_package: flutter_tomtom_navigation_android
       ios:
         default_package: flutter_tomtom_navigation_ios
-
-    
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
