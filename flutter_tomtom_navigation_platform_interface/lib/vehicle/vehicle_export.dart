@@ -1,0 +1,14 @@
+export 'adr_tunnel_restriction_code.dart';
+export 'bicycle.dart';
+export 'bus.dart';
+export 'car.dart';
+export 'cargo_capable.dart';
+export 'motorcycle.dart';
+export 'motorized.dart';
+export 'pedestrian.dart';
+export 'taxi.dart';
+export 'truck.dart';
+export 'van.dart';
+export 'vehicle_dimensions.dart';
+export 'vehicle_load_type.dart';
+export 'vehicle_type.dart';
