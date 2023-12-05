@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tomtom_navigation/location.dart';
-import 'package:flutter_tomtom_navigation/maps.dart';
-import 'package:flutter_tomtom_navigation/navigation.dart';
-import 'package:flutter_tomtom_navigation/routing.dart';
-import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface_export.dart';
 
 /// The TomtomNavigation widget, which is used to show a map
 /// and navigation interface to the user,

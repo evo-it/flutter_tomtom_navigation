@@ -1,3 +1,4 @@
+
 // Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/vehicle/model/com.tomtom.sdk.vehicle/-vehicle/index.html
 
 import 'package:flutter_tomtom_navigation_platform_interface/quantity/speed.dart';
@@ -12,15 +13,9 @@ import 'package:flutter_tomtom_navigation_platform_interface/vehicle/van.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/vehicle/vehicle_type.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+/// Specifies the vehicle (or lack of one).
 abstract class Vehicle {
   const Vehicle(this.type, {this.maxSpeed});
-
-  final Speed? maxSpeed;
-  static const pedestrianSpeedKmh = 5;
-  static const bicycleSpeedKmh = 20;
-
-  @JsonKey(includeToJson: true)
-  final VehicleType type;
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
     final type =
@@ -45,6 +40,13 @@ abstract class Vehicle {
         return Pedestrian.fromJson(json);
     }
   }
+
+  static const bicycleSpeedKmh = 20;
+  static const pedestrianSpeedKmh = 5;
+
+  final Speed? maxSpeed;
+  @JsonKey(includeToJson: true)
+  final VehicleType type;
 
   // toJson should be overriden by all implementations of the Vehicle.
   Map<String, dynamic> toJson();

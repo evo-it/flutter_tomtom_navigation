@@ -1,10 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tomtom_navigation/maps.dart';
-import 'package:flutter_tomtom_navigation/quantity.dart';
-import 'package:flutter_tomtom_navigation/routing.dart';
-import 'package:flutter_tomtom_navigation/tomtom_navigation.dart';
-import 'package:flutter_tomtom_navigation/vehicle.dart';
+import 'package:flutter_tomtom_navigation/flutter_tomtom_navigation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Get the API key from the environment
@@ -12,7 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 /// Dart run command
 const apiKey = String.fromEnvironment(
   'apiKey',
-  defaultValue: '<fallback-tomtom-api-key>',
+  defaultValue: 'nAGM7dRzTVKuCU2Eu3FpeaSJLa1bpSjq',
 );
 
 void main() {
@@ -56,17 +52,18 @@ class _MyAppState extends State<MyApp> {
     Permission.location.request();
 
     // Add listeners to the navigation view.
-    nav..registerRouteEventListener((value) {
-      setState(() => eta = DateTime.now().add(value.remainingTime));
-    })
-    ..registerDestinationArrivalEventListener((value) {
-      if (kDebugMode) {
-        print('Destination reached!');
-      }
-    })
-    ..registerLocationEventListener((value) {
-      // Do something when a new location is received
-    });
+    nav
+      ..registerRouteEventListener((value) {
+        setState(() => eta = DateTime.now().add(value.remainingTime));
+      })
+      ..registerDestinationArrivalEventListener((value) {
+        if (kDebugMode) {
+          print('Destination reached!');
+        }
+      })
+      ..registerLocationEventListener((value) {
+        // Do something when a new location is received
+      });
   }
 
   @override
@@ -75,20 +72,24 @@ class _MyAppState extends State<MyApp> {
       costModel: const CostModel(
         routeType: RouteType.short,
         considerTraffic: ConsiderTraffic.no,
-        avoidOptions: AvoidOptions(avoidTypes: {
-          AvoidType.lowEmissionZones,
-          AvoidType.motorways,
-        },),
+        avoidOptions: AvoidOptions(
+          avoidTypes: {
+            AvoidType.lowEmissionZones,
+            AvoidType.motorways,
+          },
+        ),
       ),
       itinerary: Itinerary(
         origin: ItineraryPoint(
-            place: const Place(
-          coordinate: GeoPoint(latitude: 52.013623, longitude: 4.442078),
-        ),),
+          place: const Place(
+            coordinate: GeoPoint(latitude: 52.013623, longitude: 4.442078),
+          ),
+        ),
         destination: ItineraryPoint(
-            place: const Place(
-          coordinate: GeoPoint(latitude: 52.016115, longitude: 4.432598),
-        ),),
+          place: const Place(
+            coordinate: GeoPoint(latitude: 52.016115, longitude: 4.432598),
+          ),
+        ),
       ),
       vehicle: Truck(
         maxSpeed: Speed.kilometersPerHour(130),
@@ -124,9 +125,10 @@ class _MyAppState extends State<MyApp> {
                   const SizedBox(width: 4),
                   OutlinedButton(
                     onPressed: () => showDialog<void>(
-                        context: context,
-                        builder: (context) =>
-                            Column(children: [Expanded(child: nav)]),),
+                      context: context,
+                      builder: (context) =>
+                          Column(children: [Expanded(child: nav)]),
+                    ),
                     child: const Text('Open map in dialog'),
                   ),
                   const SizedBox(width: 4),
