@@ -22,20 +22,20 @@ dev_dependencies:
   very_good_analysis: ^5.1.0
 
 # These overrides are required as long as the package isn't on pub.dev
-dependency_overrides:
-  flutter_tomtom_navigation_android:
-    git:
-      url: https://github.com/MatyasK/flutter_tomtom_navigation.git
-      path: flutter_tomtom_navigation_android
-  flutter_tomtom_navigation_ios:
-    git:
-      url: https://github.com/MatyasK/flutter_tomtom_navigation.git
-      path: flutter_tomtom_navigation_ios
-  flutter_tomtom_navigation_platform_interface:
-    path: ../flutter_tomtom_navigation_platform_interface  
-    # git:
-    #   url: https://github.com/MatyasK/flutter_tomtom_navigation.git
-    #   path: flutter_tomtom_navigation_platform_interface
+# dependency_overrides:
+#   flutter_tomtom_navigation_android:
+#     git:
+#       url: https://github.com/MatyasK/flutter_tomtom_navigation.git
+#       path: flutter_tomtom_navigation_android
+#   flutter_tomtom_navigation_ios:
+#     git:
+#       url: https://github.com/MatyasK/flutter_tomtom_navigation.git
+#       path: flutter_tomtom_navigation_ios
+#   flutter_tomtom_navigation_platform_interface:
+#     path: ../flutter_tomtom_navigation_platform_interface  
+#     # git:
+#     #   url: https://github.com/MatyasK/flutter_tomtom_navigation.git
+#     #   path: flutter_tomtom_navigation_platform_interface
 
 flutter:
   plugin:
