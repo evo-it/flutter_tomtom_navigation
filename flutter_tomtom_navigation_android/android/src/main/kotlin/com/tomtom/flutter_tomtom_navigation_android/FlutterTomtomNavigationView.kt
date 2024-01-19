@@ -23,7 +23,6 @@ import com.tomtom.sdk.location.android.AndroidLocationProvider
 import com.tomtom.sdk.location.mapmatched.MapMatchedLocationProvider
 import com.tomtom.sdk.location.simulation.SimulationLocationProvider
 import com.tomtom.sdk.location.simulation.strategy.InterpolationStrategy
-import com.tomtom.sdk.map.display.MapOptions
 import com.tomtom.sdk.map.display.TomTomMap
 import com.tomtom.sdk.map.display.camera.CameraChangeListener
 import com.tomtom.sdk.map.display.camera.CameraOptions
@@ -31,7 +30,6 @@ import com.tomtom.sdk.map.display.camera.CameraTrackingMode
 import com.tomtom.sdk.map.display.common.screen.Padding
 import com.tomtom.sdk.map.display.gesture.MapLongClickListener
 import com.tomtom.sdk.map.display.location.LocationMarkerOptions
-import com.tomtom.sdk.map.display.map.OnlineCachePolicy
 import com.tomtom.sdk.map.display.route.Instruction
 import com.tomtom.sdk.map.display.route.RouteClickListener
 import com.tomtom.sdk.map.display.route.RouteOptions
@@ -141,18 +139,8 @@ class FlutterTomtomNavigationView(
 
         // Get the API key from the creation params
         val mapOptionsJson = creationParams["mapOptions"] as String
-        val rawMapOptions =
-            Gson().fromJson(mapOptionsJson, MapOptions::class.java)
-        println("${rawMapOptions.cameraOptions?.position}/${rawMapOptions.cameraOptions?.zoom} ($rawMapOptions)")
-        val mapOptions = rawMapOptions.copy(
-            rawMapOptions.mapKey,
-            cameraOptions = rawMapOptions.cameraOptions,
-            padding = rawMapOptions.padding,
-            mapStyle = rawMapOptions.mapStyle,
-            styleMode = rawMapOptions.styleMode,
-            onlineCachePolicy = OnlineCachePolicy.Default,
-            renderToTexture = rawMapOptions.renderToTexture,
-        )
+        val mapOptions = MapOptionsDeserializer.deserialize(mapOptionsJson)
+        println("mo is $mapOptions")
         println("Camera options is ${mapOptions.cameraOptions}")
         apiKey = mapOptions.mapKey
         val debug = creationParams["debug"] as Boolean
@@ -597,6 +585,12 @@ class FlutterTomtomNavigationView(
         override fun onFailure(failure: LoadingStyleFailure) {}
     }
 
+    private val styleLoadingCallback2 = object : StyleLoadingCallback {
+        override fun onSuccess() {}
+
+        override fun onFailure(failure: LoadingStyleFailure) {}
+    }
+
     /**
      * Set the bottom padding on the map. The padding sets a safe area of the MapView in which user interaction is not received. It is used to uncover the chevron in the navigation panel.
      */
@@ -714,6 +708,10 @@ class FlutterTomtomNavigationView(
                     route?.let { route ->
                         mapFragment.currentLocationButton.visibilityPolicy =
                             CurrentLocationButton.VisibilityPolicy.Invisible
+                        tomTomMap.loadStyle(
+                            StandardStyles.DRIVING,
+                            styleLoadingCallback2
+                        )
                         startNavigation(route, useSimulation)
                     }
                 }
