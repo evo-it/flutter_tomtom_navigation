@@ -14,8 +14,10 @@ import com.tomtom.sdk.routing.options.guidance.ExtendedSections
 import com.tomtom.sdk.routing.options.guidance.GuidanceOptions
 import com.tomtom.sdk.routing.options.guidance.InstructionPhoneticsType
 import com.tomtom.sdk.routing.options.guidance.InstructionType
+import com.tomtom.sdk.routing.options.guidance.OnlineApiVersion
 import com.tomtom.sdk.routing.options.guidance.ProgressPoints
 import com.tomtom.sdk.vehicle.Vehicle
+import java.util.Locale
 
 class RoutePlanningOptionsDeserializer {
     companion object {
@@ -37,13 +39,19 @@ class RoutePlanningOptionsDeserializer {
             println("Android options is $arguments")
             val opt = gson.fromJson(arguments, RoutePlanningOptions::class.java)
             println("Deserialized to $opt")
+
+            // For now, use the default locale that is set on app launch
+            // TODO retrieve guidance options from Flutter
+            //  and pass the non-deprecated version
             return opt.copy(
                 guidanceOptions = GuidanceOptions(
-                    instructionType = InstructionType.Text,
+                    guidanceVersion = OnlineApiVersion.v1,
+                    instructionType = InstructionType.Coded,
                     phoneticsType = InstructionPhoneticsType.Ipa,
                     announcementPoints = AnnouncementPoints.All,
                     extendedSections = ExtendedSections.All,
-                    progressPoints = ProgressPoints.All
+                    progressPoints = ProgressPoints.All,
+                    language = Locale.getDefault(),
                 ),
                 itinerary = Itinerary(
                     // For now, always replace the origin with the current location

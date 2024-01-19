@@ -70,6 +70,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.platform.PlatformView
 import java.lang.IllegalArgumentException
 import kotlin.random.Random
+import java.util.Locale
 
 class FlutterTomtomNavigationView(
     context: Context,
@@ -444,10 +445,11 @@ class FlutterTomtomNavigationView(
      * Note that you have to set the previously-created TomTom Navigation object to the NavigationFragment before using it.
      */
 
-    private fun startNavigation(route: Route, useSimulation: Boolean = true) {
+    private fun startNavigation(route: Route) {
         showNavigation()
         navigationFragment.setTomTomNavigation(tomTomNavigation)
         val routePlan = RoutePlan(route, routePlanningOptions)
+        navigationFragment.changeAudioLanguage(Locale.getDefault())
         navigationFragment.startNavigation(routePlan)
         navigationFragment.addNavigationListener(navigationListener)
         tomTomNavigation.addProgressUpdatedListener(progressUpdatedListener)
@@ -457,7 +459,6 @@ class FlutterTomtomNavigationView(
         tomTomNavigation.addDestinationArrivalListener(
             destinationArrivalListener
         )
-        this.useSimulation = useSimulation
     }
 
     /**
@@ -709,7 +710,8 @@ class FlutterTomtomNavigationView(
                             StandardStyles.DRIVING,
                             styleLoadingCallback2
                         )
-                        startNavigation(route, useSimulation)
+                        this.useSimulation = useSimulation
+                        startNavigation(route)
                     }
                 }
             }
