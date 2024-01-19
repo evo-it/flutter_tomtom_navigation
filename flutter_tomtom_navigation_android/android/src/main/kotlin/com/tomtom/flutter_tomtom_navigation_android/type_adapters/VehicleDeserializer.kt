@@ -14,15 +14,7 @@ class VehicleDeserializer : JsonDeserializer<Vehicle> {
         typeOfT: Type?,
         context: JsonDeserializationContext?
     ): Vehicle {
-        val vehicle = Vehicle.Truck(
-            loadType = setOf(VehicleLoadType.OtherHazmatExplosive, VehicleLoadType.UnHazmatClass2)
-        )
-
-
-
         val gson = Gson()
-
-        println("Serialized: ${gson.toJson(vehicle)}")
 
         return when (json.asJsonObject.get("type").asInt) {
             0 -> gson.fromJson(json, Vehicle.Car::class.java)

@@ -9,6 +9,7 @@ export 'pedestrian.dart';
 export 'taxi.dart';
 export 'truck.dart';
 export 'van.dart';
+export 'vehicle.dart';
 export 'vehicle_dimensions.dart';
 export 'vehicle_load_type.dart';
 export 'vehicle_type.dart';
