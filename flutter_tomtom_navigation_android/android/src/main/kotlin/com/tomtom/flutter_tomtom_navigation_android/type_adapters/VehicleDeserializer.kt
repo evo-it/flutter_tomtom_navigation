@@ -14,7 +14,6 @@ class VehicleDeserializer : JsonDeserializer<Vehicle> {
         typeOfT: Type?,
         context: JsonDeserializationContext?
     ): Vehicle {
-        HazmatClass
         val gson = Gson()
 
         return when (json.asJsonObject.get("type").asInt) {

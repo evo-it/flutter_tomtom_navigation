@@ -570,7 +570,9 @@ class FlutterTomtomNavigationView(
     }
 
     private val styleLoadingCallback2 = object : StyleLoadingCallback {
-        override fun onSuccess() {}
+        override fun onSuccess() {
+            tomTomMap.showVehicleRestrictions(routePlanningOptions.vehicle)
+        }
 
         override fun onFailure(failure: LoadingStyleFailure) {}
     }
