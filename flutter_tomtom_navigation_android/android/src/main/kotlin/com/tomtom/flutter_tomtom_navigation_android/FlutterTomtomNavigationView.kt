@@ -40,15 +40,12 @@ import com.tomtom.sdk.map.display.ui.MapFragment
 import com.tomtom.sdk.map.display.ui.currentlocation.CurrentLocationButton
 import com.tomtom.sdk.navigation.ActiveRouteChangedListener
 import com.tomtom.sdk.navigation.DestinationArrivalListener
-import com.tomtom.sdk.navigation.NavigationFailure
 import com.tomtom.sdk.navigation.ProgressUpdatedListener
 import com.tomtom.sdk.navigation.RoutePlan
 import com.tomtom.sdk.navigation.TomTomNavigation
 import com.tomtom.sdk.navigation.online.Configuration
 import com.tomtom.sdk.navigation.online.OnlineTomTomNavigationFactory
 import com.tomtom.sdk.navigation.progress.RouteProgress
-import com.tomtom.sdk.navigation.routereplanner.RouteReplanner
-import com.tomtom.sdk.navigation.routereplanner.online.OnlineRouteReplannerFactory
 import com.tomtom.sdk.navigation.ui.NavigationFragment
 import com.tomtom.sdk.navigation.ui.NavigationUiOptions
 import com.tomtom.sdk.routing.RoutePlanner
@@ -58,12 +55,11 @@ import com.tomtom.sdk.routing.RoutingFailure
 import com.tomtom.sdk.routing.online.OnlineRoutePlanner
 import com.tomtom.sdk.routing.options.Itinerary
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
-import com.tomtom.sdk.routing.options.guidance.AnnouncementPoints
 import com.tomtom.sdk.routing.options.guidance.ExtendedSections
 import com.tomtom.sdk.routing.options.guidance.GuidanceOptions
 import com.tomtom.sdk.routing.options.guidance.InstructionPhoneticsType
-import com.tomtom.sdk.routing.options.guidance.InstructionType
-import com.tomtom.sdk.routing.options.guidance.ProgressPoints
+import com.tomtom.sdk.routing.options.guidance.OnlineApiVersion
+import com.tomtom.sdk.routing.options.guidance.RoadShieldReferences
 import com.tomtom.sdk.routing.route.Route
 import com.tomtom.sdk.vehicle.Vehicle
 import com.tomtom.sdk.vehicle.VehicleProviderFactory
@@ -105,8 +101,6 @@ class FlutterTomtomNavigationView(
     // TomTom SDK objects, which should be disposed by calling close()!
     private lateinit var locationProvider: LocationProvider
     private lateinit var routePlanner: RoutePlanner
-
-    private lateinit var routeReplanner: RouteReplanner
     private lateinit var tomTomNavigation: TomTomNavigation
 
     // Other SDK objects that do not have their own lifecycle
@@ -124,7 +118,6 @@ class FlutterTomtomNavigationView(
         channel.setMethodCallHandler(null)
 
         tomTomNavigation.close()
-        routeReplanner.close()
 
         routePlanner.close()
     }
@@ -251,9 +244,8 @@ class FlutterTomtomNavigationView(
      * You can plan route by initializing by using the online route planner and default route replanner.
      */
     private fun initRouting() {
-        routePlanner =
-            OnlineRoutePlanner.create(context = context, apiKey = apiKey)
-        routeReplanner = OnlineRouteReplannerFactory.create(routePlanner)
+        routePlanner = OnlineRoutePlanner.create(context = context, apiKey = apiKey)
+        routePlanner = OnlineRoutePlanner.create(context = context, apiKey = apiKey)
     }
 
     /**
@@ -264,7 +256,7 @@ class FlutterTomtomNavigationView(
             context = context,
             apiKey = apiKey,
             locationProvider = locationProvider,
-            routeReplanner = routeReplanner,
+            routePlanner = routePlanner,
             vehicleProvider = VehicleProviderFactory.create(vehicle = Vehicle.Car())
         )
         tomTomNavigation = OnlineTomTomNavigationFactory.create(configuration)
@@ -354,6 +346,7 @@ class FlutterTomtomNavigationView(
         }
     }
 
+    // TODO This function should probably be removed, so we only use routing through Flutter.
     /**
      * Used to calculate a route using the following parameters:
      * - InstructionType - This indicates that the routing result has to contain guidance instructions.
@@ -370,11 +363,10 @@ class FlutterTomtomNavigationView(
         routePlanningOptions = RoutePlanningOptions(
             itinerary = itinerary,
             guidanceOptions = GuidanceOptions(
-                instructionType = InstructionType.Text,
+                guidanceVersion = OnlineApiVersion.v2,
+                roadShieldReferences = RoadShieldReferences.All,
                 phoneticsType = InstructionPhoneticsType.Ipa,
-                announcementPoints = AnnouncementPoints.All,
-                extendedSections = ExtendedSections.All,
-                progressPoints = ProgressPoints.All
+                extendedSections = ExtendedSections.None
             ),
             vehicle = Vehicle.Car()
         )
@@ -482,7 +474,7 @@ class FlutterTomtomNavigationView(
                 sendNavigationStatusUpdate(NavigationStatus.RUNNING)
 
                 tomTomMap.addCameraChangeListener(cameraChangeListener)
-                tomTomMap.cameraTrackingMode = CameraTrackingMode.FollowRoute
+                tomTomMap.cameraTrackingMode = CameraTrackingMode.FollowRouteDirection
                 tomTomMap.enableLocationMarker(
                     LocationMarkerOptions(
                         LocationMarkerOptions.Type.Chevron
@@ -491,14 +483,6 @@ class FlutterTomtomNavigationView(
                 setMapMatchedLocationProvider()
                 setLocationProviderToNavigation(route!!)
                 setMapNavigationPadding()
-            }
-
-            override fun onFailed(failure: NavigationFailure) {
-                sendNavigationStatusUpdate(NavigationStatus.FAILED)
-
-                Toast.makeText(context, failure.message, Toast.LENGTH_SHORT)
-                    .show()
-                stopNavigation()
             }
 
             override fun onStopped() {
@@ -643,7 +627,7 @@ class FlutterTomtomNavigationView(
         CameraChangeListener {
             // TODO(Frank): This does not do anything. Instead, we hide and show the whole navigation view.
             val cameraTrackingMode = tomTomMap.cameraTrackingMode
-            if (cameraTrackingMode == CameraTrackingMode.FollowRoute) {
+            if (cameraTrackingMode == CameraTrackingMode.FollowRouteDirection) {
                 navigationFragment.navigationView.showSpeedView()
             } else {
                 navigationFragment.navigationView.hideSpeedView()
@@ -780,5 +764,4 @@ enum class NavigationStatus(val value: Int) {
     READY(3),
     RUNNING(4),
     STOPPED(5),
-    FAILED(6),
 }

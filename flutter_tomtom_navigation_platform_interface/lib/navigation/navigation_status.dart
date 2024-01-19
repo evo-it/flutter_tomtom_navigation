@@ -8,8 +8,7 @@ enum NavigationStatus {
   restrictionsLoaded(2),
   ready(3),
   running(4),
-  stopped(5),
-  failed(6);
+  stopped(5);
 
   const NavigationStatus(this.value);
 

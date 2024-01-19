@@ -4,8 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.tomtom.sdk.vehicle.HazmatClass
 import com.tomtom.sdk.vehicle.Vehicle
-import com.tomtom.sdk.vehicle.VehicleLoadType
 import java.lang.reflect.Type
 
 class VehicleDeserializer : JsonDeserializer<Vehicle> {
@@ -14,6 +14,7 @@ class VehicleDeserializer : JsonDeserializer<Vehicle> {
         typeOfT: Type?,
         context: JsonDeserializationContext?
     ): Vehicle {
+        HazmatClass
         val gson = Gson()
 
         return when (json.asJsonObject.get("type").asInt) {
