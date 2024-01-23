@@ -572,18 +572,7 @@ class FlutterTomtomNavigationView(
 
     private val styleLoadingCallback2 = object : StyleLoadingCallback {
         override fun onSuccess() {
-            tomTomMap.loadStyle(
-                StandardStyles.VEHICLE_RESTRICTIONS,
-                styleLoadingCallback3,
-            )
-        }
-
-        override fun onFailure(failure: LoadingStyleFailure) {}
-    }
-
-    private val styleLoadingCallback3 = object : StyleLoadingCallback {
-        override fun onSuccess() {
-            tomTomMap.showVehicleRestrictions(routePlanningOptions.vehicle)
+            startNavigation(route!!)
         }
 
         override fun onFailure(failure: LoadingStyleFailure) {}
@@ -711,7 +700,6 @@ class FlutterTomtomNavigationView(
                             styleLoadingCallback2
                         )
                         this.useSimulation = useSimulation
-                        startNavigation(route)
                     }
                 }
             }
