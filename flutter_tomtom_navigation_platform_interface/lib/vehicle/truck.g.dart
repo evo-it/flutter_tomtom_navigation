@@ -10,7 +10,7 @@ Truck _$TruckFromJson(Map<String, dynamic> json) => Truck(
       maxSpeed: json['maxSpeed'] == null
           ? null
           : Speed.fromJson(json['maxSpeed'] as Map<String, dynamic>),
-      isCommercial: json['isCommercial'] as bool? ?? false,
+      isCommercial: json['isCommercial'] as bool? ?? true,
       dimensions: json['dimensions'] == null
           ? null
           : VehicleDimensions.fromJson(

@@ -14,7 +14,7 @@ part 'truck.g.dart';
 class Truck extends Vehicle with Motorized, CargoCapable {
   const Truck({
     super.maxSpeed,
-    this.isCommercial = false,
+    this.isCommercial = true,
     this.dimensions,
     this.hazmatClasses = const {},
     this.adrTunnelRestrictionCode,

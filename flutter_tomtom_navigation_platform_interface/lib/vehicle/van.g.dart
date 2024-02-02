@@ -15,6 +15,12 @@ Van _$VanFromJson(Map<String, dynamic> json) => Van(
           ? null
           : VehicleDimensions.fromJson(
               json['dimensions'] as Map<String, dynamic>),
+      hazmatClasses: (json['hazmatClasses'] as List<dynamic>?)
+              ?.map((e) => HazmatClass.fromJson(e as Map<String, dynamic>))
+              .toSet() ??
+          const {},
+      adrTunnelRestrictionCode: $enumDecodeNullable(
+          _$AdrTunnelRestrictionCodeEnumMap, json['adrTunnelRestrictionCode']),
       modelId: json['modelId'] as String?,
     );
 
@@ -24,7 +30,17 @@ Map<String, dynamic> _$VanToJson(Van instance) => <String, dynamic>{
       'isCommercial': instance.isCommercial,
       'dimensions': instance.dimensions?.toJson(),
       'modelId': instance.modelId,
+      'adrTunnelRestrictionCode':
+          _$AdrTunnelRestrictionCodeEnumMap[instance.adrTunnelRestrictionCode],
+      'hazmatClasses': instance.hazmatClasses.map((e) => e.toJson()).toList(),
     };
+
+const _$AdrTunnelRestrictionCodeEnumMap = {
+  AdrTunnelRestrictionCode.B: 'B',
+  AdrTunnelRestrictionCode.C: 'C',
+  AdrTunnelRestrictionCode.D: 'D',
+  AdrTunnelRestrictionCode.E: 'E',
+};
 
 const _$VehicleTypeEnumMap = {
   VehicleType.car: 0,
