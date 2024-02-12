@@ -55,9 +55,9 @@ class RoutePlanningOptionsDeserializer {
                 ),
                 itinerary = Itinerary(
                     // For now, always replace the origin with the current location
-                    origin = ItineraryPoint(Place(currentLocation)),
+                    origin = ItineraryPoint(Place(GeoPoint(52.674225, 4.794123))),
                     waypoints = opt.itinerary.waypoints,
-                    destination = opt.itinerary.destination
+                    destination = ItineraryPoint(Place(GeoPoint(52.678452, 4.790565))),
                 )
             )
         }
