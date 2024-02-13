@@ -102,10 +102,10 @@ class _MyAppState extends State<MyApp> {
           numberOfAxles: 3,
         ),
         adrTunnelRestrictionCode: AdrTunnelRestrictionCode.C,
-        loadType: {
-          VehicleLoadType.otherHazmatExplosive,
-          VehicleLoadType.unHazmatClass2,
-          VehicleLoadType.otherHazmatHarmfulToWater,
+        hazmatClasses: {
+          HazmatClass.intlExplosive,
+          HazmatClass.unClass2Gas,
+          HazmatClass.intlHarmfulToWater,
         },
       ),
     );

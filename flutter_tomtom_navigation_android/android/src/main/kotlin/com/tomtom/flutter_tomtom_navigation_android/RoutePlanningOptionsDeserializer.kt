@@ -9,13 +9,10 @@ import com.tomtom.sdk.routing.options.Itinerary
 import com.tomtom.sdk.routing.options.ItineraryPoint
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.options.calculation.RouteType
-import com.tomtom.sdk.routing.options.guidance.AnnouncementPoints
 import com.tomtom.sdk.routing.options.guidance.ExtendedSections
 import com.tomtom.sdk.routing.options.guidance.GuidanceOptions
 import com.tomtom.sdk.routing.options.guidance.InstructionPhoneticsType
-import com.tomtom.sdk.routing.options.guidance.InstructionType
 import com.tomtom.sdk.routing.options.guidance.OnlineApiVersion
-import com.tomtom.sdk.routing.options.guidance.ProgressPoints
 import com.tomtom.sdk.vehicle.Vehicle
 import java.util.Locale
 
@@ -45,19 +42,16 @@ class RoutePlanningOptionsDeserializer {
             //  and pass the non-deprecated version
             return opt.copy(
                 guidanceOptions = GuidanceOptions(
-                    guidanceVersion = OnlineApiVersion.v1,
-                    instructionType = InstructionType.Coded,
-                    phoneticsType = InstructionPhoneticsType.Ipa,
-                    announcementPoints = AnnouncementPoints.All,
-                    extendedSections = ExtendedSections.All,
-                    progressPoints = ProgressPoints.All,
+                    guidanceVersion = OnlineApiVersion.v2,
                     language = Locale.getDefault(),
+                    phoneticsType = InstructionPhoneticsType.Ipa,
+                    extendedSections = ExtendedSections.All,
                 ),
                 itinerary = Itinerary(
                     // For now, always replace the origin with the current location
-                    origin = ItineraryPoint(Place(GeoPoint(52.674225, 4.794123))),
+                    origin = ItineraryPoint(Place(currentLocation)),
                     waypoints = opt.itinerary.waypoints,
-                    destination = ItineraryPoint(Place(GeoPoint(52.678452, 4.790565))),
+                    destination = opt.itinerary.destination,
                 )
             )
         }
