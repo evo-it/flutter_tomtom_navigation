@@ -1,17 +1,16 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'vehicle_load_type.dart';
+part of 'hazmat_class.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-VehicleLoadType _$VehicleLoadTypeFromJson(Map<String, dynamic> json) =>
-    VehicleLoadType(
+HazmatClass _$HazmatClassFromJson(Map<String, dynamic> json) => HazmatClass(
       json['value'] as int,
     );
 
-Map<String, dynamic> _$VehicleLoadTypeToJson(VehicleLoadType instance) =>
+Map<String, dynamic> _$HazmatClassToJson(HazmatClass instance) =>
     <String, dynamic>{
       'value': instance.value,
     };

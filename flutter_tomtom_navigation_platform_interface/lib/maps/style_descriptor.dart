@@ -4,22 +4,22 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'style_descriptor.g.dart';
 
-
 @JsonSerializable(explicitToJson: true)
 class StyleDescriptor {
-	const StyleDescriptor({
-		required this.uri,/// Default value Uri,
-		this.darkUri, /// Default value Uri? = null,
-		this.layerMappingUri, /// Default value Uri? = null,
-		this.darkLayerMappingUri, /// Default value Uri? = null,
-	}); 
- 
-	 final Uri? darkLayerMappingUri;
-	 final Uri? darkUri;
-	 final Uri? layerMappingUri;
-	 final Uri uri;
+  const StyleDescriptor({
+    required this.uri, // Default value Uri,
+    this.darkUri, // Default value Uri? = null,
+    this.layerMappingUri, // Default value Uri? = null,
+    this.darkLayerMappingUri, // Default value Uri? = null,
+  });
 
-	Map<String, dynamic> toJson() => _$StyleDescriptorToJson(this);
+  final Uri? darkLayerMappingUri;
+  final Uri? darkUri;
+  final Uri? layerMappingUri;
+  final Uri uri;
 
-	factory StyleDescriptor.fromJson(Map<String, dynamic> json) => _$StyleDescriptorFromJson(json);
+  Map<String, dynamic> toJson() => _$StyleDescriptorToJson(this);
+
+  factory StyleDescriptor.fromJson(Map<String, dynamic> json) =>
+      _$StyleDescriptorFromJson(json);
 }

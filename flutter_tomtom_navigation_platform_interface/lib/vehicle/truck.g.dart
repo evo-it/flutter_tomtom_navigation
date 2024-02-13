@@ -10,13 +10,13 @@ Truck _$TruckFromJson(Map<String, dynamic> json) => Truck(
       maxSpeed: json['maxSpeed'] == null
           ? null
           : Speed.fromJson(json['maxSpeed'] as Map<String, dynamic>),
-      isCommercial: json['isCommercial'] as bool? ?? false,
+      isCommercial: json['isCommercial'] as bool? ?? true,
       dimensions: json['dimensions'] == null
           ? null
           : VehicleDimensions.fromJson(
               json['dimensions'] as Map<String, dynamic>),
-      loadType: (json['loadType'] as List<dynamic>?)
-              ?.map((e) => VehicleLoadType.fromJson(e as Map<String, dynamic>))
+      hazmatClasses: (json['hazmatClasses'] as List<dynamic>?)
+              ?.map((e) => HazmatClass.fromJson(e as Map<String, dynamic>))
               .toSet() ??
           const {},
       adrTunnelRestrictionCode: $enumDecodeNullable(
@@ -32,7 +32,7 @@ Map<String, dynamic> _$TruckToJson(Truck instance) => <String, dynamic>{
       'modelId': instance.modelId,
       'adrTunnelRestrictionCode':
           _$AdrTunnelRestrictionCodeEnumMap[instance.adrTunnelRestrictionCode],
-      'loadType': instance.loadType.map((e) => e.toJson()).toList(),
+      'hazmatClasses': instance.hazmatClasses.map((e) => e.toJson()).toList(),
     };
 
 const _$AdrTunnelRestrictionCodeEnumMap = {
