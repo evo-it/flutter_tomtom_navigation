@@ -1,4 +1,4 @@
-Which can just go into the README. To get the package working for our app, I had to perform the following steps:
+To get the package working for our app, I had to perform the following steps:
 # Required
 * Add `packagingOptions` to the app/build.gradle (as per TT docs)
 ```
