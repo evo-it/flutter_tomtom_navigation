@@ -31,7 +31,6 @@ import com.tomtom.sdk.map.display.camera.CameraOptions
 import com.tomtom.sdk.map.display.camera.CameraTrackingMode
 import com.tomtom.sdk.map.display.common.screen.Padding
 import com.tomtom.sdk.map.display.location.LocationMarkerOptions
-import com.tomtom.sdk.map.display.route.Instruction
 import com.tomtom.sdk.map.display.style.LoadingStyleFailure
 import com.tomtom.sdk.map.display.style.StandardStyles
 import com.tomtom.sdk.map.display.style.StyleLoadingCallback
@@ -47,7 +46,6 @@ import com.tomtom.sdk.map.display.visualization.routing.traffic.RouteTrafficInci
 import com.tomtom.sdk.navigation.DestinationArrivalListener
 import com.tomtom.sdk.navigation.ProgressUpdatedListener
 import com.tomtom.sdk.navigation.TomTomNavigation
-import com.tomtom.sdk.navigation.guidance.instruction.GuidanceInstruction
 import com.tomtom.sdk.navigation.online.Configuration
 import com.tomtom.sdk.navigation.online.OnlineTomTomNavigationFactory
 import com.tomtom.sdk.navigation.progress.RouteProgress
@@ -105,6 +103,7 @@ class FlutterTomtomNavigationView(
     private lateinit var navigationTileStore: NavigationTileStore
     private lateinit var navigationVisualization: NavigationVisualization
     private lateinit var route: Route
+
     // Other SDK objects that do not have their own lifecycle
     private var mapFragment: MapFragment
     private var navigationFragment: NavigationFragment
@@ -127,6 +126,8 @@ class FlutterTomtomNavigationView(
     }
 
     init {
+        BuildConfig()
+
         this.context = context
         println("Init navigation view with id $id")
 
@@ -156,7 +157,6 @@ class FlutterTomtomNavigationView(
         initNavigationTileStore()
         initLocationProvider()
         initRouting()
-        initNavigation()
 
         // The root view is a RelativeLayout
         relativeLayout = RelativeLayout(context)
@@ -174,7 +174,6 @@ class FlutterTomtomNavigationView(
             mapFragment.getMapAsync { map ->
                 tomTomMap = map
                 enableUserLocation()
-                initNavigationVisualization()
 
                 tomTomMap.loadStyle(
                     StandardStyles.VEHICLE_RESTRICTIONS,
@@ -212,9 +211,11 @@ class FlutterTomtomNavigationView(
     private fun initNavigationVisualization() {
         navigationVisualization = NavigationVisualizationFactory.create(
             tomTomMap, tomTomNavigation, StyleConfiguration(
-                routeTrafficIncident = RouteTrafficIncidentStyle()
+                routeTrafficIncident = RouteTrafficIncidentStyle(),
+//                safetyLocationStyle = SafetyLocationStyle(),
             ), navigationTileStore
         )
+//        navigationVisualization.safetyLocationVisualization.setSafetyLocationsCountOption(SafetyLocationCountOptions.NumberOfLocations(5))
     }
 
     private fun Context.getFragmentActivityOrThrow(): FragmentActivity {
@@ -282,10 +283,11 @@ class FlutterTomtomNavigationView(
             context = context,
             locationProvider = locationProvider,
             routePlanner = routePlanner,
-            vehicleProvider = VehicleProviderFactory.create(vehicle = Vehicle.Car()),
+            vehicleProvider = VehicleProviderFactory.create(vehicle = routePlanningOptions.vehicle),
             navigationTileStore = navigationTileStore,
         )
         tomTomNavigation = OnlineTomTomNavigationFactory.create(configuration)
+        initNavigationVisualization()
     }
 
     /**
@@ -349,7 +351,7 @@ class FlutterTomtomNavigationView(
                 )
             publish(json)
 
-
+            initNavigation()
             navigationVisualization.displayRoutePlan(RoutePlan(result.routes))
             route = result.routes.first()
             navigationVisualization.selectRoute(route = result.routes.first())
@@ -364,22 +366,6 @@ class FlutterTomtomNavigationView(
     }
 
     /**
-     * For the navigation use case, the instructions can be drawn on the route in form of arrows that indicate maneuvers.
-     * To do this, map the Instruction object provided by routing to the Instruction object used by the map.
-     * Note that during navigation, you need to update the progress property of the drawn route to display the next instructions.
-     */
-    private fun Route.mapInstructions(): List<Instruction> {
-        val routeInstructions =
-            legs.flatMap { routeLeg -> routeLeg.instructions }
-        return routeInstructions.map {
-            Instruction(
-                routeOffset = it.routeOffset,
-                combineWithNext = if (it is GuidanceInstruction) (it as GuidanceInstruction).combineWithNext else false
-            )
-        }
-    }
-
-    /**
      * Used to start navigation by
      * - initializing the NavigationFragment to display the UI navigation information,
      * - passing the Route object along which the navigation will be done, and RoutePlanningOptions used during the route planning,
@@ -390,10 +376,8 @@ class FlutterTomtomNavigationView(
     private fun startNavigation() {
         showNavigation()
         navigationFragment.setTomTomNavigation(tomTomNavigation)
-        println("Active route: " + navigationVisualization.activeRoute?.id)
         val routePlan = NavigationRoutePlan(route, routePlanningOptions)
         navigationFragment.changeAudioLanguage(Locale.getDefault())
-//        navigationFragment.startNavigation(routePlan)
         navigationFragment.startNavigation(routePlan)
         navigationFragment.addNavigationListener(navigationListener)
         tomTomNavigation.addProgressUpdatedListener(progressUpdatedListener)

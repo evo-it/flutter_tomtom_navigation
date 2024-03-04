@@ -92,7 +92,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       vehicle: Truck(
-        maxSpeed: Speed.kilometersPerHour(130),
+        maxSpeed: Speed.kilometersPerHour(80),
         dimensions: VehicleDimensions(
           height: Distance.meters(3.5),
           width: Distance.meters(2.5),
@@ -101,12 +101,12 @@ class _MyAppState extends State<MyApp> {
           weight: Weight.metricTons(12),
           numberOfAxles: 3,
         ),
-        adrTunnelRestrictionCode: AdrTunnelRestrictionCode.C,
-        hazmatClasses: {
-          HazmatClass.intlExplosive,
-          HazmatClass.unClass2Gas,
-          HazmatClass.intlHarmfulToWater,
-        },
+        // adrTunnelRestrictionCode: AdrTunnelRestrictionCode.C,
+        // hazmatClasses: {
+        //   HazmatClass.intlExplosive,
+        //   HazmatClass.unClass2Gas,
+        //   HazmatClass.intlHarmfulToWater,
+        // },
       ),
     );
 
