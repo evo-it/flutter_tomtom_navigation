@@ -58,7 +58,6 @@ import com.tomtom.sdk.routing.RoutingFailure
 import com.tomtom.sdk.routing.online.OnlineRoutePlanner
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.route.Route
-import com.tomtom.sdk.vehicle.Vehicle
 import com.tomtom.sdk.vehicle.VehicleProviderFactory
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
@@ -126,8 +125,6 @@ class FlutterTomtomNavigationView(
     }
 
     init {
-        BuildConfig()
-
         this.context = context
         println("Init navigation view with id $id")
 
