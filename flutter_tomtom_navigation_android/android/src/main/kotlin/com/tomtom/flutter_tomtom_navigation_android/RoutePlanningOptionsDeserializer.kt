@@ -3,24 +3,23 @@ package com.tomtom.flutter_tomtom_navigation_android
 import com.google.gson.GsonBuilder
 import com.tomtom.flutter_tomtom_navigation_android.type_adapters.RouteTypeAdapter
 import com.tomtom.flutter_tomtom_navigation_android.type_adapters.VehicleDeserializer
+import com.tomtom.sdk.annotations.InternalTomTomSdkApi
 import com.tomtom.sdk.location.GeoPoint
 import com.tomtom.sdk.location.Place
 import com.tomtom.sdk.routing.options.Itinerary
 import com.tomtom.sdk.routing.options.ItineraryPoint
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.options.calculation.RouteType
-import com.tomtom.sdk.routing.options.guidance.AnnouncementPoints
 import com.tomtom.sdk.routing.options.guidance.ExtendedSections
 import com.tomtom.sdk.routing.options.guidance.GuidanceOptions
 import com.tomtom.sdk.routing.options.guidance.InstructionPhoneticsType
-import com.tomtom.sdk.routing.options.guidance.InstructionType
-import com.tomtom.sdk.routing.options.guidance.OnlineApiVersion
-import com.tomtom.sdk.routing.options.guidance.ProgressPoints
+import com.tomtom.sdk.routing.options.guidance.RoadShieldReferences
 import com.tomtom.sdk.vehicle.Vehicle
 import java.util.Locale
 
 class RoutePlanningOptionsDeserializer {
     companion object {
+        @OptIn(InternalTomTomSdkApi::class)
         fun deserialize(
             arguments: String,
             currentLocation: GeoPoint
@@ -45,12 +44,9 @@ class RoutePlanningOptionsDeserializer {
             //  and pass the non-deprecated version
             return opt.copy(
                 guidanceOptions = GuidanceOptions(
-                    guidanceVersion = OnlineApiVersion.v1,
-                    instructionType = InstructionType.Coded,
+                    roadShieldReferences = RoadShieldReferences.None,
                     phoneticsType = InstructionPhoneticsType.Ipa,
-                    announcementPoints = AnnouncementPoints.All,
                     extendedSections = ExtendedSections.All,
-                    progressPoints = ProgressPoints.All,
                     language = Locale.getDefault(),
                 ),
                 itinerary = Itinerary(

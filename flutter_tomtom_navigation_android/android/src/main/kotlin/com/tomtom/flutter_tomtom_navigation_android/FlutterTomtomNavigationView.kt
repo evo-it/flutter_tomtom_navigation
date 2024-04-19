@@ -41,7 +41,6 @@ import com.tomtom.sdk.map.display.visualization.navigation.NavigationVisualizati
 import com.tomtom.sdk.map.display.visualization.navigation.StyleConfiguration
 import com.tomtom.sdk.map.display.visualization.routing.RoutePlan
 import com.tomtom.sdk.navigation.RoutePlan as NavigationRoutePlan
-import com.tomtom.sdk.map.display.visualization.routing.annotations.ExperimentalRoutingRouteAPI
 import com.tomtom.sdk.map.display.visualization.routing.traffic.RouteTrafficIncidentStyle
 import com.tomtom.sdk.navigation.DestinationArrivalListener
 import com.tomtom.sdk.navigation.ProgressUpdatedListener
@@ -337,7 +336,6 @@ class FlutterTomtomNavigationView(
      * - The second method returns RoutePlanningResponse containing the routing results.
      * - This example draws the first retrieved route on the map, using the RouteOptions class.
      */
-    @OptIn(ExperimentalRoutingRouteAPI::class)
     private val routePlanningCallback = object : RoutePlanningCallback {
         override fun onSuccess(result: RoutePlanningResponse) {
             val summaryJson = Gson().toJson(result.routes.first().summary)
@@ -351,7 +349,7 @@ class FlutterTomtomNavigationView(
             initNavigation()
             navigationVisualization.displayRoutePlan(RoutePlan(result.routes))
             route = result.routes.first()
-            navigationVisualization.selectRoute(route = result.routes.first())
+            navigationVisualization.selectRoute(route.id)
             tomTomMap.zoomToRoutes(ZOOM_TO_ROUTE_PADDING)
         }
 
@@ -434,7 +432,6 @@ class FlutterTomtomNavigationView(
     /**
      * Use the SimulationLocationProvider for testing purposes.
      */
-    @OptIn(ExperimentalRoutingRouteAPI::class)
     private fun setLocationProviderToNavigation() {
         locationProvider = if (useSimulation) {
             val route = navigationVisualization.selectedRoute!!
