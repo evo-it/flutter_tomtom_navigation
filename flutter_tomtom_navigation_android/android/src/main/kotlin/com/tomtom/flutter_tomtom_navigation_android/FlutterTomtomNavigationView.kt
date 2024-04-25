@@ -100,7 +100,7 @@ class FlutterTomtomNavigationView(
     private lateinit var routePlanner: RoutePlanner
     private lateinit var tomTomNavigation: TomTomNavigation
     private lateinit var navigationTileStore: NavigationTileStore
-    private lateinit var navigationVisualization: NavigationVisualization
+    private var navigationVisualization: NavigationVisualization? = null
     private lateinit var route: Route
 
     // Other SDK objects that do not have their own lifecycle
@@ -118,7 +118,7 @@ class FlutterTomtomNavigationView(
 
         channel.setMethodCallHandler(null)
 
-        navigationVisualization.close()
+        navigationVisualization?.close()
         tomTomNavigation.close()
         navigationTileStore.close()
         routePlanner.close()
@@ -348,9 +348,9 @@ class FlutterTomtomNavigationView(
             publish(json)
 
             initNavigation()
-            navigationVisualization.displayRoutePlan(RoutePlan(result.routes))
+            navigationVisualization?.displayRoutePlan(RoutePlan(result.routes))
             route = result.routes.first()
-            navigationVisualization.selectRoute(route.id)
+            navigationVisualization?.selectRoute(route.id)
             tomTomMap.zoomToRoutes(ZOOM_TO_ROUTE_PADDING)
         }
 
@@ -450,7 +450,7 @@ class FlutterTomtomNavigationView(
             NativeEventType.DESTINATION_ARRIVAL
         )
         publish(json)
-        navigationVisualization.clearRoutePlan()
+        navigationVisualization?.clearRoutePlan()
     }
 
     /**
@@ -458,7 +458,7 @@ class FlutterTomtomNavigationView(
      */
     private fun setLocationProviderToNavigation() {
         locationProvider = if (useSimulation) {
-            val route = navigationVisualization.selectedRoute!!
+            val route = navigationVisualization!!.selectedRoute!!
             val routeGeoLocations = route.geometry.map { GeoLocation(it) }
             val simulationStrategy = InterpolationStrategy(routeGeoLocations)
             SimulationLocationProvider.create(strategy = simulationStrategy)
@@ -477,7 +477,7 @@ class FlutterTomtomNavigationView(
     private fun stopNavigation() {
         tomTomMap.removeRouteClickListener(routeClickListener)
         navigationFragment.stopNavigation()
-        navigationVisualization.clearRoutePlan()
+        navigationVisualization?.clearRoutePlan()
         mapFragment.currentLocationButton.visibilityPolicy =
             CurrentLocationButton.VisibilityPolicy.InvisibleWhenRecentered
         tomTomMap.removeCameraChangeListener(cameraChangeListener)
