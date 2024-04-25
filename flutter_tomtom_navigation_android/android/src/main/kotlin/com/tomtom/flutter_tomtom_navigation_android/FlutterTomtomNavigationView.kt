@@ -402,7 +402,7 @@ class FlutterTomtomNavigationView(
                         LocationMarkerOptions.Type.Chevron
                     )
                 )
-                navigationFragment.navigationView.setCurrentSpeedClickListener(compassButtonClickListener)
+                navigationFragment.navigationView.setCurrentSpeedClickListener(toggleOverviewCamera)
 
                 setMapMatchedLocationProvider()
                 setLocationProviderToNavigation()
@@ -416,7 +416,7 @@ class FlutterTomtomNavigationView(
             }
         }
 
-    private val compassButtonClickListener = View.OnClickListener {
+    private val toggleOverviewCamera = View.OnClickListener {
         val currentMode = tomTomMap.cameraTrackingMode
         if (currentMode == CameraTrackingMode.RouteOverview) {
             tomTomMap.cameraTrackingMode =
