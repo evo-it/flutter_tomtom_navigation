@@ -402,6 +402,8 @@ class FlutterTomtomNavigationView(
                         LocationMarkerOptions.Type.Chevron
                     )
                 )
+                navigationFragment.navigationView.setCurrentSpeedClickListener(compassButtonClickListener)
+
                 setMapMatchedLocationProvider()
                 setLocationProviderToNavigation()
                 setMapNavigationPadding()
@@ -413,6 +415,16 @@ class FlutterTomtomNavigationView(
                 stopNavigation()
             }
         }
+
+    private val compassButtonClickListener = View.OnClickListener {
+        val currentMode = tomTomMap.cameraTrackingMode
+        if (currentMode == CameraTrackingMode.RouteOverview) {
+            tomTomMap.cameraTrackingMode =
+                CameraTrackingMode.FollowRouteDirection
+        } else {
+            tomTomMap.cameraTrackingMode = CameraTrackingMode.RouteOverview
+        }
+    }
 
     private val progressUpdatedListener = ProgressUpdatedListener {
         sendRouteUpdateEvent(it)
@@ -541,12 +553,12 @@ class FlutterTomtomNavigationView(
     private val cameraChangeListener by lazy {
         CameraChangeListener {
             // TODO(Frank): This does not do anything. Instead, we hide and show the whole navigation view.
-            val cameraTrackingMode = tomTomMap.cameraTrackingMode
-            if (cameraTrackingMode == CameraTrackingMode.FollowRouteDirection) {
-                navigationFragment.navigationView.showSpeedView()
-            } else {
-                navigationFragment.navigationView.hideSpeedView()
-            }
+//            val cameraTrackingMode = tomTomMap.cameraTrackingMode
+//            if (cameraTrackingMode == CameraTrackingMode.FollowRouteDirection) {
+//                navigationFragment.navigationView.showSpeedView()
+//            } else {
+//                navigationFragment.navigationView.hideSpeedView()
+//            }
         }
     }
 
