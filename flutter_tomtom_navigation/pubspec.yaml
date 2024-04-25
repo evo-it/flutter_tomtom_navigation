@@ -1,6 +1,6 @@
 name: flutter_tomtom_navigation
 description: TomTom Navigation in Flutter using the native iOS and Android SDKs.
-version: 0.0.2
+version: 0.0.3
 publish_to: none
 
 environment:
