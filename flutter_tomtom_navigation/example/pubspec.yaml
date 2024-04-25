@@ -10,10 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_tomtom_navigation: ^0.0.1
-  permission_handler: ^11.1.0
+  permission_handler: ^11.3.1
 
 dev_dependencies:
-  flutter_lints: ^3.0.1
+  flutter_lints: ^3.0.2
   flutter_test:
     sdk: flutter
   integration_test:
@@ -33,34 +33,3 @@ dependency_overrides:
 
 flutter:
   uses-material-design: true
-
-  
-  
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  

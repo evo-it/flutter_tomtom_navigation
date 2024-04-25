@@ -1,6 +1,6 @@
 name: flutter_tomtom_navigation
-description: A new Flutter plugin project.
-version: 0.0.1
+description: TomTom Navigation in Flutter using the native iOS and Android SDKs.
+version: 0.0.2
 publish_to: none
 
 environment:
@@ -10,32 +10,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_tomtom_navigation_android: ^0.0.1
+  flutter_tomtom_navigation_android: ^0.0.2
   flutter_tomtom_navigation_ios: ^0.0.1
   flutter_tomtom_navigation_platform_interface: ^0.0.1
 
 dev_dependencies:
-  flutter_lints: ^3.0.1
+  flutter_lints: ^3.0.2
   flutter_test:
     sdk: flutter
-  plugin_platform_interface: ^2.1.7
+  plugin_platform_interface: ^2.1.8
   very_good_analysis: ^5.1.0
-
-# These overrides are required as long as the package isn't on pub.dev
-# dependency_overrides:
-#   flutter_tomtom_navigation_android:
-#     git:
-#       url: https://github.com/MatyasK/flutter_tomtom_navigation.git
-#       path: flutter_tomtom_navigation_android
-#   flutter_tomtom_navigation_ios:
-#     git:
-#       url: https://github.com/MatyasK/flutter_tomtom_navigation.git
-#       path: flutter_tomtom_navigation_ios
-#   flutter_tomtom_navigation_platform_interface:
-#     path: ../flutter_tomtom_navigation_platform_interface  
-#     # git:
-#     #   url: https://github.com/MatyasK/flutter_tomtom_navigation.git
-#     #   path: flutter_tomtom_navigation_platform_interface
 
 flutter:
   plugin:

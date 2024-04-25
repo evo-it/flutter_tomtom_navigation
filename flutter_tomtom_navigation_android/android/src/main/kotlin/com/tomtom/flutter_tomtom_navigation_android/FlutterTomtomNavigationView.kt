@@ -31,6 +31,7 @@ import com.tomtom.sdk.map.display.camera.CameraOptions
 import com.tomtom.sdk.map.display.camera.CameraTrackingMode
 import com.tomtom.sdk.map.display.common.screen.Padding
 import com.tomtom.sdk.map.display.location.LocationMarkerOptions
+import com.tomtom.sdk.map.display.route.RouteClickListener
 import com.tomtom.sdk.map.display.style.LoadingStyleFailure
 import com.tomtom.sdk.map.display.style.StandardStyles
 import com.tomtom.sdk.map.display.style.StyleLoadingCallback
@@ -402,6 +403,11 @@ class FlutterTomtomNavigationView(
                         LocationMarkerOptions.Type.Chevron
                     )
                 )
+                navigationFragment.navigationView.setCurrentSpeedClickListener(
+                    setCurrentSpeedClickListener
+                )
+                tomTomMap.addRouteClickListener(routeClickListener)
+
                 setMapMatchedLocationProvider()
                 setLocationProviderToNavigation()
                 setMapNavigationPadding()
@@ -413,6 +419,24 @@ class FlutterTomtomNavigationView(
                 stopNavigation()
             }
         }
+
+    private val setCurrentSpeedClickListener = View.OnClickListener {
+        toggleOverviewCamera()
+    }
+
+    private val routeClickListener = RouteClickListener {
+        toggleOverviewCamera()
+    }
+
+    private fun toggleOverviewCamera() {
+        val currentMode = tomTomMap.cameraTrackingMode
+        if (currentMode == CameraTrackingMode.RouteOverview) {
+            tomTomMap.cameraTrackingMode =
+                CameraTrackingMode.FollowRouteDirection
+        } else {
+            tomTomMap.cameraTrackingMode = CameraTrackingMode.RouteOverview
+        }
+    }
 
     private val progressUpdatedListener = ProgressUpdatedListener {
         sendRouteUpdateEvent(it)
@@ -451,6 +475,7 @@ class FlutterTomtomNavigationView(
      * Don’t forget to reset any map settings that were changed, such as camera tracking, location marker, and map padding.
      */
     private fun stopNavigation() {
+        tomTomMap.removeRouteClickListener(routeClickListener)
         navigationFragment.stopNavigation()
         navigationVisualization.clearRoutePlan()
         mapFragment.currentLocationButton.visibilityPolicy =
@@ -541,12 +566,12 @@ class FlutterTomtomNavigationView(
     private val cameraChangeListener by lazy {
         CameraChangeListener {
             // TODO(Frank): This does not do anything. Instead, we hide and show the whole navigation view.
-            val cameraTrackingMode = tomTomMap.cameraTrackingMode
-            if (cameraTrackingMode == CameraTrackingMode.FollowRouteDirection) {
-                navigationFragment.navigationView.showSpeedView()
-            } else {
-                navigationFragment.navigationView.hideSpeedView()
-            }
+//            val cameraTrackingMode = tomTomMap.cameraTrackingMode
+//            if (cameraTrackingMode == CameraTrackingMode.FollowRouteDirection) {
+//                navigationFragment.navigationView.showSpeedView()
+//            } else {
+//                navigationFragment.navigationView.hideSpeedView()
+//            }
         }
     }
 
