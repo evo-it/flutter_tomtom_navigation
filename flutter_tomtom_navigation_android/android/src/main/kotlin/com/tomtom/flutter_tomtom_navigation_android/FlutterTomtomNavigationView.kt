@@ -31,6 +31,7 @@ import com.tomtom.sdk.map.display.camera.CameraOptions
 import com.tomtom.sdk.map.display.camera.CameraTrackingMode
 import com.tomtom.sdk.map.display.common.screen.Padding
 import com.tomtom.sdk.map.display.location.LocationMarkerOptions
+import com.tomtom.sdk.map.display.route.RouteClickListener
 import com.tomtom.sdk.map.display.style.LoadingStyleFailure
 import com.tomtom.sdk.map.display.style.StandardStyles
 import com.tomtom.sdk.map.display.style.StyleLoadingCallback
@@ -100,7 +101,8 @@ class FlutterTomtomNavigationView(
     private lateinit var routePlanner: RoutePlanner
     private lateinit var tomTomNavigation: TomTomNavigation
     private lateinit var navigationTileStore: NavigationTileStore
-    private lateinit var navigationVisualization: NavigationVisualization
+    private var navigationVisualization: NavigationVisualization? = null
+
     private lateinit var route: Route
 
     // Other SDK objects that do not have their own lifecycle
@@ -114,13 +116,12 @@ class FlutterTomtomNavigationView(
     private var useSimulation: Boolean = true
 
     override fun dispose() {
-        locationProvider.removeOnLocationUpdateListener(onLocationUpdateListener)
-
         channel.setMethodCallHandler(null)
 
-        navigationVisualization.close()
+        navigationVisualization?.close()
         tomTomNavigation.close()
         navigationTileStore.close()
+        locationProvider.close()
         routePlanner.close()
     }
 
@@ -349,9 +350,9 @@ class FlutterTomtomNavigationView(
             publish(json)
 
             initNavigation()
-            navigationVisualization.displayRoutePlan(RoutePlan(result.routes))
+            navigationVisualization!!.displayRoutePlan(RoutePlan(result.routes))
             route = result.routes.first()
-            navigationVisualization.selectRoute(route = result.routes.first())
+            navigationVisualization!!.selectRoute(route = result.routes.first())
             tomTomMap.zoomToRoutes(ZOOM_TO_ROUTE_PADDING)
         }
 
@@ -404,6 +405,11 @@ class FlutterTomtomNavigationView(
                         LocationMarkerOptions.Type.Chevron
                     )
                 )
+                navigationFragment.navigationView.setCurrentSpeedClickListener(
+                    setCurrentSpeedClickListener
+                )
+                tomTomMap.addRouteClickListener(routeClickListener)
+
                 setMapMatchedLocationProvider()
                 setLocationProviderToNavigation()
                 setMapNavigationPadding()
@@ -415,6 +421,24 @@ class FlutterTomtomNavigationView(
                 stopNavigation()
             }
         }
+
+    private val setCurrentSpeedClickListener = View.OnClickListener {
+        toggleOverviewCamera()
+    }
+
+    private val routeClickListener = RouteClickListener {
+        toggleOverviewCamera()
+    }
+
+    private fun toggleOverviewCamera() {
+        val currentMode = tomTomMap.cameraTrackingMode
+        if (currentMode == CameraTrackingMode.RouteOverview || currentMode == CameraTrackingMode.None) {
+            tomTomMap.cameraTrackingMode =
+                CameraTrackingMode.FollowRouteDirection
+        } else {
+            tomTomMap.cameraTrackingMode = CameraTrackingMode.RouteOverview
+        }
+    }
 
     private val progressUpdatedListener = ProgressUpdatedListener {
         sendRouteUpdateEvent(it)
@@ -428,7 +452,7 @@ class FlutterTomtomNavigationView(
             NativeEventType.DESTINATION_ARRIVAL
         )
         publish(json)
-        navigationVisualization.clearRoutePlan()
+        navigationVisualization?.clearRoutePlan()
     }
 
     /**
@@ -437,7 +461,7 @@ class FlutterTomtomNavigationView(
     @OptIn(ExperimentalRoutingRouteAPI::class)
     private fun setLocationProviderToNavigation() {
         locationProvider = if (useSimulation) {
-            val route = navigationVisualization.selectedRoute!!
+            val route = navigationVisualization!!.selectedRoute!!
             val routeGeoLocations = route.geometry.map { GeoLocation(it) }
             val simulationStrategy = InterpolationStrategy(routeGeoLocations)
             SimulationLocationProvider.create(strategy = simulationStrategy)
@@ -454,8 +478,9 @@ class FlutterTomtomNavigationView(
      * Don’t forget to reset any map settings that were changed, such as camera tracking, location marker, and map padding.
      */
     private fun stopNavigation() {
+        tomTomMap.removeRouteClickListener(routeClickListener)
         navigationFragment.stopNavigation()
-        navigationVisualization.clearRoutePlan()
+        navigationVisualization?.clearRoutePlan()
         mapFragment.currentLocationButton.visibilityPolicy =
             CurrentLocationButton.VisibilityPolicy.InvisibleWhenRecentered
         tomTomMap.removeCameraChangeListener(cameraChangeListener)
@@ -541,16 +566,27 @@ class FlutterTomtomNavigationView(
         tomTomMap.hideVehicleRestrictions()
     }
 
-    private val cameraChangeListener by lazy {
-        CameraChangeListener {
-            // TODO(Frank): This does not do anything. Instead, we hide and show the whole navigation view.
-            val cameraTrackingMode = tomTomMap.cameraTrackingMode
-            if (cameraTrackingMode == CameraTrackingMode.FollowRouteDirection) {
-                navigationFragment.navigationView.showSpeedView()
-            } else {
-                navigationFragment.navigationView.hideSpeedView()
-            }
+    private var previousZoom = 0.0
+
+    private val cameraChangeListener = CameraChangeListener {
+        val cameraTrackingMode = tomTomMap.cameraTrackingMode
+        val zoom = tomTomMap.cameraPosition.zoom
+
+        // If the user zooms out, unlock the camera
+        // Ideally panning would also be allowed while zoomed in, but what can ya do ¯\_(ツ)_/¯
+        // The previous zoom check is so we only toggle to free cam while we're not currently zooming back in to track the route
+        if (zoom <= 14.5 && cameraTrackingMode == CameraTrackingMode.FollowRouteDirection && previousZoom > zoom) {
+            tomTomMap.cameraTrackingMode = CameraTrackingMode.None
+            tomTomMap.animateCamera(
+                CameraOptions(
+                    position = tomTomMap.currentLocation?.position,
+                    tilt = 0.0,
+                    rotation = 0.0,
+                )
+            )
         }
+
+        previousZoom = zoom
     }
 
     private fun areLocationPermissionsGranted() =
