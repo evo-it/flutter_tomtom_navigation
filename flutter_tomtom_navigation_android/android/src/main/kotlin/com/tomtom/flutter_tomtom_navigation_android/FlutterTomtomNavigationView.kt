@@ -70,11 +70,10 @@ import kotlin.random.Random
 import java.util.Locale
 
 class FlutterTomtomNavigationView(
-    context: Context,
+    private val context: Context,
     id: Int,
     creationParams: Map<String?, Any?>?
 ) : PlatformView, MethodCallHandler {
-    private val context: Context
     private val apiKey: String
 
     /// The MethodChannel that will the communication between Flutter and native Android
@@ -121,12 +120,10 @@ class FlutterTomtomNavigationView(
         navigationVisualization?.close()
         tomTomNavigation.close()
         navigationTileStore.close()
-        locationProvider.close()
         routePlanner.close()
     }
 
     init {
-        this.context = context
         println("Init navigation view with id $id")
 
         if (creationParams.isNullOrEmpty()) {
