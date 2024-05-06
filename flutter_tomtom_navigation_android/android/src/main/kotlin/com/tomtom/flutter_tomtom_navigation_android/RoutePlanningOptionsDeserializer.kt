@@ -42,7 +42,6 @@ class RoutePlanningOptionsDeserializer {
 
             // For now, use the default locale that is set on app launch
             // TODO retrieve guidance options from Flutter
-            //  and pass the non-deprecated version
             return opt.copy(
                 guidanceOptions = GuidanceOptions(
                     guidanceVersion = OnlineApiVersion.v1,

@@ -372,7 +372,12 @@ class FlutterTomtomNavigationView(
         showNavigation()
         navigationFragment.setTomTomNavigation(tomTomNavigation)
         val routePlan = NavigationRoutePlan(route, routePlanningOptions)
-        navigationFragment.changeAudioLanguage(Locale.getDefault())
+        navigationFragment.changeTextToSpeechEngine(
+            FlutterTomtomTextToSpeech(
+                context,
+                Locale.getDefault()
+            )
+        )
         navigationFragment.startNavigation(routePlan)
         navigationFragment.addNavigationListener(navigationListener)
         tomTomNavigation.addProgressUpdatedListener(progressUpdatedListener)
