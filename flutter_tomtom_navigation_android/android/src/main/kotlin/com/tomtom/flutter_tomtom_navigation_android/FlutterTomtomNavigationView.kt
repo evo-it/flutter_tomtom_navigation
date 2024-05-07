@@ -18,7 +18,6 @@ import com.google.gson.JsonObject
 import com.tomtom.sdk.datamanagement.navigationtile.NavigationTileStore
 import com.tomtom.sdk.datamanagement.navigationtile.NavigationTileStoreConfiguration
 import com.tomtom.sdk.location.GeoLocation
-import com.tomtom.sdk.location.GeoPoint
 import com.tomtom.sdk.location.LocationProvider
 import com.tomtom.sdk.location.OnLocationUpdateListener
 import com.tomtom.sdk.location.android.AndroidLocationProvider
@@ -69,11 +68,10 @@ import kotlin.random.Random
 import java.util.Locale
 
 class FlutterTomtomNavigationView(
-    context: Context,
+    private val context: Context,
     id: Int,
     creationParams: Map<String?, Any?>?
 ) : PlatformView, MethodCallHandler {
-    private val context: Context
     private val apiKey: String
 
     /// The MethodChannel that will the communication between Flutter and native Android
@@ -125,7 +123,6 @@ class FlutterTomtomNavigationView(
     }
 
     init {
-        this.context = context
         println("Init navigation view with id $id")
 
         if (creationParams.isNullOrEmpty()) {
@@ -607,16 +604,6 @@ class FlutterTomtomNavigationView(
 
         when (call.method) {
             "planRoute" -> {
-                val cameraOptions = CameraOptions(
-                    position = GeoPoint(52.1, 5.6),
-                    zoom = 1.0,
-                    tilt = 2.0,
-                    rotation = 3.0,
-                    fieldOfView = 4.0,
-                )
-                println(cameraOptions.position)
-                println(Gson().toJson(cameraOptions))
-
                 val userLocation =
                     tomTomMap.currentLocation?.position ?: return
                 routePlanningOptions =
