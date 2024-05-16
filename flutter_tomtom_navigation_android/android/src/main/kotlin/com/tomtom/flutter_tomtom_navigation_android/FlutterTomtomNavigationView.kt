@@ -244,6 +244,9 @@ class FlutterTomtomNavigationView(
                 }
                 defaultCurrentLocationButtonMargin =
                     mapFragment.currentLocationButton.margin
+                mapFragment.currentLocationButton.addCurrentLocationButtonClickListener {
+                    recenterCamera()
+                }
             }
         }
         navigationStatusPublisher.publish(NavigationStatusPublisher.NavigationStatus.MAP_LOADED)
@@ -313,27 +316,18 @@ class FlutterTomtomNavigationView(
         }
     }
 
-    private val currentLocationButtonClickListener = UiComponentClickListener {
-        recenterCamera()
-    }
-
     private fun unlockCamera() {
         tomTomMap?.cameraTrackingMode = CameraTrackingMode.None
         navigationFragment.navigationView.hideSpeedView()
-
-        // Move the current location button into view!
-        mapFragment.currentLocationButton.addCurrentLocationButtonClickListener(
-            currentLocationButtonClickListener
-        )
-
     }
 
     private fun recenterCamera() {
-        mapFragment.currentLocationButton.removeCurrentLocationButtonClickListener(
-            currentLocationButtonClickListener
-        )
-        tomTomMap?.cameraTrackingMode = CameraTrackingMode.FollowRouteDirection
-        navigationFragment.navigationView.showSpeedView()
+        if (tomTomNavigation.navigationSnapshot != null) {
+            tomTomMap?.cameraTrackingMode =
+                CameraTrackingMode.FollowRouteDirection
+            navigationFragment.navigationView.showSpeedView()
+        }
+        // By default, the standard recenter is performed
     }
 
     /**
