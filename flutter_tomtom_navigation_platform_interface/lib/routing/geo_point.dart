@@ -18,4 +18,6 @@ class GeoPoint {
 	Map<String, dynamic> toJson() => _$GeoPointToJson(this);
 
 	factory GeoPoint.fromJson(Map<String, dynamic> json) => _$GeoPointFromJson(json);
+
+	static const currentLocation = GeoPoint(latitude: 0, longitude: 0);
 }
