@@ -32,11 +32,14 @@ import com.tomtom.sdk.location.simulation.strategy.InterpolationStrategy
 import com.tomtom.sdk.map.display.TomTomMap
 import com.tomtom.sdk.map.display.camera.CameraTrackingMode
 import com.tomtom.sdk.map.display.common.screen.Padding
+import com.tomtom.sdk.map.display.gesture.MapPanningListener
 import com.tomtom.sdk.map.display.location.LocationMarkerOptions
 import com.tomtom.sdk.map.display.style.LoadingStyleFailure
 import com.tomtom.sdk.map.display.style.StandardStyles
 import com.tomtom.sdk.map.display.style.StyleLoadingCallback
 import com.tomtom.sdk.map.display.ui.MapFragment
+import com.tomtom.sdk.map.display.ui.Margin
+import com.tomtom.sdk.map.display.ui.UiComponentClickListener
 import com.tomtom.sdk.map.display.visualization.navigation.NavigationVisualization
 import com.tomtom.sdk.map.display.visualization.navigation.NavigationVisualizationFactory
 import com.tomtom.sdk.map.display.visualization.navigation.StyleConfiguration
@@ -63,7 +66,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.platform.PlatformView
 import java.util.Locale
 import kotlin.random.Random
-
 
 /**
  * The FlutterTomtomNavigationView provides an all-in-one View that is displayed
@@ -93,6 +95,7 @@ class FlutterTomtomNavigationView(
     private val view = ConstraintLayout(context)
 
     // SDK objects
+    private val mapFragment: MapFragment
     private val navigationFragment: NavigationFragment
     private val locationProvider: LocationProvider
     private val navigationTileStore: NavigationTileStore
@@ -106,6 +109,10 @@ class FlutterTomtomNavigationView(
     private var routePlan: com.tomtom.sdk.navigation.RoutePlan? = null
     private var simLocationProvider: LocationProvider? = null
     private var route: Route? = null
+    private var defaultCurrentLocationButtonMargin: Margin? = null
+
+    private val density = context.resources.displayMetrics.density
+    private val bottomPadding = (263 * density).toInt()
 
     override fun getView(): View {
         return view
@@ -192,7 +199,7 @@ class FlutterTomtomNavigationView(
         )
 
         // Add the map container
-        val mapFragment = MapFragment.newInstance(mapOptions)
+        mapFragment = MapFragment.newInstance(mapOptions)
         val mapView = FragmentContainerView(context)
         mapView.id = Random.nextInt()
         view.addView(mapView)
@@ -235,6 +242,8 @@ class FlutterTomtomNavigationView(
                     destinationArrivalPublisher.publish(route)
                     navigationVisualization?.clearRoutePlan()
                 }
+                defaultCurrentLocationButtonMargin =
+                    mapFragment.currentLocationButton.margin
             }
         }
         navigationStatusPublisher.publish(NavigationStatusPublisher.NavigationStatus.MAP_LOADED)
@@ -256,6 +265,19 @@ class FlutterTomtomNavigationView(
                     // safetyLocationStyle = SafetyLocationStyle(),
                 ),
             )
+
+            it.addMapPanningListener(object : MapPanningListener {
+                override fun onMapPanningEnded() {}
+
+                override fun onMapPanningOngoing() {}
+
+                override fun onMapPanningStarted() {
+                    if (tomTomMap?.cameraTrackingMode == CameraTrackingMode.FollowRouteDirection) {
+                        // Release the camera
+                        unlockCamera()
+                    }
+                }
+            })
 
             // Set the map to the vehicle restrictions mode (for now, of the default vehicle)
             it.loadStyle(
@@ -291,6 +313,29 @@ class FlutterTomtomNavigationView(
         }
     }
 
+    private val currentLocationButtonClickListener = UiComponentClickListener {
+        recenterCamera()
+    }
+
+    private fun unlockCamera() {
+        tomTomMap?.cameraTrackingMode = CameraTrackingMode.None
+        navigationFragment.navigationView.hideSpeedView()
+
+        // Move the current location button into view!
+        mapFragment.currentLocationButton.addCurrentLocationButtonClickListener(
+            currentLocationButtonClickListener
+        )
+
+    }
+
+    private fun recenterCamera() {
+        mapFragment.currentLocationButton.removeCurrentLocationButtonClickListener(
+            currentLocationButtonClickListener
+        )
+        tomTomMap?.cameraTrackingMode = CameraTrackingMode.FollowRouteDirection
+        navigationFragment.navigationView.showSpeedView()
+    }
+
     /**
      * Helper function to retrieve the parent fragment activity.
      * It can be used to swap in the required views
@@ -323,8 +368,6 @@ class FlutterTomtomNavigationView(
             override fun onStarted() {
                 println("navigation started")
                 navigationStatusPublisher.publish(NavigationStatusPublisher.NavigationStatus.RUNNING)
-
-//                tomTomMap.addCameraChangeListener(cameraChangeListener)
                 tomTomMap?.cameraTrackingMode =
                     CameraTrackingMode.FollowRouteDirection
                 tomTomMap?.enableLocationMarker(
@@ -334,17 +377,13 @@ class FlutterTomtomNavigationView(
                 )
 
                 println("Setting map padding!")
-                val bottomPaddingInDp = 263
-                val bottomPaddingInPixels =
-                    (bottomPaddingInDp * context.resources.displayMetrics.density).toInt()
-                val padding = Padding(0, 0, 0, bottomPaddingInPixels)
+                val padding = Padding(0, 0, 0, bottomPadding)
                 tomTomMap?.setPadding(padding)
 
 //                navigationFragment.navigationView.setCurrentSpeedClickListener(
 //                    setCurrentSpeedClickListener
 //                )
 //                tomTomMap.addRouteClickListener(routeClickListener)
-
 //                setMapMatchedLocationProvider()
 //                setLocationProviderToNavigation()
 //                setMapNavigationPadding()
@@ -356,47 +395,6 @@ class FlutterTomtomNavigationView(
                 stopNavigation()
             }
         }
-
-    /**
-     * Stop the navigation process using NavigationFragment.
-     * This hides the UI elements and calls the TomTomNavigation.stop() method.
-     * Don’t forget to reset any map settings that were changed, such as camera tracking, location marker, and map padding.
-     */
-    private fun stopNavigation() {
-        tomTomMap?.setPadding(Padding(0, 0, 0, 0))
-//        tomTomMap.removeRouteClickListener(routeClickListener)
-        navigationFragment.stopNavigation()
-        navigationVisualization?.clearRoutePlan()
-//        mapFragment.currentLocationButton.visibilityPolicy =
-//            CurrentLocationButton.VisibilityPolicy.InvisibleWhen Re-centered
-//        tomTomMap.removeCameraChangeListener(cameraChangeListener)
-        tomTomMap?.cameraTrackingMode = CameraTrackingMode.None
-        tomTomMap?.enableLocationMarker(
-            LocationMarkerOptions(
-                LocationMarkerOptions.Type.Pointer
-            )
-        )
-
-        // Set the location provider back to the native one
-        closeAndDisposeSimLocationProvider()
-
-        navigationFragment.navigationView.hideSpeedView()
-        tomTomMap?.loadStyle(
-            StandardStyles.VEHICLE_RESTRICTIONS,
-            object : StyleLoadingCallback {
-                override fun onFailure(failure: LoadingStyleFailure) {
-                    println("Failed to load vehicle restrictions!")
-                }
-
-                override fun onSuccess() {
-                    navigationStatusPublisher.publish(
-                        NavigationStatusPublisher.NavigationStatus.READY
-                    )
-                    tomTomMap?.hideVehicleRestrictions()
-                }
-
-            })
-    }
 
     /**
      * Set the location provider back to the native one.
@@ -414,12 +412,12 @@ class FlutterTomtomNavigationView(
         }
     }
 
-//    private var previousZoom = 0.0
-//
 //    private val cameraChangeListener = CameraChangeListener {
-//        val cameraTrackingMode = tomTomMap.cameraTrackingMode
-//        val zoom = tomTomMap.cameraPosition.zoom
+//        val cameraTrackingMode = tomTomMap?.cameraTrackingMode
+//        val zoom = tomTomMap?.cameraPosition?.zoom
 //
+//        println("$cameraTrackingMode, ${tomTomMap?.cameraPosition?.position}, $zoom")
+
 //        // If the user zooms out, unlock the camera
 //        // Ideally panning would also be allowed while zoomed in, but what can ya do ¯\_(ツ)_/¯
 //        // The previous zoom check is so we only toggle to free cam while we're not currently zooming back in to track the route
@@ -504,33 +502,7 @@ class FlutterTomtomNavigationView(
             "startNavigation" -> {
                 val useSimulation =
                     call.argument<Boolean>("useSimulation")!!
-
-                if (route != null && useSimulation) {
-                    val strategy = InterpolationStrategy(route!!.geometry.map {
-                        GeoLocation(it)
-                    })
-                    simLocationProvider =
-                        SimulationLocationProvider.create(strategy)
-                    tomTomNavigation.locationProvider = simLocationProvider!!
-                    tomTomMap?.setLocationProvider(simLocationProvider)
-                    simLocationProvider?.enable()
-                }
-                navigationFragment.navigationView.showSpeedView()
-
-                tomTomMap?.loadStyle(
-                    StandardStyles.DRIVING,
-                    object : StyleLoadingCallback {
-                        override fun onFailure(failure: LoadingStyleFailure) {
-                            println("Failed to load driving map style :(")
-                        }
-
-                        override fun onSuccess() {
-                            if (routePlan != null) {
-                                navigationFragment.startNavigation(routePlan!!)
-                            }
-                        }
-                    }
-                )
+                startNavigation(useSimulation)
             }
 
             "stopNavigation" -> {
@@ -541,5 +513,79 @@ class FlutterTomtomNavigationView(
                 result.notImplemented()
             }
         }
+    }
+
+    private fun startNavigation(useSimulation: Boolean) {
+        if (route != null && useSimulation) {
+            val strategy = InterpolationStrategy(route!!.geometry.map {
+                GeoLocation(it)
+            })
+            simLocationProvider =
+                SimulationLocationProvider.create(strategy)
+            tomTomNavigation.locationProvider = simLocationProvider!!
+            tomTomMap?.setLocationProvider(simLocationProvider)
+            simLocationProvider?.enable()
+        }
+
+        navigationFragment.navigationView.showSpeedView()
+        if (mapFragment.currentLocationButton.margin == defaultCurrentLocationButtonMargin) {
+            val margin =
+                mapFragment.currentLocationButton.margin.copy(bottom = (density * (263 + 32)).toInt())
+            mapFragment.currentLocationButton.margin = margin
+        }
+
+        tomTomMap?.loadStyle(
+            StandardStyles.DRIVING,
+            object : StyleLoadingCallback {
+                override fun onFailure(failure: LoadingStyleFailure) {
+                    println("Failed to load driving map style :(")
+                }
+
+                override fun onSuccess() {
+                    if (routePlan != null) {
+                        navigationFragment.startNavigation(routePlan!!)
+                    }
+                }
+            }
+        )
+    }
+
+    /**
+     * Stop the navigation process using NavigationFragment.
+     * This hides the UI elements and calls the TomTomNavigation.stop() method.
+     * Don’t forget to reset any map settings that were changed, such as camera tracking, location marker, and map padding.
+     */
+    private fun stopNavigation() {
+        tomTomMap?.setPadding(Padding(0, 0, 0, 0))
+        navigationFragment.stopNavigation()
+        navigationVisualization?.clearRoutePlan()
+        tomTomMap?.cameraTrackingMode = CameraTrackingMode.None
+        tomTomMap?.enableLocationMarker(
+            LocationMarkerOptions(
+                LocationMarkerOptions.Type.Pointer
+            )
+        )
+
+        // Set the location provider back to the native one
+        closeAndDisposeSimLocationProvider()
+
+        navigationFragment.navigationView.hideSpeedView()
+        tomTomMap?.loadStyle(
+            StandardStyles.VEHICLE_RESTRICTIONS,
+            object : StyleLoadingCallback {
+                override fun onFailure(failure: LoadingStyleFailure) {
+                    println("Failed to load vehicle restrictions!")
+                }
+
+                override fun onSuccess() {
+                    navigationStatusPublisher.publish(
+                        NavigationStatusPublisher.NavigationStatus.READY
+                    )
+                    tomTomMap?.hideVehicleRestrictions()
+                }
+
+            })
+        mapFragment.currentLocationButton.margin =
+            defaultCurrentLocationButtonMargin!!
     }
 }
