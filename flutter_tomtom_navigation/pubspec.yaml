@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_tomtom_navigation_android: ^0.1.0
+  flutter_tomtom_navigation_android: ^0.1.1
   flutter_tomtom_navigation_ios: ^0.1.0
   flutter_tomtom_navigation_platform_interface: ^1.0.1
 
