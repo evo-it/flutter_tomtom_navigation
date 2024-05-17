@@ -50,12 +50,16 @@ class RoutePlanningOptionsDeserializer {
                     language = Locale.getDefault(),
                 ),
                 itinerary = Itinerary(
-                    // For now, always replace the origin with the current location
-                    origin = ItineraryPoint(Place(currentLocation)),
+                    // Replace the origin with the current location if an origin point of 0 was passed
+                    origin = if (opt.itinerary.origin.place.coordinate == ZERO)
+                        ItineraryPoint(Place(currentLocation))
+                    else opt.itinerary.origin,
                     waypoints = opt.itinerary.waypoints,
                     destination = opt.itinerary.destination,
                 )
             )
         }
+
+        val ZERO = GeoPoint(0.0, 0.0)
     }
 }

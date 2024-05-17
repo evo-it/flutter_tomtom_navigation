@@ -1,6 +1,6 @@
 name: flutter_tomtom_navigation
 description: TomTom Navigation in Flutter using the native iOS and Android SDKs.
-version: 0.0.3
+version: 0.1.0
 publish_to: none
 
 environment:
@@ -10,9 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_tomtom_navigation_android: ^0.0.2
-  flutter_tomtom_navigation_ios: ^0.0.1
-  flutter_tomtom_navigation_platform_interface: ^0.0.1
+  flutter_tomtom_navigation_android: ^0.1.0
+  flutter_tomtom_navigation_ios: ^0.1.0
+  flutter_tomtom_navigation_platform_interface: ^1.0.1
 
 dev_dependencies:
   flutter_lints: ^3.0.2

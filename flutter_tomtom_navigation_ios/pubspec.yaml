@@ -1,6 +1,6 @@
 name: flutter_tomtom_navigation_ios
 description: The iOS implementation of Flutter TomTom Navigation.
-version: 0.0.1
+version: 0.1.0
 publish_to: none
 
 environment:
