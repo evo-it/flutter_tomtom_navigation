@@ -19,6 +19,7 @@ import com.tomtom.flutter_tomtom_navigation_android.platform_channel.BasicEventP
 import com.tomtom.flutter_tomtom_navigation_android.platform_channel.DestinationArrivalPublisher
 import com.tomtom.flutter_tomtom_navigation_android.platform_channel.NativeEventPublisher
 import com.tomtom.flutter_tomtom_navigation_android.platform_channel.NavigationStatusPublisher
+import com.tomtom.flutter_tomtom_navigation_android.tts.FlutterTomtomTextToSpeech
 import com.tomtom.quantity.Distance
 import com.tomtom.sdk.datamanagement.navigationtile.NavigationTileStore
 import com.tomtom.sdk.datamanagement.navigationtile.NavigationTileStoreConfiguration
@@ -241,7 +242,12 @@ class FlutterTomtomNavigationView(
             Handler(Looper.getMainLooper()).post {
                 navigationFragment.setTomTomNavigation(tomTomNavigation)
                 navigationFragment.navigationView.hideSpeedView()
-                navigationFragment.changeAudioLanguage(Locale.getDefault())
+                navigationFragment.changeTextToSpeechEngine(
+                    FlutterTomtomTextToSpeech(
+                        context,
+                        Locale.getDefault(),
+                    )
+                )
                 navigationFragment.addNavigationListener(navigationListener)
                 tomTomNavigation.addProgressUpdatedListener { progress ->
                     progressUpdatedPublisher.publish(

@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> {
       itinerary: Itinerary(
         origin: ItineraryPoint(
           place: const Place(
-            coordinate: GeoPoint(latitude: 51.985252, longitude: 4.340215),
+            coordinate: GeoPoint(latitude: 51.984956, longitude: 4.344450),
             // coordinate: GeoPoint.currentLocation,
           ),
         ),
