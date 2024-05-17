@@ -15,6 +15,7 @@ import com.tomtom.sdk.routing.options.guidance.GuidanceOptions
 import com.tomtom.sdk.routing.options.guidance.InstructionPhoneticsType
 import com.tomtom.sdk.routing.options.guidance.RoadShieldReferences
 import com.tomtom.sdk.vehicle.Vehicle
+import com.tomtom.sdk.vehicle.Vehicle.*
 import java.util.Locale
 
 class RoutePlanningOptionsDeserializer {
@@ -40,9 +41,8 @@ class RoutePlanningOptionsDeserializer {
             println("Deserialized to $opt")
 
             // For now, use the default locale that is set on app launch
-            // TODO retrieve guidance options from Flutter
-            //  and pass the non-deprecated version
             return opt.copy(
+                // TODO once navigation can handle it, either use the normal vehicle or remove the guidance options
                 guidanceOptions = GuidanceOptions(
                     roadShieldReferences = RoadShieldReferences.None,
                     phoneticsType = InstructionPhoneticsType.Ipa,
@@ -56,7 +56,15 @@ class RoutePlanningOptionsDeserializer {
                     else opt.itinerary.origin,
                     waypoints = opt.itinerary.waypoints,
                     destination = opt.itinerary.destination,
-                )
+                ),
+                vehicle = if (opt.vehicle is Van) Car(
+                    maxSpeed = (opt.vehicle as Van).maxSpeed,
+                    isCommercial = (opt.vehicle as Van).isCommercial,
+                    electricEngine = (opt.vehicle as Van).electricEngine,
+                    combustionEngine = (opt.vehicle as Van).combustionEngine,
+                    dimensions = (opt.vehicle as Van).dimensions,
+                    modelId = (opt.vehicle as Van).modelId,
+                ) else opt.vehicle
             )
         }
 

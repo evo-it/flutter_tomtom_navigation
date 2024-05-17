@@ -255,7 +255,6 @@ class FlutterTomtomNavigationView(
                 }
                 tomTomNavigation.addDestinationArrivalListener { route ->
                     destinationArrivalPublisher.publish(route)
-                    navigationVisualization?.clearRoutePlan()
                 }
                 defaultCurrentLocationButtonMargin =
                     mapFragment.currentLocationButton.margin
