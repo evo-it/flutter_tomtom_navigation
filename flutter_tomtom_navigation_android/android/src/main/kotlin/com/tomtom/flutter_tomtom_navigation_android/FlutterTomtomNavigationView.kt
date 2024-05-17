@@ -39,7 +39,6 @@ import com.tomtom.sdk.map.display.style.StandardStyles
 import com.tomtom.sdk.map.display.style.StyleLoadingCallback
 import com.tomtom.sdk.map.display.ui.MapFragment
 import com.tomtom.sdk.map.display.ui.Margin
-import com.tomtom.sdk.map.display.ui.UiComponentClickListener
 import com.tomtom.sdk.map.display.visualization.navigation.NavigationVisualization
 import com.tomtom.sdk.map.display.visualization.navigation.NavigationVisualizationFactory
 import com.tomtom.sdk.map.display.visualization.navigation.StyleConfiguration
@@ -55,6 +54,7 @@ import com.tomtom.sdk.routing.RoutePlanningCallback
 import com.tomtom.sdk.routing.RoutePlanningResponse
 import com.tomtom.sdk.routing.RoutingFailure
 import com.tomtom.sdk.routing.online.OnlineRoutePlanner
+import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.route.Route
 import com.tomtom.sdk.vehicle.Vehicle
 import com.tomtom.sdk.vehicle.VehicleProvider
@@ -81,6 +81,12 @@ class FlutterTomtomNavigationView(
      * The TomTom API key which is passed in the initial MapOptions.
      */
     private val apiKey: String
+
+    /**
+     * The method channel which is used to communicate to Flutter.
+     *
+     * It is used by the different publishers below.
+     */
     private val channel: MethodChannel
     private val navigationStatusPublisher: NavigationStatusPublisher
     private val routeUpdatePublisher: BasicEventPublisher
@@ -126,6 +132,10 @@ class FlutterTomtomNavigationView(
         routePlanner.close()
     }
 
+    /**
+     * Initializes the Navigation view.
+     * TODO this may be split up and/or commented further to improve legibility
+     */
     init {
         println("Init navigation view with id $id")
 
@@ -316,11 +326,20 @@ class FlutterTomtomNavigationView(
         }
     }
 
+    /**
+     * Called when the user pans the camera during navigation.
+     * It unlocks the camera and hides the speed view.
+     */
     private fun unlockCamera() {
         tomTomMap?.cameraTrackingMode = CameraTrackingMode.None
         navigationFragment.navigationView.hideSpeedView()
     }
 
+    /**
+     * Called when the current location button is tapped.
+     * During navigation, this locks the camera onto the route again,
+     * and by default it just re-centers the camera.
+     */
     private fun recenterCamera() {
         if (tomTomNavigation.navigationSnapshot != null) {
             tomTomMap?.cameraTrackingMode =
@@ -351,11 +370,9 @@ class FlutterTomtomNavigationView(
     }
 
     /**
-     * Handle the updates to the navigation states using the NavigationListener
-     * - Use CameraChangeListener to observe camera tracking mode and detect if the camera is locked on the chevron. If the user starts to move the camera, it will change and you can adjust the UI to suit.
-     * - Use the SimulationLocationProvider for testing purposes.
-     * - Once navigation is started, the camera is set to follow the user position, and the location indicator is changed to a chevron. To match raw location updates to the routes, use MapMatchedLocationProvider and set it to the TomTomMap.
-     * - Set the bottom padding on the map. The padding sets a safe area of the MapView in which user interaction is not received. It is used to uncover the chevron in the navigation panel.
+     * Listen to the status of the navigation listener.
+     * When started, the camera is set to follow the route, the location marker is changed to a chevron and the bottom padding is applied.
+     * When stopped, these changes are reverted once again.
      */
     private val navigationListener =
         object : NavigationFragment.NavigationListener {
@@ -369,18 +386,8 @@ class FlutterTomtomNavigationView(
                         LocationMarkerOptions.Type.Chevron
                     )
                 )
-
-                println("Setting map padding!")
                 val padding = Padding(0, 0, 0, bottomPadding)
                 tomTomMap?.setPadding(padding)
-
-//                navigationFragment.navigationView.setCurrentSpeedClickListener(
-//                    setCurrentSpeedClickListener
-//                )
-//                tomTomMap.addRouteClickListener(routeClickListener)
-//                setMapMatchedLocationProvider()
-//                setLocationProviderToNavigation()
-//                setMapNavigationPadding()
             }
 
             override fun onStopped() {
@@ -406,31 +413,8 @@ class FlutterTomtomNavigationView(
         }
     }
 
-//    private val cameraChangeListener = CameraChangeListener {
-//        val cameraTrackingMode = tomTomMap?.cameraTrackingMode
-//        val zoom = tomTomMap?.cameraPosition?.zoom
-//
-//        println("$cameraTrackingMode, ${tomTomMap?.cameraPosition?.position}, $zoom")
-
-//        // If the user zooms out, unlock the camera
-//        // Ideally panning would also be allowed while zoomed in, but what can ya do ¯\_(ツ)_/¯
-//        // The previous zoom check is so we only toggle to free cam while we're not currently zooming back in to track the route
-//        if (zoom <= 14.5 && cameraTrackingMode == CameraTrackingMode.FollowRouteDirection && previousZoom > zoom) {
-//            tomTomMap.cameraTrackingMode = CameraTrackingMode.None
-//            tomTomMap.animateCamera(
-//                CameraOptions(
-//                    position = tomTomMap.currentLocation?.position,
-//                    tilt = 0.0,
-//                    rotation = 0.0,
-//                )
-//            )
-//        }
-//
-//        previousZoom = zoom
-//    }
-
     /**
-     * Handle different method calls from Flutter to the navigation view.
+     * Handle different method calls from Flutter to the native view.
      */
     override fun onMethodCall(
         call: MethodCall,
@@ -440,10 +424,6 @@ class FlutterTomtomNavigationView(
 
         when (call.method) {
             "planRoute" -> {
-                // We want to plan a route. For this we need to:
-                // 1. Get the route planning options and insert the current location as the origin
-                // 2. Set the vehicle in TomTomNavigation to this vehicle (for re-planning!)
-                // 3. Show the correct restrictions for this vehicle (for visualization)
                 val userLocation =
                     tomTomMap?.currentLocation?.position ?: return
                 val routePlanningOptions =
@@ -452,45 +432,7 @@ class FlutterTomtomNavigationView(
                         userLocation
                     )
 
-                tomTomMap?.clear()
-                tomTomMap?.hideVehicleRestrictions()
-
-                // Show the vehicle restrictions that apply for the current vehicle
-                tomTomMap?.showVehicleRestrictions(routePlanningOptions.vehicle)
-
-                // Update the vehicle in the navigation
-                vehicleProvider.vehicle = routePlanningOptions.vehicle
-
-                routePlanner.planRoute(
-                    routePlanningOptions,
-                    object : RoutePlanningCallback {
-                        override fun onSuccess(result: RoutePlanningResponse) {
-                            val firstRoute = result.routes.first()
-                            route = firstRoute
-                            routePlannedPublisher.publish(firstRoute.summary)
-
-                            navigationVisualization?.displayRoutePlan(
-                                RoutePlan(result.routes)
-                            )
-                            navigationVisualization?.selectRoute(firstRoute.id)
-                            routePlan = com.tomtom.sdk.navigation.RoutePlan(
-                                firstRoute,
-                                routePlanningOptions
-                            )
-                            tomTomMap?.zoomToRoutes(100)
-                        }
-
-                        override fun onFailure(failure: RoutingFailure) {
-                            Toast.makeText(
-                                context,
-                                failure.message,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                        override fun onRoutePlanned(route: Route) = Unit
-                    }
-                )
+                planRoute(routePlanningOptions)
             }
 
             "startNavigation" -> {
@@ -509,6 +451,61 @@ class FlutterTomtomNavigationView(
         }
     }
 
+    /**
+     * Plan a route with the provided itinerary and link the vehicle.
+     * If 0,0 was passed as an origin, we use the plan from the current location instead
+     */
+    private fun planRoute(routePlanningOptions: RoutePlanningOptions) {
+        // Must not forget to:
+        // A. Set the vehicle in TomTomNavigation to this vehicle (for re-planning!)
+        // B. Show the correct restrictions for this vehicle (for visualization)
+
+        tomTomMap?.clear()
+        tomTomMap?.hideVehicleRestrictions()
+
+        // Show the vehicle restrictions that apply for the current vehicle
+        tomTomMap?.showVehicleRestrictions(routePlanningOptions.vehicle)
+
+        // Update the vehicle in the navigation
+        vehicleProvider.vehicle = routePlanningOptions.vehicle
+
+        routePlanner.planRoute(
+            routePlanningOptions,
+            object : RoutePlanningCallback {
+                override fun onSuccess(result: RoutePlanningResponse) {
+                    val firstRoute = result.routes.first()
+                    route = firstRoute
+                    routePlannedPublisher.publish(firstRoute.summary)
+
+                    navigationVisualization?.displayRoutePlan(
+                        RoutePlan(result.routes)
+                    )
+                    navigationVisualization?.selectRoute(firstRoute.id)
+                    routePlan = com.tomtom.sdk.navigation.RoutePlan(
+                        firstRoute,
+                        routePlanningOptions
+                    )
+                    tomTomMap?.zoomToRoutes(100)
+                }
+
+                override fun onFailure(failure: RoutingFailure) {
+                    Toast.makeText(
+                        context,
+                        failure.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                override fun onRoutePlanned(route: Route) = Unit
+            }
+        )
+    }
+
+    /**
+     * Start the navigation process using NavigationFragment.
+     * This also sets the simulated location provider if requested,
+     * shows the speed view and offsets the current location button
+     */
     private fun startNavigation(useSimulation: Boolean) {
         if (route != null && useSimulation) {
             val strategy = InterpolationStrategy(route!!.geometry.map {
@@ -546,8 +543,8 @@ class FlutterTomtomNavigationView(
 
     /**
      * Stop the navigation process using NavigationFragment.
-     * This hides the UI elements and calls the TomTomNavigation.stop() method.
-     * Don’t forget to reset any map settings that were changed, such as camera tracking, location marker, and map padding.
+     * This also removes the simulated location provider if present
+     * And resets the UI elements like the current location button and current speed view
      */
     private fun stopNavigation() {
         tomTomMap?.setPadding(Padding(0, 0, 0, 0))
