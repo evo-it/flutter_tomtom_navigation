@@ -119,7 +119,6 @@ class FlutterTomtomNavigationView(
     private var defaultCurrentLocationButtonMargin: Margin? = null
 
     private val density = context.resources.displayMetrics.density
-    private val bottomPadding = (263 * density).toInt()
 
     override fun getView(): View {
         return view
@@ -127,9 +126,9 @@ class FlutterTomtomNavigationView(
 
     override fun dispose() {
         channel.setMethodCallHandler(null)
-        navigationVisualization?.close()
+        // The visualization etc. are closed implicitly already.
+        // If you close them here, an exception is thrown (illegal state: instance closed)
         tomTomNavigation.close()
-        navigationTileStore.close()
         routePlanner.close()
     }
 
@@ -392,7 +391,7 @@ class FlutterTomtomNavigationView(
                         LocationMarkerOptions.Type.Chevron
                     )
                 )
-                val padding = Padding(0, 0, 0, bottomPadding)
+                val padding = Padding(0, 0, 0, (263 * density).toInt())
                 tomTomMap?.setPadding(padding)
             }
 
