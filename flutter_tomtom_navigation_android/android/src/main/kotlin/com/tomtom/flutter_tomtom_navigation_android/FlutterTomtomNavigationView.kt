@@ -120,16 +120,18 @@ class FlutterTomtomNavigationView(
 
     private val density = context.resources.displayMetrics.density
 
+    private var closing = false
+
     override fun getView(): View {
         return view
     }
 
     override fun dispose() {
+        closing = true
         channel.setMethodCallHandler(null)
         // The visualization etc. are closed implicitly already.
         // If you close them here, an exception is thrown (illegal state: instance closed)
         tomTomNavigation.close()
-        routePlanner.close()
     }
 
     /**
@@ -239,6 +241,7 @@ class FlutterTomtomNavigationView(
                 ?.replace(it.id, navigationFragment)?.commit()
             // TODO one frame is drawn with the speed view shown. Can we hide that somehow?
             Handler(Looper.getMainLooper()).post {
+                if (closing) return@post
                 navigationFragment.setTomTomNavigation(tomTomNavigation)
                 navigationFragment.navigationView.hideSpeedView()
                 navigationFragment.changeTextToSpeechEngine(
