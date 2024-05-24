@@ -408,13 +408,13 @@ class FlutterTomtomNavigationView(
     /**
      * Set the location provider back to the native one.
      */
-    private fun closeAndDisposeSimLocationProvider() {
+    private fun closeAndDisposeNavLocationProvider() {
         if (navLocationProvider != null) {
             // Set back to native
             tomTomNavigation.locationProvider = locationProvider
             tomTomMap?.setLocationProvider(locationProvider)
 
-            // Close and dispose the simulated one
+            // Close and dispose the navigation one
             navLocationProvider?.disable()
             navLocationProvider?.close()
             navLocationProvider = null
@@ -569,7 +569,7 @@ class FlutterTomtomNavigationView(
         )
 
         // Set the location provider back to the native one
-        closeAndDisposeSimLocationProvider()
+        closeAndDisposeNavLocationProvider()
 
         navigationFragment.navigationView.hideSpeedView()
         tomTomMap?.loadStyle(
