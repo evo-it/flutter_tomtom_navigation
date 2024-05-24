@@ -28,6 +28,7 @@ import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.LocationProvider
 import com.tomtom.sdk.location.OnLocationUpdateListener
 import com.tomtom.sdk.location.android.AndroidLocationProvider
+import com.tomtom.sdk.location.mapmatched.MapMatchedLocationProvider
 import com.tomtom.sdk.location.simulation.SimulationLocationProvider
 import com.tomtom.sdk.location.simulation.strategy.InterpolationStrategy
 import com.tomtom.sdk.map.display.TomTomMap
@@ -114,22 +115,24 @@ class FlutterTomtomNavigationView(
     private var tomTomMap: TomTomMap? = null
     private var navigationVisualization: NavigationVisualization? = null
     private var routePlan: com.tomtom.sdk.navigation.RoutePlan? = null
-    private var simLocationProvider: LocationProvider? = null
+    private var navLocationProvider: LocationProvider? = null
     private var route: Route? = null
     private var defaultCurrentLocationButtonMargin: Margin? = null
 
     private val density = context.resources.displayMetrics.density
+
+    private var closing = false
 
     override fun getView(): View {
         return view
     }
 
     override fun dispose() {
+        closing = true
         channel.setMethodCallHandler(null)
         // The visualization etc. are closed implicitly already.
         // If you close them here, an exception is thrown (illegal state: instance closed)
         tomTomNavigation.close()
-        routePlanner.close()
     }
 
     /**
@@ -239,6 +242,7 @@ class FlutterTomtomNavigationView(
                 ?.replace(it.id, navigationFragment)?.commit()
             // TODO one frame is drawn with the speed view shown. Can we hide that somehow?
             Handler(Looper.getMainLooper()).post {
+                if (closing) return@post
                 navigationFragment.setTomTomNavigation(tomTomNavigation)
                 navigationFragment.navigationView.hideSpeedView()
                 navigationFragment.changeTextToSpeechEngine(
@@ -404,16 +408,16 @@ class FlutterTomtomNavigationView(
     /**
      * Set the location provider back to the native one.
      */
-    private fun closeAndDisposeSimLocationProvider() {
-        if (simLocationProvider != null) {
+    private fun closeAndDisposeNavLocationProvider() {
+        if (navLocationProvider != null) {
             // Set back to native
             tomTomNavigation.locationProvider = locationProvider
             tomTomMap?.setLocationProvider(locationProvider)
 
-            // Close and dispose the simulated one
-            simLocationProvider?.disable()
-            simLocationProvider?.close()
-            simLocationProvider = null
+            // Close and dispose the navigation one
+            navLocationProvider?.disable()
+            navLocationProvider?.close()
+            navLocationProvider = null
         }
     }
 
@@ -511,16 +515,19 @@ class FlutterTomtomNavigationView(
      * shows the speed view and offsets the current location button
      */
     private fun startNavigation(useSimulation: Boolean) {
-        if (route != null && useSimulation) {
-            val strategy = InterpolationStrategy(route!!.geometry.map {
-                GeoLocation(it)
-            })
-            simLocationProvider =
-                SimulationLocationProvider.create(strategy)
-            tomTomNavigation.locationProvider = simLocationProvider!!
-            tomTomMap?.setLocationProvider(simLocationProvider)
-            simLocationProvider?.enable()
+        // If we want to use simulation, set the location provider
+        // to simulation location provider, otherwise use a map matched provider
+        navLocationProvider =
+            if (route != null && useSimulation) SimulationLocationProvider.create(
+                InterpolationStrategy(route!!.geometry.map {
+                    GeoLocation(it)
+                })
+            ) else MapMatchedLocationProvider(tomTomNavigation)
+        if (navLocationProvider is SimulationLocationProvider) {
+            tomTomNavigation.locationProvider = navLocationProvider!!
         }
+        tomTomMap?.setLocationProvider(navLocationProvider)
+        navLocationProvider?.enable()
 
         navigationFragment.navigationView.showSpeedView()
         if (mapFragment.currentLocationButton.margin == defaultCurrentLocationButtonMargin) {
@@ -562,7 +569,7 @@ class FlutterTomtomNavigationView(
         )
 
         // Set the location provider back to the native one
-        closeAndDisposeSimLocationProvider()
+        closeAndDisposeNavLocationProvider()
 
         navigationFragment.navigationView.hideSpeedView()
         tomTomMap?.loadStyle(
