@@ -9,11 +9,11 @@ part of 'summary.dart';
 Summary _$SummaryFromJson(Map<String, dynamic> json) => Summary(
       length: (json['length'] as num).toDouble(),
       travelTime:
-          Summary._durationFromHalfNanoseconds(json['travelTime'] as int),
+          durationFromHalfNanoseconds((json['travelTime'] as num).toInt()),
       trafficDelay: json['trafficDelay'] == null
           ? Duration.zero
-          : Summary._durationFromHalfNanoseconds(json['trafficDelay'] as int),
-      trafficLength: json['trafficLength'] as int? ?? 0,
+          : durationFromHalfNanoseconds((json['trafficDelay'] as num).toInt()),
+      trafficLength: (json['trafficLength'] as num?)?.toInt() ?? 0,
       departureTimeWithZone: Summary._dateTimeFromMap(
           json['departureTimeWithZone'] as Map<String, dynamic>),
       arrivalTimeWithZone: Summary._dateTimeFromMap(

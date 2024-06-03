@@ -20,8 +20,9 @@ GeoLocation _$GeoLocationFromJson(Map<String, dynamic> json) => GeoLocation(
       altitude: json['altitude'] == null
           ? null
           : Distance.fromJson(json['altitude'] as Map<String, dynamic>),
-      time: json['time'] as int?,
-      elapsedRealtimeNanos: json['elapsedRealtimeNanos'] as int? ?? 0,
+      time: (json['time'] as num?)?.toInt(),
+      elapsedRealtimeNanos:
+          (json['elapsedRealtimeNanos'] as num?)?.toInt() ?? 0,
       provider: json['provider'] as String? ?? 'DEFAULT_PROVIDER',
       providerType: $enumDecodeNullable(
               _$LocationProviderTypeEnumMap, json['providerType']) ??

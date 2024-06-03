@@ -7,7 +7,7 @@ part of 'avoid_type.dart';
 // **************************************************************************
 
 AvoidType _$AvoidTypeFromJson(Map<String, dynamic> json) => AvoidType(
-      json['value'] as int,
+      (json['value'] as num).toInt(),
     );
 
 Map<String, dynamic> _$AvoidTypeToJson(AvoidType instance) => <String, dynamic>{

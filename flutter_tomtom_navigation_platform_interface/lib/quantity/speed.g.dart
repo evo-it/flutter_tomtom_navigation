@@ -7,7 +7,7 @@ part of 'speed.dart';
 // **************************************************************************
 
 Speed _$SpeedFromJson(Map<String, dynamic> json) => Speed._(
-      json['rawValue'] as int,
+      (json['rawValue'] as num).toInt(),
     );
 
 Map<String, dynamic> _$SpeedToJson(Speed instance) => <String, dynamic>{

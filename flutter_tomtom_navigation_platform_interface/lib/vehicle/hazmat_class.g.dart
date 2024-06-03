@@ -7,7 +7,7 @@ part of 'hazmat_class.dart';
 // **************************************************************************
 
 HazmatClass _$HazmatClassFromJson(Map<String, dynamic> json) => HazmatClass(
-      json['value'] as int,
+      (json['value'] as num).toInt(),
     );
 
 Map<String, dynamic> _$HazmatClassToJson(HazmatClass instance) =>

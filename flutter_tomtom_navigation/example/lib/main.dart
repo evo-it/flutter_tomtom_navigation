@@ -53,15 +53,19 @@ class _MyAppState extends State<MyApp> {
 
     // Add listeners to the navigation view.
     nav
-      ..registerRouteEventListener((value) {
-        setState(() => eta = DateTime.now().add(value.remainingTime));
+      ..registerRouteEventListener((routeProgress) {
+        // Calculating eta for the next destination
+        final lastStopEta =
+            routeProgress.remainingRouteStopsProgress.last.remainingTime;
+
+        setState(() => eta = DateTime.now().add(lastStopEta));
       })
       ..registerDestinationArrivalEventListener((value) {
         if (kDebugMode) {
           print('Destination reached!');
         }
       })
-      ..registerLocationEventListener((value) {
+      ..registerLocationEventListener((location) {
         // Do something when a new location is received
       });
   }
@@ -118,6 +122,7 @@ class _MyAppState extends State<MyApp> {
       body: Center(
         child: Column(
           children: [
+            Expanded(child: nav),
             if (eta != null) Text('ETA: $eta'),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -158,7 +163,6 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
             ),
-            Expanded(child: nav),
           ],
         ),
       ),

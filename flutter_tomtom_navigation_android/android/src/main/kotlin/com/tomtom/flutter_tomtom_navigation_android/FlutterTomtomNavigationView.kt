@@ -46,6 +46,7 @@ import com.tomtom.sdk.map.display.visualization.navigation.NavigationVisualizati
 import com.tomtom.sdk.map.display.visualization.navigation.StyleConfiguration
 import com.tomtom.sdk.map.display.visualization.routing.RoutePlan
 import com.tomtom.sdk.map.display.visualization.routing.traffic.RouteTrafficIncidentStyle
+import com.tomtom.sdk.navigation.ProgressUpdatedListener
 import com.tomtom.sdk.navigation.TomTomNavigation
 import com.tomtom.sdk.navigation.online.Configuration
 import com.tomtom.sdk.navigation.online.OnlineTomTomNavigationFactory
@@ -140,7 +141,7 @@ class FlutterTomtomNavigationView(
      * TODO this may be split up and/or commented further to improve legibility
      */
     init {
-        println("Init navigation view with id $id")
+        log("Init navigation view with id $id")
 
         if (creationParams.isNullOrEmpty()) {
             throw IllegalArgumentException("No creation parameters provided to the FlutterTomtomNavigationView")
@@ -305,7 +306,7 @@ class FlutterTomtomNavigationView(
                 StandardStyles.VEHICLE_RESTRICTIONS,
                 object : StyleLoadingCallback {
                     override fun onFailure(failure: LoadingStyleFailure) {
-                        println("Failed to load vehicle restrictions!")
+                        log("Failed to load vehicle restrictions!")
                     }
 
                     override fun onSuccess() {
@@ -329,7 +330,7 @@ class FlutterTomtomNavigationView(
             if (hasLocationPermissions) {
                 locationProvider.enable()
             } else {
-                println("No location permissions! We can't really do anything now :(")
+                log("No location permissions! We can't really do anything now :(")
             }
         }
     }
@@ -385,7 +386,7 @@ class FlutterTomtomNavigationView(
     private val navigationListener =
         object : NavigationFragment.NavigationListener {
             override fun onStarted() {
-                println("navigation started")
+                log("navigation started")
                 navigationStatusPublisher.publish(NavigationStatusPublisher.NavigationStatus.RUNNING)
                 tomTomMap?.cameraTrackingMode =
                     CameraTrackingMode.FollowRouteDirection
@@ -400,7 +401,7 @@ class FlutterTomtomNavigationView(
 
             override fun onStopped() {
                 navigationStatusPublisher.publish(NavigationStatusPublisher.NavigationStatus.STOPPED)
-                println("stopped!")
+                log("navigation stopped!")
                 stopNavigation()
             }
         }
@@ -428,7 +429,7 @@ class FlutterTomtomNavigationView(
         call: MethodCall,
         result: MethodChannel.Result
     ) {
-        println("Called method ${call.method}...")
+        log("Called method ${call.method}...")
 
         when (call.method) {
             "planRoute" -> {
@@ -540,7 +541,7 @@ class FlutterTomtomNavigationView(
             StandardStyles.DRIVING,
             object : StyleLoadingCallback {
                 override fun onFailure(failure: LoadingStyleFailure) {
-                    println("Failed to load driving map style :(")
+                    log("Failed to load driving map style :(")
                 }
 
                 override fun onSuccess() {
@@ -576,7 +577,7 @@ class FlutterTomtomNavigationView(
             StandardStyles.VEHICLE_RESTRICTIONS,
             object : StyleLoadingCallback {
                 override fun onFailure(failure: LoadingStyleFailure) {
-                    println("Failed to load vehicle restrictions!")
+                    log("Failed to load vehicle restrictions!")
                 }
 
                 override fun onSuccess() {
@@ -590,4 +591,10 @@ class FlutterTomtomNavigationView(
         mapFragment.currentLocationButton.margin =
             defaultCurrentLocationButtonMargin!!
     }
+}
+
+
+
+private fun log(msg: String) {
+    println("[TomTomNavigation]: $msg")
 }
