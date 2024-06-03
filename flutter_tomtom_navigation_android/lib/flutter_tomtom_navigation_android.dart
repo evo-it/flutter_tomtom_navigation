@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -5,10 +7,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_method_channel.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/flutter_tomtom_navigation_platform_interface.dart';
+import 'package:flutter_tomtom_navigation_platform_interface/maps/map_options.dart';
 
 class FlutterTomtomNavigationAndroid
     extends MethodChannelFlutterTomtomNavigation {
-
   /// Registers this class as the default instance of [FlutterTomtomNavigationPlatform].
   static void registerWith() {
     FlutterTomtomNavigationPlatform.instance = FlutterTomtomNavigationAndroid();
@@ -20,13 +22,12 @@ class FlutterTomtomNavigationAndroid
   }
 
   @override
-  Widget buildView(String apiKey, bool debug) {
-    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO building OOOOOOOOOOOOOOOOOOOOOOOOO');
+  Widget buildView(MapOptions mapOptions, {required bool debug}) {
     // This is used in the platform side to register the view.
     const String viewType = '<tomtom-navigation>';
     // Pass parameters to the platform side.
-    Map<String, dynamic> creationParams = <String, dynamic>{
-      'apiKey': apiKey,
+    final creationParams = <String, dynamic>{
+      'mapOptions': jsonEncode(mapOptions),
       'debug': debug,
     };
 

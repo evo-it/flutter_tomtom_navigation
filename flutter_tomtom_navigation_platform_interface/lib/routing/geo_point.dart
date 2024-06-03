@@ -4,20 +4,24 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'geo_point.g.dart';
 
-
 @JsonSerializable(explicitToJson: true)
 class GeoPoint {
-	const GeoPoint({
-		required this.latitude,/// Default value Double,
-		required this.longitude,/// Default value Double,
-	}); 
- 
-	 final double latitude;
-	 final double longitude;
+  const GeoPoint({
+    required this.latitude,
 
-	Map<String, dynamic> toJson() => _$GeoPointToJson(this);
+    /// Default value Double,
+    required this.longitude,
 
-	factory GeoPoint.fromJson(Map<String, dynamic> json) => _$GeoPointFromJson(json);
+    /// Default value Double,
+  });
 
-	static const currentLocation = GeoPoint(latitude: 0, longitude: 0);
+  factory GeoPoint.fromJson(Map<String, dynamic> json) =>
+      _$GeoPointFromJson(json);
+
+  final double latitude;
+  final double longitude;
+
+  Map<String, dynamic> toJson() => _$GeoPointToJson(this);
+
+  static const currentLocation = GeoPoint(latitude: 0, longitude: 0);
 }

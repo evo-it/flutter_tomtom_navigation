@@ -16,6 +16,9 @@ class Motorcycle extends Vehicle with Motorized {
     this.modelId,
   }) : super(VehicleType.motorcycle);
 
+  factory Motorcycle.fromJson(Map<String, dynamic> json) =>
+      _$MotorcycleFromJson(json);
+
   @override
   final bool isCommercial;
 
@@ -27,6 +30,4 @@ class Motorcycle extends Vehicle with Motorized {
 
   @override
   Map<String, dynamic> toJson() => _$MotorcycleToJson(this);
-
-  factory Motorcycle.fromJson(Map<String, dynamic> json) => _$MotorcycleFromJson(json);
 }

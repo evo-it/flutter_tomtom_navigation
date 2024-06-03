@@ -8,10 +8,13 @@ part 'padding.g.dart';
 class Padding {
   const Padding({
     int padding = 0,
-  }) : top = padding,
+  })  : top = padding,
         left = padding,
         right = padding,
         bottom = padding;
+
+  factory Padding.fromJson(Map<String, dynamic> json) =>
+      _$PaddingFromJson(json);
 
   const Padding._(this.top, this.left, this.right, this.bottom);
 
@@ -25,7 +28,4 @@ class Padding {
   final int top;
 
   Map<String, dynamic> toJson() => _$PaddingToJson(this);
-
-  factory Padding.fromJson(Map<String, dynamic> json) =>
-      _$PaddingFromJson(json);
 }

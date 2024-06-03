@@ -8,3 +8,12 @@ int durationToHalfNanoseconds(Duration duration) =>
 
 Distance distanceFromRawValue(int value) =>
     Distance.fromJson({'rawValue': value});
+
+DateTime dateTimeFromMap(Map<String, dynamic> map) => DateTime(
+      map['year'] as int,
+      map['month'] as int,
+      map['dayOfMonth'] as int,
+      map['hourOfDay'] as int,
+      map['minute'] as int,
+      map['second'] as int,
+    );

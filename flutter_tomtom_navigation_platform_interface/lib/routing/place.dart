@@ -25,6 +25,8 @@ class Place {
     /// Default value List<EntryPoint> = emptyList(),
   }) : types = const [];
 
+  factory Place.fromJson(Map<String, dynamic> json) => _$PlaceFromJson(json);
+
   final Address? address;
   final GeoPoint coordinate;
   final List<EntryPoint> entryPoints;
@@ -33,6 +35,4 @@ class Place {
   final List<Type> types;
 
   Map<String, dynamic> toJson() => _$PlaceToJson(this);
-
-  factory Place.fromJson(Map<String, dynamic> json) => _$PlaceFromJson(json);
 }

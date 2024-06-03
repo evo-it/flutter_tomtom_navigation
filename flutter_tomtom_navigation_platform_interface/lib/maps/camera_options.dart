@@ -21,9 +21,10 @@ class CameraOptions {
 
     /// Default value Double? = null,
     this.fieldOfView,
-
-    /// Default value Double? = null,
   });
+
+  factory CameraOptions.fromJson(Map<String, dynamic> json) =>
+      _$CameraOptionsFromJson(json);
 
   // TODO(Frank): These JSON keys are very odd, but that's how they are read in the SDK...
   @JsonKey(name: 'e')
@@ -38,7 +39,4 @@ class CameraOptions {
   final double? zoom;
 
   Map<String, dynamic> toJson() => _$CameraOptionsToJson(this);
-
-  factory CameraOptions.fromJson(Map<String, dynamic> json) =>
-      _$CameraOptionsFromJson(json);
 }

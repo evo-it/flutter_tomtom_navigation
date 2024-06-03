@@ -14,9 +14,9 @@ class Bicycle extends Vehicle {
               maxSpeed ?? Speed.kilometersPerHour(Vehicle.bicycleSpeedKmh),
         );
 
-  @override
-  Map<String, dynamic> toJson() => _$BicycleToJson(this);
-
   factory Bicycle.fromJson(Map<String, dynamic> json) =>
       _$BicycleFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$BicycleToJson(this);
 }

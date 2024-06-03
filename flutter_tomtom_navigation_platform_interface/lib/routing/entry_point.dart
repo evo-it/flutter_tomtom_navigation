@@ -6,17 +6,21 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'entry_point.g.dart';
 
-
 @JsonSerializable(explicitToJson: true)
 class EntryPoint {
-	const EntryPoint({
-		required this.type,/// Default value EntryType,
-		required this.position,/// Default value GeoPoint,
-	});
-	 final GeoPoint position;
-	final EntryType type;
+  const EntryPoint({
+    required this.type,
 
-	Map<String, dynamic> toJson() => _$EntryPointToJson(this);
+    /// Default value EntryType,
+    required this.position,
 
-	factory EntryPoint.fromJson(Map<String, dynamic> json) => _$EntryPointFromJson(json);
+    /// Default value GeoPoint,
+  });
+
+  factory EntryPoint.fromJson(Map<String, dynamic> json) =>
+      _$EntryPointFromJson(json);
+  final GeoPoint position;
+  final EntryType type;
+
+  Map<String, dynamic> toJson() => _$EntryPointToJson(this);
 }

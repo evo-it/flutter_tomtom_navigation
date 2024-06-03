@@ -14,9 +14,9 @@ class Pedestrian extends Vehicle {
               maxSpeed ?? Speed.kilometersPerHour(Vehicle.pedestrianSpeedKmh),
         );
 
-  @override
-  Map<String, dynamic> toJson() => _$PedestrianToJson(this);
-
   factory Pedestrian.fromJson(Map<String, dynamic> json) =>
       _$PedestrianFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$PedestrianToJson(this);
 }

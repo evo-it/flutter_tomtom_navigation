@@ -143,7 +143,11 @@ class MethodChannelFlutterTomtomNavigation
           tt.Summary.fromJson(jsonDecode(event.data) as Map<String, dynamic>),
         );
       case NativeEventType.routeUpdate:
-        handleRouteUpdateEvent(event.data);
+        _onRouteEvent?.call(
+          RouteProgress.fromJson(
+            jsonDecode(event.data) as Map<String, dynamic>,
+          ),
+        );
       case NativeEventType.navigationUpdate:
         final statusInt = (jsonDecode(event.data)
             as Map<String, dynamic>)['navigationStatus'] as int;
@@ -163,13 +167,5 @@ class MethodChannelFlutterTomtomNavigation
           print('Got unexpected stream event $event');
         }
     }
-  }
-
-  void handleRouteUpdateEvent(String data) {
-    print('[FlutterTomtomNavigation] Route update: $data');
-
-    _onRouteEvent?.call(
-      RouteProgress.fromJson(jsonDecode(data) as Map<String, dynamic>),
-    );
   }
 }

@@ -7,20 +7,24 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'avoid_options.g.dart';
 
-
 @JsonSerializable(explicitToJson: true)
 class AvoidOptions {
-	const AvoidOptions({
-		this.avoidTypes = const {}, /// Default value Set<AvoidType> = emptySet(),
-		this.avoidAreas = const {}, /// Default value Set<GeoBoundingBox> = emptySet(),
-		this.vignettes, /// Default value Vignettes? = null,
-	}); 
- 
-	 final Set<GeoBoundingBox> avoidAreas;
-	 final Set<AvoidType> avoidTypes;
-	 final Vignettes? vignettes;
+  const AvoidOptions({
+    this.avoidTypes = const {},
 
-	Map<String, dynamic> toJson() => _$AvoidOptionsToJson(this);
+    /// Default value Set<AvoidType> = emptySet(),
+    this.avoidAreas = const {},
 
-	factory AvoidOptions.fromJson(Map<String, dynamic> json) => _$AvoidOptionsFromJson(json);
+    /// Default value Vignettes? = null,
+    this.vignettes,
+  });
+
+  factory AvoidOptions.fromJson(Map<String, dynamic> json) =>
+      _$AvoidOptionsFromJson(json);
+
+  final Set<GeoBoundingBox> avoidAreas;
+  final Set<AvoidType> avoidTypes;
+  final Vignettes? vignettes;
+
+  Map<String, dynamic> toJson() => _$AvoidOptionsToJson(this);
 }

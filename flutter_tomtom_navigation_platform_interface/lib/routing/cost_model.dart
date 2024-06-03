@@ -7,20 +7,26 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'cost_model.g.dart';
 
-
 @JsonSerializable(explicitToJson: true)
 class CostModel {
-	const CostModel({
-		this.routeType = RouteType.fast,/// Default value RouteType = RouteType.Fast,
-		this.considerTraffic = ConsiderTraffic.yes,/// Default value ConsiderTraffic = ConsiderTraffic.Yes,
-		this.avoidOptions, /// Default value AvoidOptions? = null,
-	});
- 
-	 final AvoidOptions? avoidOptions;
-	 final ConsiderTraffic considerTraffic;
-	 final RouteType routeType;
+  const CostModel({
+    this.routeType = RouteType.fast,
 
-	Map<String, dynamic> toJson() => _$CostModelToJson(this);
+    /// Default value RouteType = RouteType.Fast,
+    this.considerTraffic = ConsiderTraffic.yes,
 
-	factory CostModel.fromJson(Map<String, dynamic> json) => _$CostModelFromJson(json);
+    /// Default value ConsiderTraffic = ConsiderTraffic.Yes,
+    this.avoidOptions,
+
+    /// Default value AvoidOptions? = null,
+  });
+
+  factory CostModel.fromJson(Map<String, dynamic> json) =>
+      _$CostModelFromJson(json);
+
+  final AvoidOptions? avoidOptions;
+  final ConsiderTraffic considerTraffic;
+  final RouteType routeType;
+
+  Map<String, dynamic> toJson() => _$CostModelToJson(this);
 }

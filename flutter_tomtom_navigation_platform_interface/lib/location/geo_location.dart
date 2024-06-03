@@ -11,9 +11,6 @@ part 'geo_location.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class GeoLocation {
-  factory GeoLocation.fromJson(Map<String, dynamic> json) =>
-      _$GeoLocationFromJson(json);
-
   GeoLocation({
     required this.position,
 
@@ -43,6 +40,8 @@ class GeoLocation {
 
     /// Default value LocationProviderType = LocationProviderType.REALTIME,
   }) : time = time ?? DateTime.now().millisecondsSinceEpoch;
+  factory GeoLocation.fromJson(Map<String, dynamic> json) =>
+      _$GeoLocationFromJson(json);
 
   final Distance? accuracy;
   final Distance? altitude;

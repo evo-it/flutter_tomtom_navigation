@@ -19,13 +19,13 @@ class GeoBoundingBox {
           longitude: (topLeft.longitude + bottomRight.longitude) / 2,
         );
 
+  factory GeoBoundingBox.fromJson(Map<String, dynamic> json) =>
+      _$GeoBoundingBoxFromJson(json);
+
   final GeoPoint bottomRight;
   @JsonKey(includeToJson: true, includeFromJson: true)
   final GeoPoint center;
   final GeoPoint topLeft;
 
   Map<String, dynamic> toJson() => _$GeoBoundingBoxToJson(this);
-
-  factory GeoBoundingBox.fromJson(Map<String, dynamic> json) =>
-      _$GeoBoundingBoxFromJson(json);
 }

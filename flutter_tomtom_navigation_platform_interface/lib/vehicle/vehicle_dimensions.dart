@@ -8,23 +8,36 @@ part 'vehicle_dimensions.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class VehicleDimensions {
-	VehicleDimensions({
-		this.weight, /// Default value Weight? = null,
-		this.axleWeight, /// Default value Weight? = null,
-		this.length, /// Default value Distance? = null,
-		this.width, /// Default value Distance? = null,
-		this.height, /// Default value Distance? = null,
-		this.numberOfAxles, /// Default value Int? = null,
-	}); 
- 
-	 final Weight? axleWeight;
-	 final Distance? height;
-	 final Distance? length;
-	 final int? numberOfAxles;
-	 final Weight? weight;
-	 final Distance? width;
+  VehicleDimensions({
+    this.weight,
 
-	Map<String, dynamic> toJson() => _$VehicleDimensionsToJson(this);
+    /// Default value Weight? = null,
+    this.axleWeight,
 
-	factory VehicleDimensions.fromJson(Map<String, dynamic> json) => _$VehicleDimensionsFromJson(json);
+    /// Default value Weight? = null,
+    this.length,
+
+    /// Default value Distance? = null,
+    this.width,
+
+    /// Default value Distance? = null,
+    this.height,
+
+    /// Default value Distance? = null,
+    this.numberOfAxles,
+
+    /// Default value Int? = null,
+  });
+
+  factory VehicleDimensions.fromJson(Map<String, dynamic> json) =>
+      _$VehicleDimensionsFromJson(json);
+
+  final Weight? axleWeight;
+  final Distance? height;
+  final Distance? length;
+  final int? numberOfAxles;
+  final Weight? weight;
+  final Distance? width;
+
+  Map<String, dynamic> toJson() => _$VehicleDimensionsToJson(this);
 }

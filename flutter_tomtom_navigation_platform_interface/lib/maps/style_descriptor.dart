@@ -13,13 +13,13 @@ class StyleDescriptor {
     this.darkLayerMappingUri, // Default value Uri? = null,
   });
 
+  factory StyleDescriptor.fromJson(Map<String, dynamic> json) =>
+      _$StyleDescriptorFromJson(json);
+
   final Uri? darkLayerMappingUri;
   final Uri? darkUri;
   final Uri? layerMappingUri;
   final Uri uri;
 
   Map<String, dynamic> toJson() => _$StyleDescriptorToJson(this);
-
-  factory StyleDescriptor.fromJson(Map<String, dynamic> json) =>
-      _$StyleDescriptorFromJson(json);
 }

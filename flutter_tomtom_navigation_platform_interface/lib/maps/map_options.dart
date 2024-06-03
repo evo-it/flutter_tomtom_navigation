@@ -8,28 +8,40 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'map_options.g.dart';
 
-
 @JsonSerializable(explicitToJson: true)
 class MapOptions {
-	const MapOptions({
-		required this.mapKey,/// Default value String,
-		this.cameraOptions, /// Default value CameraOptions? = null,
-		this.padding = const Padding(),/// Default value Padding = Padding(),
-		this.mapStyle, /// Default value StyleDescriptor? = null,
-		this.styleMode = StyleMode.main,/// Default value StyleMode = StyleMode.MAIN,
-		// required this.onlineCachePolicy,/// Default value OnlineCachePolicy = OnlineCachePolicy.Default,
-		this.renderToTexture = false,/// Default value Boolean = false,
-	});
- 
-	 final CameraOptions? cameraOptions;
-	 final String mapKey;
-	 final StyleDescriptor? mapStyle;
-	 // final OnlineCachePolicy onlineCachePolicy;
-	 final Padding padding;
-	 final bool renderToTexture;
-	 final StyleMode styleMode;
+  const MapOptions({
+    required this.mapKey,
 
-	Map<String, dynamic> toJson() => _$MapOptionsToJson(this);
+    /// Default value String,
+    this.cameraOptions,
 
-	factory MapOptions.fromJson(Map<String, dynamic> json) => _$MapOptionsFromJson(json);
+    /// Default value CameraOptions? = null,
+    this.padding = const Padding(),
+
+    /// Default value Padding = Padding(),
+    this.mapStyle,
+
+    /// Default value StyleDescriptor? = null,
+    this.styleMode = StyleMode.main,
+
+    /// Default value StyleMode = StyleMode.MAIN,
+    // required this.onlineCachePolicy,/// Default value OnlineCachePolicy = OnlineCachePolicy.Default,
+    this.renderToTexture = false,
+
+    /// Default value Boolean = false,
+  });
+
+  factory MapOptions.fromJson(Map<String, dynamic> json) =>
+      _$MapOptionsFromJson(json);
+
+  final CameraOptions? cameraOptions;
+  final String mapKey;
+  final StyleDescriptor? mapStyle;
+  // final OnlineCachePolicy onlineCachePolicy;
+  final Padding padding;
+  final bool renderToTexture;
+  final StyleMode styleMode;
+
+  Map<String, dynamic> toJson() => _$MapOptionsToJson(this);
 }

@@ -16,6 +16,8 @@ class Bus extends Vehicle with Motorized {
     this.modelId,
   }) : super(VehicleType.bus);
 
+  factory Bus.fromJson(Map<String, dynamic> json) => _$BusFromJson(json);
+
   @override
   final bool isCommercial;
 
@@ -27,6 +29,4 @@ class Bus extends Vehicle with Motorized {
 
   @override
   Map<String, dynamic> toJson() => _$BusToJson(this);
-
-  factory Bus.fromJson(Map<String, dynamic> json) => _$BusFromJson(json);
 }

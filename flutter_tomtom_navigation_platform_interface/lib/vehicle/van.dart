@@ -21,6 +21,8 @@ class Van extends Vehicle with Motorized, CargoCapable {
     this.modelId,
   }) : super(VehicleType.van);
 
+  factory Van.fromJson(Map<String, dynamic> json) => _$VanFromJson(json);
+
   @override
   final bool isCommercial;
 
@@ -32,8 +34,6 @@ class Van extends Vehicle with Motorized, CargoCapable {
 
   @override
   Map<String, dynamic> toJson() => _$VanToJson(this);
-
-  factory Van.fromJson(Map<String, dynamic> json) => _$VanFromJson(json);
 
   @override
   final AdrTunnelRestrictionCode? adrTunnelRestrictionCode;

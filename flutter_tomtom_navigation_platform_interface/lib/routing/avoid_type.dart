@@ -8,6 +8,9 @@ part 'avoid_type.g.dart';
 class AvoidType {
   const AvoidType(this.value);
 
+  factory AvoidType.fromJson(Map<String, dynamic> json) =>
+      _$AvoidTypeFromJson(json);
+
   static const tollRoads = AvoidType(0);
   static const motorways = AvoidType(1);
   static const ferries = AvoidType(2);
@@ -22,7 +25,4 @@ class AvoidType {
   final int value;
 
   Map<String, dynamic> toJson() => _$AvoidTypeToJson(this);
-
-  factory AvoidType.fromJson(Map<String, dynamic> json) =>
-      _$AvoidTypeFromJson(json);
 }

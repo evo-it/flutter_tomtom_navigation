@@ -4,19 +4,6 @@ part 'distance.g.dart';
 
 @JsonSerializable(explicitToJson: true, constructor: '_')
 class Distance {
-  const Distance._(this.rawValue);
-
-  static const _factorMillimeters = 1e3;
-  static const _factorCentimeters = 1e4;
-  static const _factorMeters = 1e6;
-  static const _factorKilometers = 1e9;
-  static const _factorInches = 25400;
-  static const _factorFeet = 304800;
-  static const _factorYards = 914400;
-  static const _factorMiles = 1609344000;
-
-  static const zero = Distance._(0);
-
   factory Distance.millimeters(num millimeters) =>
       Distance._((millimeters * _factorMillimeters).round());
 
@@ -40,10 +27,22 @@ class Distance {
   factory Distance.miles(num miles) =>
       Distance._((miles * _factorMiles).round());
 
+  factory Distance.fromJson(Map<String, dynamic> json) =>
+      _$DistanceFromJson(json);
+  const Distance._(this.rawValue);
+
+  static const _factorMillimeters = 1e3;
+  static const _factorCentimeters = 1e4;
+  static const _factorMeters = 1e6;
+  static const _factorKilometers = 1e9;
+  static const _factorInches = 25400;
+  static const _factorFeet = 304800;
+  static const _factorYards = 914400;
+  static const _factorMiles = 1609344000;
+
+  static const zero = Distance._(0);
+
   final int rawValue;
 
   Map<String, dynamic> toJson() => _$DistanceToJson(this);
-
-  factory Distance.fromJson(Map<String, dynamic> json) =>
-      _$DistanceFromJson(json);
 }

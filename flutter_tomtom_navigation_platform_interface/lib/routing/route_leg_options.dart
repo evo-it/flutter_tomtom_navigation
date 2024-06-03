@@ -5,18 +5,20 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'route_leg_options.g.dart';
 
-
 @JsonSerializable(explicitToJson: true)
 class RouteLegOptions {
-	const RouteLegOptions({
-		required this.supportingPoints,/// Default value List<GeoPoint>,
-		// this.chargingInformation, /// Default value ChargingInformation? = null,
-	}); 
- 
-	 // final ChargingInformation? chargingInformation;
-	 final List<GeoPoint> supportingPoints;
+  const RouteLegOptions({
+    required this.supportingPoints,
 
-	Map<String, dynamic> toJson() => _$RouteLegOptionsToJson(this);
+    /// Default value List<GeoPoint>,
+    // this.chargingInformation, /// Default value ChargingInformation? = null,
+  });
 
-	factory RouteLegOptions.fromJson(Map<String, dynamic> json) => _$RouteLegOptionsFromJson(json);
+  factory RouteLegOptions.fromJson(Map<String, dynamic> json) =>
+      _$RouteLegOptionsFromJson(json);
+
+  // final ChargingInformation? chargingInformation;
+  final List<GeoPoint> supportingPoints;
+
+  Map<String, dynamic> toJson() => _$RouteLegOptionsToJson(this);
 }

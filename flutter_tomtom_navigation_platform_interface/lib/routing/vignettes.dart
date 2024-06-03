@@ -11,11 +11,6 @@ abstract class Vignettes {
     this.avoidVignettes = const [],
   });
 
-  final List<String> allowVignettes;
-  final List<String> avoidVignettes;
-
-  Map<String, dynamic> toJson() => _$VignettesToJson(this);
-
   factory Vignettes.fromJson(Map<String, dynamic> json) {
     final isAllow = (json['allowVignettes'] as List).isNotEmpty;
     if (isAllow) {
@@ -23,6 +18,11 @@ abstract class Vignettes {
     }
     return Avoid(avoidVignettes: json['allowVignettes'] as List<String>);
   }
+
+  final List<String> allowVignettes;
+  final List<String> avoidVignettes;
+
+  Map<String, dynamic> toJson() => _$VignettesToJson(this);
 }
 
 class Allow extends Vignettes {

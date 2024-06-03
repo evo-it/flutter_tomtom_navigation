@@ -4,6 +4,17 @@ part 'speed.g.dart';
 
 @JsonSerializable(explicitToJson: true, constructor: '_')
 class Speed {
+  factory Speed.metersPerSecond(num metersPerSecond) =>
+      Speed._((metersPerSecond * _factorMetersPerSecond).round());
+
+  factory Speed.metersPerHour(num metersPerHour) =>
+      Speed._((metersPerHour * _factorMetersPerHour).round());
+  factory Speed.kilometersPerHour(num kilometersPerHour) =>
+      Speed._((kilometersPerHour * _factorKilometersPerHour).round());
+  factory Speed.milesPerHour(num milesPerHour) =>
+      Speed._((milesPerHour * _factorMilesPerHour).round());
+
+  factory Speed.fromJson(Map<String, dynamic> json) => _$SpeedFromJson(json);
   const Speed._(this.rawValue);
 
   static const _factorMetersPerSecond = 1e9;
@@ -13,16 +24,7 @@ class Speed {
 
   static const zero = Speed._(0);
 
-  factory Speed.metersPerSecond(num metersPerSecond) => Speed._((metersPerSecond * _factorMetersPerSecond).round());
-
-  factory Speed.metersPerHour(num metersPerHour) => Speed._((metersPerHour * _factorMetersPerHour).round());
-  factory Speed.kilometersPerHour(num kilometersPerHour) => Speed._((kilometersPerHour * _factorKilometersPerHour).round());
-  factory Speed.milesPerHour(num milesPerHour) => Speed._((milesPerHour * _factorMilesPerHour).round());
-
   final int rawValue;
 
   Map<String, dynamic> toJson() => _$SpeedToJson(this);
-
-  factory Speed.fromJson(Map<String, dynamic> json) =>
-      _$SpeedFromJson(json);
 }

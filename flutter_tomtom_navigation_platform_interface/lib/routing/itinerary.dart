@@ -7,22 +7,30 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'itinerary.g.dart';
 
-
 @JsonSerializable(explicitToJson: true)
 class Itinerary {
-	const Itinerary({
-		required this.origin,/// Default value GeoPoint,
-		required this.destination,/// Default value GeoPoint,
-		this.waypoints = const [], /// Default value List<GeoPoint> = emptyList(),
-		this.heading, /// Default value Angle? = null,
-	}); 
- 
-	 final ItineraryPoint destination;
-	 final ItineraryPoint origin;
-	 final List<ItineraryPoint> waypoints;
-	 final Angle? heading;
+  const Itinerary({
+    required this.origin,
 
-	Map<String, dynamic> toJson() => _$ItineraryToJson(this);
+    /// Default value GeoPoint,
+    required this.destination,
 
-	factory Itinerary.fromJson(Map<String, dynamic> json) => _$ItineraryFromJson(json);
+    /// Default value GeoPoint,
+    this.waypoints = const [],
+
+    /// Default value List<GeoPoint> = emptyList(),
+    this.heading,
+
+    /// Default value Angle? = null,
+  });
+
+  factory Itinerary.fromJson(Map<String, dynamic> json) =>
+      _$ItineraryFromJson(json);
+
+  final ItineraryPoint destination;
+  final ItineraryPoint origin;
+  final List<ItineraryPoint> waypoints;
+  final Angle? heading;
+
+  Map<String, dynamic> toJson() => _$ItineraryToJson(this);
 }
