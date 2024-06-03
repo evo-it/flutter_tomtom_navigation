@@ -15,31 +15,24 @@ class RouteStopsProgress {
     this.remainingTrafficDelay = Duration.zero,
   });
 
-  @JsonKey(fromJson: _distanceFromRawValue)
+  factory RouteStopsProgress.fromJson(Map<String, dynamic> json) =>
+      _$RouteStopsProgressFromJson(json);
+
+  @JsonKey(fromJson: distanceFromRawValue)
   final Distance remainingDistance;
   @JsonKey(
-      name: 'remainingTime',
-      fromJson: durationFromHalfNanoseconds,
-      toJson: durationToHalfNanoseconds)
+    name: 'remainingTime',
+    fromJson: durationFromHalfNanoseconds,
+    toJson: durationToHalfNanoseconds,
+  )
   final Duration remainingTime;
   @JsonKey(
-      name: 'remainingTrafficDelay',
-      fromJson: durationFromHalfNanoseconds,
-      toJson: durationToHalfNanoseconds)
+    name: 'remainingTrafficDelay',
+    fromJson: durationFromHalfNanoseconds,
+    toJson: durationToHalfNanoseconds,
+  )
   final Duration remainingTrafficDelay;
   final String routeStopId;
 
   Map<String, dynamic> toJson() => _$RouteStopsProgressToJson(this);
-
-  factory RouteStopsProgress.fromJson(Map<String, dynamic> json) =>
-      _$RouteStopsProgressFromJson(json);
-
-  static Duration _durationFromHalfNanoseconds(int halfNanos) =>
-      Duration(microseconds: (halfNanos / 1000 / 2).round());
-
-  static int _durationToHalfNanoseconds(Duration duration) =>
-      duration.inMicroseconds * 1000 * 2;
-
-  static Distance _distanceFromRawValue(int value) =>
-      Distance.fromJson({'rawValue': value});
 }

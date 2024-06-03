@@ -14,8 +14,7 @@ RouteStopsProgress _$RouteStopsProgressFromJson(Map<String, dynamic> json) =>
           : durationFromHalfNanoseconds((json['remainingTime'] as num).toInt()),
       remainingDistance: json['remainingDistance'] == null
           ? Distance.zero
-          : RouteStopsProgress._distanceFromRawValue(
-              (json['remainingDistance'] as num).toInt()),
+          : distanceFromRawValue((json['remainingDistance'] as num).toInt()),
       remainingTrafficDelay: json['remainingTrafficDelay'] == null
           ? Duration.zero
           : durationFromHalfNanoseconds(
