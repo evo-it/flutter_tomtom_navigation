@@ -7,10 +7,10 @@ part of 'padding.dart';
 // **************************************************************************
 
 Padding _$PaddingFromJson(Map<String, dynamic> json) => Padding._(
-      json['top'] as int,
-      json['left'] as int,
-      json['right'] as int,
-      json['bottom'] as int,
+      (json['top'] as num).toInt(),
+      (json['left'] as num).toInt(),
+      (json['right'] as num).toInt(),
+      (json['bottom'] as num).toInt(),
     );
 
 Map<String, dynamic> _$PaddingToJson(Padding instance) => <String, dynamic>{

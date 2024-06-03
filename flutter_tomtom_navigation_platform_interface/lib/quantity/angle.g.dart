@@ -7,7 +7,7 @@ part of 'angle.dart';
 // **************************************************************************
 
 Angle _$AngleFromJson(Map<String, dynamic> json) => Angle._(
-      json['rawValue'] as int,
+      (json['rawValue'] as num).toInt(),
     );
 
 Map<String, dynamic> _$AngleToJson(Angle instance) => <String, dynamic>{

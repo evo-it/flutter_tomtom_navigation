@@ -7,7 +7,7 @@ part of 'distance.dart';
 // **************************************************************************
 
 Distance _$DistanceFromJson(Map<String, dynamic> json) => Distance._(
-      json['rawValue'] as int,
+      (json['rawValue'] as num).toInt(),
     );
 
 Map<String, dynamic> _$DistanceToJson(Distance instance) => <String, dynamic>{

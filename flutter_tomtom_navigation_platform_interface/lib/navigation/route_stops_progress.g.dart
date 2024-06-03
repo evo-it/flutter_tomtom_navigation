@@ -11,18 +11,22 @@ RouteStopsProgress _$RouteStopsProgressFromJson(Map<String, dynamic> json) =>
       routeStopId: json['routeStopId'] as String,
       remainingTime: json['remainingTime'] == null
           ? Duration.zero
-          : RouteStopsProgress._durationFromHalfNanoseconds(
-              json['remainingTime'] as int),
+          : durationFromHalfNanoseconds((json['remainingTime'] as num).toInt()),
       remainingDistance: json['remainingDistance'] == null
           ? Distance.zero
           : RouteStopsProgress._distanceFromRawValue(
-              json['remainingDistance'] as int),
+              (json['remainingDistance'] as num).toInt()),
+      remainingTrafficDelay: json['remainingTrafficDelay'] == null
+          ? Duration.zero
+          : durationFromHalfNanoseconds(
+              (json['remainingTrafficDelay'] as num).toInt()),
     );
 
 Map<String, dynamic> _$RouteStopsProgressToJson(RouteStopsProgress instance) =>
     <String, dynamic>{
       'remainingDistance': instance.remainingDistance.toJson(),
-      'remainingTime':
-          RouteStopsProgress._durationToHalfNanoseconds(instance.remainingTime),
+      'remainingTime': durationToHalfNanoseconds(instance.remainingTime),
+      'remainingTrafficDelay':
+          durationToHalfNanoseconds(instance.remainingTrafficDelay),
       'routeStopId': instance.routeStopId,
     };

@@ -23,7 +23,7 @@ VehicleDimensions _$VehicleDimensionsFromJson(Map<String, dynamic> json) =>
       height: json['height'] == null
           ? null
           : Distance.fromJson(json['height'] as Map<String, dynamic>),
-      numberOfAxles: json['numberOfAxles'] as int?,
+      numberOfAxles: (json['numberOfAxles'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$VehicleDimensionsToJson(VehicleDimensions instance) =>

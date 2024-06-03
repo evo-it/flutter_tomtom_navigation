@@ -1,5 +1,6 @@
 // Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/routing/model/com.tomtom.sdk.routing.route/-summary/index.html
 
+import 'package:flutter_tomtom_navigation_platform_interface/json_helpers.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'summary.g.dart';
@@ -44,10 +45,10 @@ class Summary {
   final double? reachableOffset;
 
   // final Consumption? remainingBudget;
-  @JsonKey(name: 'trafficDelay', fromJson: _durationFromHalfNanoseconds)
+  @JsonKey(name: 'trafficDelay', fromJson: durationFromHalfNanoseconds)
   final Duration trafficDelay;
   final int trafficLength;
-  @JsonKey(name: 'travelTime', fromJson: _durationFromHalfNanoseconds)
+  @JsonKey(name: 'travelTime', fromJson: durationFromHalfNanoseconds)
   final Duration travelTime;
 
   factory Summary.fromJson(Map<String, dynamic> json) {

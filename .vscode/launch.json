@@ -1,0 +1,129 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "flutter_tomtom_navigation",
+            "cwd": "flutter_tomtom_navigation",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "flutter_tomtom_navigation (profile mode)",
+            "cwd": "flutter_tomtom_navigation",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "flutter_tomtom_navigation (release mode)",
+            "cwd": "flutter_tomtom_navigation",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "flutter_tomtom_navigation_android",
+            "cwd": "flutter_tomtom_navigation_android",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "flutter_tomtom_navigation_android (profile mode)",
+            "cwd": "flutter_tomtom_navigation_android",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "flutter_tomtom_navigation_android (release mode)",
+            "cwd": "flutter_tomtom_navigation_android",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "flutter_tomtom_navigation_ios",
+            "cwd": "flutter_tomtom_navigation_ios",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "flutter_tomtom_navigation_ios (profile mode)",
+            "cwd": "flutter_tomtom_navigation_ios",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "flutter_tomtom_navigation_ios (release mode)",
+            "cwd": "flutter_tomtom_navigation_ios",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "flutter_tomtom_navigation_platform_interface",
+            "cwd": "flutter_tomtom_navigation_platform_interface",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "flutter_tomtom_navigation_platform_interface (profile mode)",
+            "cwd": "flutter_tomtom_navigation_platform_interface",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "flutter_tomtom_navigation_platform_interface (release mode)",
+            "cwd": "flutter_tomtom_navigation_platform_interface",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "example",
+            "cwd": "flutter_tomtom_navigation\\example",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "example (profile mode)",
+            "cwd": "flutter_tomtom_navigation\\example",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "example (release mode)",
+            "cwd": "flutter_tomtom_navigation\\example",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "example",
+            "cwd": "flutter_tomtom_navigation_ios\\example",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "example (profile mode)",
+            "cwd": "flutter_tomtom_navigation_ios\\example",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "example (release mode)",
+            "cwd": "flutter_tomtom_navigation_ios\\example",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}
