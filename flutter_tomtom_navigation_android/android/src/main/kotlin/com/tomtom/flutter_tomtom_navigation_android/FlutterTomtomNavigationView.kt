@@ -19,7 +19,6 @@ import com.tomtom.flutter_tomtom_navigation_android.platform_channel.BasicEventP
 import com.tomtom.flutter_tomtom_navigation_android.platform_channel.DestinationArrivalPublisher
 import com.tomtom.flutter_tomtom_navigation_android.platform_channel.NativeEventPublisher
 import com.tomtom.flutter_tomtom_navigation_android.platform_channel.NavigationStatusPublisher
-import com.tomtom.flutter_tomtom_navigation_android.tts.FlutterTomtomTextToSpeech
 import com.tomtom.quantity.Distance
 import com.tomtom.sdk.datamanagement.navigationtile.NavigationTileStore
 import com.tomtom.sdk.datamanagement.navigationtile.NavigationTileStoreConfiguration
@@ -46,7 +45,6 @@ import com.tomtom.sdk.map.display.visualization.navigation.NavigationVisualizati
 import com.tomtom.sdk.map.display.visualization.navigation.StyleConfiguration
 import com.tomtom.sdk.map.display.visualization.routing.RoutePlan
 import com.tomtom.sdk.map.display.visualization.routing.traffic.RouteTrafficIncidentStyle
-import com.tomtom.sdk.navigation.ProgressUpdatedListener
 import com.tomtom.sdk.navigation.TomTomNavigation
 import com.tomtom.sdk.navigation.online.Configuration
 import com.tomtom.sdk.navigation.online.OnlineTomTomNavigationFactory
@@ -59,6 +57,7 @@ import com.tomtom.sdk.routing.RoutingFailure
 import com.tomtom.sdk.routing.online.OnlineRoutePlanner
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.route.Route
+import com.tomtom.sdk.tts.android.AndroidTextToSpeechEngine
 import com.tomtom.sdk.vehicle.Vehicle
 import com.tomtom.sdk.vehicle.VehicleProvider
 import com.tomtom.sdk.vehicle.VehicleProviderFactory
@@ -246,12 +245,9 @@ class FlutterTomtomNavigationView(
                 if (closing) return@post
                 navigationFragment.setTomTomNavigation(tomTomNavigation)
                 navigationFragment.navigationView.hideSpeedView()
-                navigationFragment.changeTextToSpeechEngine(
-                    FlutterTomtomTextToSpeech(
-                        context,
-                        Locale.getDefault(),
-                    )
-                )
+                // Set a TTS engine instead of just changing the language, which would work
+                // but the TTS may not be available yet causing it to not-change at all
+                navigationFragment.changeTextToSpeechEngine(AndroidTextToSpeechEngine(context, Locale.getDefault()))
                 navigationFragment.addNavigationListener(navigationListener)
                 tomTomNavigation.addProgressUpdatedListener { progress ->
                     progressUpdatedPublisher.publish(
