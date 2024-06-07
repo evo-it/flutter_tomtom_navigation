@@ -35,11 +35,13 @@ import com.tomtom.sdk.map.display.camera.CameraTrackingMode
 import com.tomtom.sdk.map.display.common.screen.Padding
 import com.tomtom.sdk.map.display.gesture.MapPanningListener
 import com.tomtom.sdk.map.display.location.LocationMarkerOptions
+import com.tomtom.sdk.map.display.route.RouteClickListener
 import com.tomtom.sdk.map.display.style.LoadingStyleFailure
 import com.tomtom.sdk.map.display.style.StandardStyles
 import com.tomtom.sdk.map.display.style.StyleLoadingCallback
 import com.tomtom.sdk.map.display.ui.MapFragment
 import com.tomtom.sdk.map.display.ui.Margin
+import com.tomtom.sdk.map.display.ui.currentlocation.CurrentLocationButton
 import com.tomtom.sdk.map.display.visualization.navigation.NavigationVisualization
 import com.tomtom.sdk.map.display.visualization.navigation.NavigationVisualizationFactory
 import com.tomtom.sdk.map.display.visualization.navigation.StyleConfiguration
@@ -482,10 +484,15 @@ class FlutterTomtomNavigationView(
                     route = firstRoute
                     routePlannedPublisher.publish(firstRoute.summary)
 
+                    /// If multiple routes were planned attach listener for the user to select routes
+                    if (result.routes.size > 1) {
+                        tomTomMap?.addRouteClickListener(routeClickListener)
+                    }
+
                     navigationVisualization?.displayRoutePlan(
                         RoutePlan(result.routes)
                     )
-                    navigationVisualization?.selectRoute(firstRoute.id)
+
                     routePlan = com.tomtom.sdk.navigation.RoutePlan(
                         firstRoute,
                         routePlanningOptions
@@ -587,6 +594,19 @@ class FlutterTomtomNavigationView(
         mapFragment.currentLocationButton.margin =
             defaultCurrentLocationButtonMargin!!
     }
+
+    private val routeClickListener = RouteClickListener {
+        log("Clicked on route ${route?.id}")
+            route?.let { selectedRoute ->
+                route = selectedRoute
+                navigationVisualization?.selectRoute(selectedRoute.id)
+            }
+    }
+
+    /**
+     * Checks whether navigation is currently running.
+     */
+    private fun isNavigationRunning(): Boolean = tomTomNavigation.navigationSnapshot != null
 }
 
 
