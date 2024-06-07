@@ -1,4 +1,5 @@
 export 'address.dart';
+export 'alternative_routes_options.dart';
 export 'avoid_options.dart';
 export 'avoid_type.dart';
 export 'consider_traffic.dart';

@@ -1,5 +1,6 @@
 // Original page: https://developer.tomtom.com/assets/downloads/tomtom-sdks/android/api-reference/0.37.0/routing/model/com.tomtom.sdk.routing.options/-route-planning-options/index.html
 
+import 'package:flutter_tomtom_navigation_platform_interface/routing/alternative_routes_options.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/cost_model.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/itinerary.dart';
 import 'package:flutter_tomtom_navigation_platform_interface/routing/route_leg_options.dart';
@@ -13,14 +14,8 @@ part 'route_planning_options.g.dart';
 class RoutePlanningOptions {
   const RoutePlanningOptions({
     required this.itinerary,
-
-    /// Default value Itinerary,
     this.costModel = const CostModel(),
-
-    /// Default value CostModel? = CostModel(),
     this.departAt,
-
-    /// Default value Date? = null,
     this.arriveAt,
 
     /// Default value Date? = null,
@@ -30,8 +25,7 @@ class RoutePlanningOptions {
 
     /// Default value List<RouteLegOptions> = emptyList(),
     this.vehicle = const Car(),
-
-    /// Default value Vehicle = Vehicle.Car(),
+    this.alternativeRoutesOptions,
     // this.chargingOptions, /// Default value ChargingOptions? = null,
     // this.queryOptions, /// Default value QueryOptions? = null,
     // this.waypointOptimization, /// Default value WaypointOptimization? = null,
@@ -42,7 +36,7 @@ class RoutePlanningOptions {
   factory RoutePlanningOptions.fromJson(Map<String, dynamic> json) =>
       _$RoutePlanningOptionsFromJson(json);
 
-  // final AlternativeRoutesOptions? alternativeRoutesOptions;
+  final AlternativeRoutesOptions? alternativeRoutesOptions;
   // final ArrivalSidePreference arrivalSidePreference;
   final DateTime? arriveAt;
   // final ChargingOptions? chargingOptions;
