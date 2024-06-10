@@ -503,7 +503,7 @@ class FlutterTomtomNavigationView(
                         navigationVisualization?.addRouteClickListener(routeClickListener)
                     }
 
-                    setRoutePlan( routes!!.first())
+                    setRoutePlan(routes!!.first())
 
                     tomTomMap?.zoomToRoutes(100)
                 }
