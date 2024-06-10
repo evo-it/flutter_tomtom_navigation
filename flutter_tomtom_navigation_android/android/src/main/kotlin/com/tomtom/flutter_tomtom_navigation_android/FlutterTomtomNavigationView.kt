@@ -43,6 +43,7 @@ import com.tomtom.sdk.map.display.ui.Margin
 import com.tomtom.sdk.map.display.visualization.navigation.NavigationVisualization
 import com.tomtom.sdk.map.display.visualization.navigation.NavigationVisualizationFactory
 import com.tomtom.sdk.map.display.visualization.navigation.StyleConfiguration
+import com.tomtom.sdk.map.display.visualization.navigation.horizon.safetylocation.SafetyLocationStyle
 import com.tomtom.sdk.map.display.visualization.routing.RoutePlan
 import com.tomtom.sdk.map.display.visualization.routing.traffic.RouteTrafficIncidentStyle
 import com.tomtom.sdk.navigation.TomTomNavigation
@@ -57,7 +58,7 @@ import com.tomtom.sdk.routing.RoutingFailure
 import com.tomtom.sdk.routing.online.OnlineRoutePlanner
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.route.Route
-import com.tomtom.sdk.routing.route.RouteId
+import com.tomtom.sdk.safetylocations.common.SafetyLocationsConfiguration
 import com.tomtom.sdk.tts.android.AndroidTextToSpeechEngine
 import com.tomtom.sdk.vehicle.Vehicle
 import com.tomtom.sdk.vehicle.VehicleProvider
@@ -211,7 +212,7 @@ class FlutterTomtomNavigationView(
                 routePlanner = routePlanner,
                 // Initialize the TomTomNavigation with a default car. After route planning, it should be updated!
                 vehicleProvider = vehicleProvider,
-//                safetyLocationsConfiguration = SafetyLocationsConfiguration(apiKey)
+                safetyLocationsConfiguration = SafetyLocationsConfiguration(apiKey)
             )
         )
 
@@ -251,7 +252,9 @@ class FlutterTomtomNavigationView(
                 navigationFragment.navigationView.hideSpeedView()
                 // Set a TTS engine instead of just changing the language, which would work
                 // but the TTS may not be available yet causing it to not-change at all
-                navigationFragment.changeTextToSpeechEngine(AndroidTextToSpeechEngine(context, Locale.getDefault()))
+                navigationFragment.changeTextToSpeechEngine(
+                    AndroidTextToSpeechEngine(context, Locale.getDefault())
+                )
                 navigationFragment.addNavigationListener(navigationListener)
                 tomTomNavigation.addProgressUpdatedListener { progress ->
                     progressUpdatedPublisher.publish(
@@ -284,7 +287,7 @@ class FlutterTomtomNavigationView(
                 tomTomNavigation,
                 styleConfiguration = StyleConfiguration(
                     routeTrafficIncident = RouteTrafficIncidentStyle(),
-                    // safetyLocationStyle = SafetyLocationStyle(),
+                     safetyLocationStyle = SafetyLocationStyle(),
                 ),
             )
 
@@ -612,7 +615,7 @@ class FlutterTomtomNavigationView(
             defaultCurrentLocationButtonMargin!!
     }
 
-    private val routeClickListener = { route: Route, mapDisplayRoute: com.tomtom.sdk.map.display.route.Route ->
+    private val routeClickListener = { route: Route, _: com.tomtom.sdk.map.display.route.Route ->
         navigationVisualization?.selectRoute(route.id)
 
         val selectedRoute =  routes!!.find { it.id == route.id }
@@ -624,7 +627,6 @@ class FlutterTomtomNavigationView(
         }
     }
 }
-
 
 
 private fun log(msg: String) {
