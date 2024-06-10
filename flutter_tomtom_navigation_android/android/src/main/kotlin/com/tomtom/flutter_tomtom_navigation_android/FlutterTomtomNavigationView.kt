@@ -118,8 +118,11 @@ class FlutterTomtomNavigationView(
     private var navigationVisualization: NavigationVisualization? = null
     private var routePlan: com.tomtom.sdk.navigation.RoutePlan? = null
     private var navLocationProvider: LocationProvider? = null
-    private var route: Route? = null
     private var defaultCurrentLocationButtonMargin: Margin? = null
+
+    // Routes which have been computed by the route planner
+    private var routePlanningOptions: RoutePlanningOptions? = null
+    private var routes: List<Route>?  = null
 
     private val density = context.resources.displayMetrics.density
 
@@ -469,6 +472,8 @@ class FlutterTomtomNavigationView(
         // A. Set the vehicle in TomTomNavigation to this vehicle (for re-planning!)
         // B. Show the correct restrictions for this vehicle (for visualization)
 
+        this.routePlanningOptions = routePlanningOptions
+
         tomTomMap?.clear()
         tomTomMap?.hideVehicleRestrictions()
 
@@ -482,18 +487,24 @@ class FlutterTomtomNavigationView(
             routePlanningOptions,
             object : RoutePlanningCallback {
                 override fun onSuccess(result: RoutePlanningResponse) {
-                    val firstRoute = result.routes.first()
-                    route = firstRoute
-                    routePlannedPublisher.publish(firstRoute.summary)
+                    routes = result.routes
+
+                    if (routes.isNullOrEmpty()) {
+                        log("Planned routes are empty!!!")
+                        return
+                    }
 
                     navigationVisualization?.displayRoutePlan(
                         RoutePlan(result.routes)
                     )
-                    navigationVisualization?.selectRoute(firstRoute.id)
-                    routePlan = com.tomtom.sdk.navigation.RoutePlan(
-                        firstRoute,
-                        routePlanningOptions
-                    )
+
+                    /// If multiple routes were planned attach listener for the user to select routes
+                    if (result.routes.size > 1) {
+                        navigationVisualization?.addRouteClickListener(routeClickListener)
+                    }
+
+                    setRoutePlan(routes!!.first())
+
                     tomTomMap?.zoomToRoutes(100)
                 }
 
@@ -503,6 +514,8 @@ class FlutterTomtomNavigationView(
                         failure.message,
                         Toast.LENGTH_SHORT
                     ).show()
+
+                    log("Could not plan routes: ${failure.message}")
                 }
 
                 override fun onRoutePlanned(route: Route) = Unit
@@ -519,14 +532,16 @@ class FlutterTomtomNavigationView(
         // If we want to use simulation, set the location provider
         // to simulation location provider, otherwise use a map matched provider
         navLocationProvider =
-            if (route != null && useSimulation) SimulationLocationProvider.create(
-                InterpolationStrategy(route!!.geometry.map {
+            if (routePlan != null && useSimulation) SimulationLocationProvider.create(
+                InterpolationStrategy(routePlan!!.route.geometry.map {
                     GeoLocation(it)
                 })
             ) else MapMatchedLocationProvider(tomTomNavigation)
+
         if (navLocationProvider is SimulationLocationProvider) {
             tomTomNavigation.locationProvider = navLocationProvider!!
         }
+
         tomTomMap?.setLocationProvider(navLocationProvider)
         navLocationProvider?.enable()
 
@@ -547,9 +562,23 @@ class FlutterTomtomNavigationView(
                 override fun onSuccess() {
                     if (routePlan != null) {
                         navigationFragment.startNavigation(routePlan!!)
+                    } else {
+                        log("Route plan is missing can't start navigation!!!")
                     }
                 }
             }
+        )
+    }
+
+    private fun setRoutePlan(route: Route) {
+        if (routePlanningOptions == null ) {
+            log("Can't set route plan without routePlanningOptions")
+        }
+        //TODO: rework this to publish route selected event.
+        routePlannedPublisher.publish(route.summary)
+        routePlan = com.tomtom.sdk.navigation.RoutePlan(
+            route,
+            routePlanningOptions!!
         )
     }
 
@@ -590,6 +619,18 @@ class FlutterTomtomNavigationView(
             })
         mapFragment.currentLocationButton.margin =
             defaultCurrentLocationButtonMargin!!
+    }
+
+    private val routeClickListener = { route: Route, _: com.tomtom.sdk.map.display.route.Route ->
+        navigationVisualization?.selectRoute(route.id)
+
+        val selectedRoute =  routes!!.find { it.id == route.id }
+
+        if (selectedRoute != null ) {
+            setRoutePlan(selectedRoute)
+        } else {
+            log("Selected routeID is not found in the planned routes")
+        }
     }
 }
 

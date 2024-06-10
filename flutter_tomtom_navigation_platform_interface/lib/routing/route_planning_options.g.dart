@@ -26,11 +26,16 @@ RoutePlanningOptions _$RoutePlanningOptionsFromJson(
       vehicle: json['vehicle'] == null
           ? const Car()
           : Vehicle.fromJson(json['vehicle'] as Map<String, dynamic>),
+      alternativeRoutesOptions: json['alternativeRoutesOptions'] == null
+          ? null
+          : AlternativeRoutesOptions.fromJson(
+              json['alternativeRoutesOptions'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$RoutePlanningOptionsToJson(
         RoutePlanningOptions instance) =>
     <String, dynamic>{
+      'alternativeRoutesOptions': instance.alternativeRoutesOptions?.toJson(),
       'arriveAt': instance.arriveAt?.toIso8601String(),
       'costModel': instance.costModel.toJson(),
       'departAt': instance.departAt?.toIso8601String(),

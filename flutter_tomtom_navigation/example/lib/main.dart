@@ -73,6 +73,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final routePlanningOptions = RoutePlanningOptions(
+      alternativeRoutesOptions: AlternativeRoutesOptions(
+        maxAlternatives: 2,
+      ),
       costModel: const CostModel(
         routeType: RouteType.short,
         considerTraffic: ConsiderTraffic.no,
@@ -86,8 +89,8 @@ class _MyAppState extends State<MyApp> {
       itinerary: Itinerary(
         origin: ItineraryPoint(
           place: const Place(
-            coordinate: GeoPoint(latitude: 51.984956, longitude: 4.344450),
-            // coordinate: GeoPoint.currentLocation,
+            // coordinate: GeoPoint(latitude: 51.984956, longitude: 4.344450),
+            coordinate: GeoPoint.currentLocation,
           ),
         ),
         destination: ItineraryPoint(
