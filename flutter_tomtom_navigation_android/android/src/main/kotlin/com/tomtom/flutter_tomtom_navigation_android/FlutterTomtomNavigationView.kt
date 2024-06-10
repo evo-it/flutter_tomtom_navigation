@@ -489,6 +489,11 @@ class FlutterTomtomNavigationView(
                 override fun onSuccess(result: RoutePlanningResponse) {
                     routes = result.routes
 
+                    if (routes.isNullOrEmpty()) {
+                        log("Planned routes are empty!!!")
+                        return
+                    }
+
                     navigationVisualization?.displayRoutePlan(
                         RoutePlan(result.routes)
                     )
