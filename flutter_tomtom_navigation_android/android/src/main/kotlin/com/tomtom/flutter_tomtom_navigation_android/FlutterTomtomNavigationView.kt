@@ -569,7 +569,8 @@ class FlutterTomtomNavigationView(
         if (routePlanningOptions == null ) {
             log("Can't set route plan without routePlanningOptions")
         }
-
+        //TODO: rework this to publish route selected event.
+        routePlannedPublisher.publish(route.summary)
         routePlan = com.tomtom.sdk.navigation.RoutePlan(
             route,
             routePlanningOptions!!
