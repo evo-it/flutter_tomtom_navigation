@@ -1,6 +1,6 @@
 name: flutter_tomtom_navigation_platform_interface
 description: The platform interface for the Flutter TomTom navigation package
-version: 1.0.2
+version: 1.0.3
 publish_to: none
 
 environment:
