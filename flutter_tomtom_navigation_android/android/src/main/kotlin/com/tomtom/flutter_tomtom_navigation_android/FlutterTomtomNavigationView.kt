@@ -500,7 +500,7 @@ class FlutterTomtomNavigationView(
 
                     /// If multiple routes were planned attach listener for the user to select routes
                     if (result.routes.size > 1) {
-                        navigationVisualization?.addRouteClickListener(routeClickListener)
+                        navigationVisualization?.addRouteClickedListener(routeClickedListener)
                     }
 
                     setRoutePlan(routes!!.first())
@@ -621,7 +621,7 @@ class FlutterTomtomNavigationView(
             defaultCurrentLocationButtonMargin!!
     }
 
-    private val routeClickListener = { route: Route, _: com.tomtom.sdk.map.display.route.Route ->
+    private val routeClickedListener = { route: Route, _: com.tomtom.sdk.map.display.route.Route ->
         navigationVisualization?.selectRoute(route.id)
 
         val selectedRoute =  routes!!.find { it.id == route.id }
