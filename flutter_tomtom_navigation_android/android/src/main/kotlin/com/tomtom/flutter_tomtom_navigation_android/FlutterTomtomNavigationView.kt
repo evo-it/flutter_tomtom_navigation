@@ -256,6 +256,8 @@ class FlutterTomtomNavigationView(
                     AndroidTextToSpeechEngine(context, Locale.getDefault())
                 )
                 navigationFragment.addNavigationListener(navigationListener)
+                // Add a custom guidance updated listener to ensure correct pronunciation
+                tomTomNavigation.addGuidanceUpdatedListener(FlutterTomtomGuidanceUpdatedListener(context))
                 tomTomNavigation.addProgressUpdatedListener { progress ->
                     progressUpdatedPublisher.publish(
                         progress
