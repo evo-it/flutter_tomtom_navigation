@@ -46,7 +46,11 @@ import com.tomtom.sdk.map.display.visualization.navigation.StyleConfiguration
 import com.tomtom.sdk.map.display.visualization.navigation.horizon.safetylocation.SafetyLocationStyle
 import com.tomtom.sdk.map.display.visualization.routing.RoutePlan
 import com.tomtom.sdk.map.display.visualization.routing.traffic.RouteTrafficIncidentStyle
+import com.tomtom.sdk.navigation.GuidanceUpdatedListener
 import com.tomtom.sdk.navigation.TomTomNavigation
+import com.tomtom.sdk.navigation.guidance.GuidanceAnnouncement
+import com.tomtom.sdk.navigation.guidance.InstructionPhase
+import com.tomtom.sdk.navigation.guidance.instruction.GuidanceInstruction
 import com.tomtom.sdk.navigation.online.Configuration
 import com.tomtom.sdk.navigation.online.OnlineTomTomNavigationFactory
 import com.tomtom.sdk.navigation.ui.NavigationFragment
@@ -60,6 +64,10 @@ import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.route.Route
 import com.tomtom.sdk.safetylocations.common.SafetyLocationsConfiguration
 import com.tomtom.sdk.tts.android.AndroidTextToSpeechEngine
+import com.tomtom.sdk.tts.engine.AudioMessage
+import com.tomtom.sdk.tts.engine.MessagePlaybackListener
+import com.tomtom.sdk.tts.engine.MessageType
+import com.tomtom.sdk.tts.engine.TextToSpeechEngineError
 import com.tomtom.sdk.vehicle.Vehicle
 import com.tomtom.sdk.vehicle.VehicleProvider
 import com.tomtom.sdk.vehicle.VehicleProviderFactory
@@ -139,6 +147,43 @@ class FlutterTomtomNavigationView(
         // If you close them here, an exception is thrown (illegal state: instance closed)
         tomTomNavigation.close()
     }
+
+    ////// TEMPORARILY OVERRIDDEN GuidanceUpdatedListener to fix TTS bug //////
+    val tts = AndroidTextToSpeechEngine(context, language = Locale.getDefault())
+    private val playbackListener = object : MessagePlaybackListener {
+        override fun onDone() {}
+        override fun onError(error: TextToSpeechEngineError) { println(error) }
+        override fun onStart() {}
+        override fun onStop() {}
+    }
+    val guidanceUpdatedListener = object : GuidanceUpdatedListener {
+        override fun onAnnouncementGenerated(announcement: GuidanceAnnouncement, shouldPlay: Boolean) {
+            println("Announcement generated ${announcement.plainTextMessage} ($shouldPlay)")
+
+            if (shouldPlay && announcement.plainTextMessage.isNotEmpty()) {
+                val audioMessage = AudioMessage(
+                    message = "Hello from guidance", // announcement.plainTextMessage,
+                    messageType = MessageType.Plain,
+                )
+                println("Playing message...")
+                tts.playAudioMessage(
+                    audioMessage = audioMessage,
+                    playbackListener = playbackListener
+                )
+            }
+        }
+        override fun onDistanceToNextInstructionChanged(
+            distance: Distance,
+            instructions: List<GuidanceInstruction>,
+            currentPhase: InstructionPhase
+        ) {
+            //Your code here
+        }
+        override fun onInstructionsChanged(instructions: List<GuidanceInstruction>) {
+            //Your code here
+        }
+    }
+
 
     /**
      * Initializes the Navigation view.
@@ -252,12 +297,12 @@ class FlutterTomtomNavigationView(
                 navigationFragment.navigationView.hideSpeedView()
                 // Set a TTS engine instead of just changing the language, which would work
                 // but the TTS may not be available yet causing it to not-change at all
-                navigationFragment.changeTextToSpeechEngine(
-                    AndroidTextToSpeechEngine(context, Locale.getDefault())
-                )
+//                navigationFragment.changeTextToSpeechEngine(
+//                    AndroidTextToSpeechEngine(context, Locale.getDefault())
+//                )
                 navigationFragment.addNavigationListener(navigationListener)
                 // Add a custom guidance updated listener to ensure correct pronunciation
-                tomTomNavigation.addGuidanceUpdatedListener(FlutterTomtomGuidanceUpdatedListener(context))
+                tomTomNavigation.addGuidanceUpdatedListener(guidanceUpdatedListener)
                 tomTomNavigation.addProgressUpdatedListener { progress ->
                     progressUpdatedPublisher.publish(
                         progress
