@@ -148,43 +148,6 @@ class FlutterTomtomNavigationView(
         tomTomNavigation.close()
     }
 
-    ////// TEMPORARILY OVERRIDDEN GuidanceUpdatedListener to fix TTS bug //////
-    val tts = AndroidTextToSpeechEngine(context, language = Locale.getDefault())
-    private val playbackListener = object : MessagePlaybackListener {
-        override fun onDone() {}
-        override fun onError(error: TextToSpeechEngineError) { println(error) }
-        override fun onStart() {}
-        override fun onStop() {}
-    }
-    val guidanceUpdatedListener = object : GuidanceUpdatedListener {
-        override fun onAnnouncementGenerated(announcement: GuidanceAnnouncement, shouldPlay: Boolean) {
-            println("Announcement generated ${announcement.plainTextMessage} ($shouldPlay)")
-
-            if (shouldPlay && announcement.plainTextMessage.isNotEmpty()) {
-                val audioMessage = AudioMessage(
-                    message = "Hello from guidance", // announcement.plainTextMessage,
-                    messageType = MessageType.Plain,
-                )
-                println("Playing message...")
-                tts.playAudioMessage(
-                    audioMessage = audioMessage,
-                    playbackListener = playbackListener
-                )
-            }
-        }
-        override fun onDistanceToNextInstructionChanged(
-            distance: Distance,
-            instructions: List<GuidanceInstruction>,
-            currentPhase: InstructionPhase
-        ) {
-            //Your code here
-        }
-        override fun onInstructionsChanged(instructions: List<GuidanceInstruction>) {
-            //Your code here
-        }
-    }
-
-
     /**
      * Initializes the Navigation view.
      * TODO this may be split up and/or commented further to improve legibility
@@ -295,14 +258,52 @@ class FlutterTomtomNavigationView(
                 if (closing) return@post
                 navigationFragment.setTomTomNavigation(tomTomNavigation)
                 navigationFragment.navigationView.hideSpeedView()
-                // Set a TTS engine instead of just changing the language, which would work
-                // but the TTS may not be available yet causing it to not-change at all
-//                navigationFragment.changeTextToSpeechEngine(
-//                    AndroidTextToSpeechEngine(context, Locale.getDefault())
-//                )
-                navigationFragment.addNavigationListener(navigationListener)
-                // Add a custom guidance updated listener to ensure correct pronunciation
+
+                // This should fix the TTS issues that we are experiencing
+                navigationFragment.changeAudioLanguage(Locale.getDefault())
+                tomTomNavigation.preferredLanguage = Locale.getDefault()
+
+                ////// TEMPORARILY OVERRIDDEN GuidanceUpdatedListener to fix TTS bug //////
+                val tts = AndroidTextToSpeechEngine(context, language = Locale.getDefault())
+                val playbackListener = object : MessagePlaybackListener {
+                    override fun onDone() {}
+                    override fun onError(error: TextToSpeechEngineError) { println(error) }
+                    override fun onStart() {}
+                    override fun onStop() {}
+                }
+                val guidanceUpdatedListener = object : GuidanceUpdatedListener {
+                    override fun onAnnouncementGenerated(announcement: GuidanceAnnouncement, shouldPlay: Boolean) {
+                        println("Announcement generated ${announcement.plainTextMessage} ($shouldPlay)")
+
+                        if (shouldPlay && announcement.plainTextMessage.isNotEmpty()) {
+                            val audioMessage = AudioMessage(
+                                message = "Hello from guidance", // announcement.plainTextMessage,
+                                messageType = MessageType.Plain,
+                            )
+                            println("Playing message...")
+                            tts.playAudioMessage(
+                                audioMessage = audioMessage,
+                                playbackListener = playbackListener
+                            )
+                        }
+                    }
+                    override fun onDistanceToNextInstructionChanged(
+                        distance: Distance,
+                        instructions: List<GuidanceInstruction>,
+                        currentPhase: InstructionPhase
+                    ) {
+                        //Your code here
+                    }
+                    override fun onInstructionsChanged(instructions: List<GuidanceInstruction>) {
+                        //Your code here
+                    }
+                }
+                navigationFragment.changeTextToSpeechEngine(tts)
                 tomTomNavigation.addGuidanceUpdatedListener(guidanceUpdatedListener)
+
+                ///// END OF THE OVERRIDDEN STUFF
+
+                navigationFragment.addNavigationListener(navigationListener)
                 tomTomNavigation.addProgressUpdatedListener { progress ->
                     progressUpdatedPublisher.publish(
                         progress

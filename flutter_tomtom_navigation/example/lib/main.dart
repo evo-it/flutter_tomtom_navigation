@@ -89,13 +89,13 @@ class _MyAppState extends State<MyApp> {
       itinerary: Itinerary(
         origin: ItineraryPoint(
           place: const Place(
-            // coordinate: GeoPoint(latitude: 51.984956, longitude: 4.344450),
-            coordinate: GeoPoint.currentLocation,
+            coordinate: GeoPoint(latitude: 52.032716, longitude: 4.476498),
+            // coordinate: GeoPoint.currentLocation,
           ),
         ),
         destination: ItineraryPoint(
           place: const Place(
-            coordinate: GeoPoint(latitude: 51.984213, longitude: 4.328665),
+            coordinate: GeoPoint(latitude: 52.009708, longitude: 4.455537),
           ),
         ),
       ),
