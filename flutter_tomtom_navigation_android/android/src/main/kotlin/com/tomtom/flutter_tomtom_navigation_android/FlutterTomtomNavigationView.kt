@@ -60,7 +60,6 @@ import com.tomtom.sdk.routing.online.OnlineRoutePlanner
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.route.Route
 import com.tomtom.sdk.safetylocations.common.SafetyLocationsConfiguration
-import com.tomtom.sdk.tts.android.AndroidTextToSpeechEngine
 import com.tomtom.sdk.vehicle.Vehicle
 import com.tomtom.sdk.vehicle.VehicleProvider
 import com.tomtom.sdk.vehicle.VehicleProviderFactory
