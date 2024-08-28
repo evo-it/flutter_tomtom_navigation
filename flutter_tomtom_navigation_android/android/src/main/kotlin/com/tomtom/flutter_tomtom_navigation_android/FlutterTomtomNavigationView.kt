@@ -19,6 +19,7 @@ import com.tomtom.flutter_tomtom_navigation_android.platform_channel.BasicEventP
 import com.tomtom.flutter_tomtom_navigation_android.platform_channel.DestinationArrivalPublisher
 import com.tomtom.flutter_tomtom_navigation_android.platform_channel.NativeEventPublisher
 import com.tomtom.flutter_tomtom_navigation_android.platform_channel.NavigationStatusPublisher
+import com.tomtom.flutter_tomtom_navigation_android.tts.FlutterTomtomTextToSpeech
 import com.tomtom.quantity.Distance
 import com.tomtom.sdk.datamanagement.navigationtile.NavigationTileStore
 import com.tomtom.sdk.datamanagement.navigationtile.NavigationTileStoreConfiguration
@@ -253,7 +254,7 @@ class FlutterTomtomNavigationView(
                 // Set a TTS engine instead of just changing the language, which would work
                 // but the TTS may not be available yet causing it to not-change at all
                 navigationFragment.changeTextToSpeechEngine(
-                    AndroidTextToSpeechEngine(context, Locale.getDefault())
+                    FlutterTomtomTextToSpeech(context, Locale.getDefault())
                 )
                 navigationFragment.addNavigationListener(navigationListener)
                 tomTomNavigation.addProgressUpdatedListener { progress ->
