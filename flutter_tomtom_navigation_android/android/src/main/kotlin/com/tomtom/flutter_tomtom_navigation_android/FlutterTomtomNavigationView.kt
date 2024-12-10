@@ -500,6 +500,7 @@ class FlutterTomtomNavigationView(
 
                     /// If multiple routes were planned attach listener for the user to select routes
                     if (result.routes.size > 1) {
+                        navigationVisualization?.removeRouteClickedListener(routeClickedListener)
                         navigationVisualization?.addRouteClickedListener(routeClickedListener)
                     }
 
