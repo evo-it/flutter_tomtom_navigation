@@ -59,7 +59,7 @@ android {
         def version = "1.20.1"
         implementation "com.tomtom.sdk.maps:map-display:$version"
         implementation "com.tomtom.sdk.routing:route-planner-online:$version"
-        implementation "com.tomtom.sdk.location:provider-android:$version"
+        implementation "com.tomtom.sdk.location:provider-default:$version"
         implementation "com.tomtom.sdk.location:provider-simulation:$version"
         implementation "com.tomtom.sdk.navigation:route-replanner-online:$version"
         implementation "com.tomtom.sdk.location:provider-map-matched:$version"
