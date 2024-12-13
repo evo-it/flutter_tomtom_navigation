@@ -23,7 +23,7 @@ class Place {
     this.entryPoints = const [],
 
     /// Default value List<EntryPoint> = emptyList(),
-  }) : types = const [];
+  }) : _types = const [];
 
   factory Place.fromJson(Map<String, dynamic> json) => _$PlaceFromJson(json);
 
@@ -32,7 +32,7 @@ class Place {
   final List<EntryPoint> entryPoints;
   final String name;
   @JsonKey(includeFromJson: true, includeToJson: true)
-  final List<Type> types;
+  final List<Type> _types;
 
   Map<String, dynamic> toJson() => _$PlaceToJson(this);
 }

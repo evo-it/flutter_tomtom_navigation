@@ -27,8 +27,8 @@ import com.tomtom.sdk.datamanagement.navigationtile.PrefetchingConfiguration
 import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.LocationProvider
 import com.tomtom.sdk.location.OnLocationUpdateListener
-import com.tomtom.sdk.location.android.AndroidLocationProvider
-import com.tomtom.sdk.location.mapmatched.MapMatchedLocationProvider
+import com.tomtom.sdk.location.DefaultLocationProviderFactory
+import com.tomtom.sdk.location.mapmatched.MapMatchedLocationProviderFactory
 import com.tomtom.sdk.location.simulation.SimulationLocationProvider
 import com.tomtom.sdk.location.simulation.strategy.InterpolationStrategy
 import com.tomtom.sdk.map.display.TomTomMap
@@ -187,7 +187,7 @@ class FlutterTomtomNavigationView(
         navigationStatusPublisher.publish(NavigationStatusPublisher.NavigationStatus.INITIALIZING)
 
         // Initialize required SDK components
-        locationProvider = AndroidLocationProvider(context)
+        locationProvider = DefaultLocationProviderFactory.create(context)
         val onLocationUpdateListener = OnLocationUpdateListener { location ->
             locationUpdatePublisher.publish(location)
         }
@@ -500,6 +500,7 @@ class FlutterTomtomNavigationView(
 
                     /// If multiple routes were planned attach listener for the user to select routes
                     if (result.routes.size > 1) {
+                        navigationVisualization?.removeRouteClickedListener(routeClickedListener)
                         navigationVisualization?.addRouteClickedListener(routeClickedListener)
                     }
 
@@ -536,7 +537,7 @@ class FlutterTomtomNavigationView(
                 InterpolationStrategy(routePlan!!.route.geometry.map {
                     GeoLocation(it)
                 })
-            ) else MapMatchedLocationProvider(tomTomNavigation)
+            ) else MapMatchedLocationProviderFactory.create(tomTomNavigation)
 
         if (navLocationProvider is SimulationLocationProvider) {
             tomTomNavigation.locationProvider = navLocationProvider!!

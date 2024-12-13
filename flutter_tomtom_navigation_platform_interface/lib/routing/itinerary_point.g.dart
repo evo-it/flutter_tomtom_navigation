@@ -15,6 +15,6 @@ ItineraryPoint _$ItineraryPointFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ItineraryPointToJson(ItineraryPoint instance) =>
     <String, dynamic>{
       'heading': instance.heading,
-      'id': instance.id,
+      '_id': instance._id,
       'place': instance.place.toJson(),
     };

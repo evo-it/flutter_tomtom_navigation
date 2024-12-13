@@ -48,7 +48,7 @@ android {
     dependencies {
         testImplementation 'org.jetbrains.kotlin:kotlin-test'
         testImplementation 'org.mockito:mockito-core:5.11.0'
-        implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+        implementation "androidx.constraintlayout:constraintlayout:2.2.0"
         implementation 'com.google.android.material:material:1.12.0'
         implementation 'com.google.code.gson:gson:2.10.1'
 
@@ -56,10 +56,10 @@ android {
         implementation "androidx.appcompat:appcompat:$appcompat_version"
         implementation "androidx.appcompat:appcompat-resources:$appcompat_version"
 
-        def version = "1.8.0"
+        def version = "1.20.1"
         implementation "com.tomtom.sdk.maps:map-display:$version"
         implementation "com.tomtom.sdk.routing:route-planner-online:$version"
-        implementation "com.tomtom.sdk.location:provider-android:$version"
+        implementation "com.tomtom.sdk.location:provider-default:$version"
         implementation "com.tomtom.sdk.location:provider-simulation:$version"
         implementation "com.tomtom.sdk.navigation:route-replanner-online:$version"
         implementation "com.tomtom.sdk.location:provider-map-matched:$version"

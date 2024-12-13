@@ -17,14 +17,14 @@ class ItineraryPoint {
     this.heading,
 
     /// Default value Angle? = null,
-  }) : id = uuid.v4();
+  }) : _id = uuid.v4();
 
   factory ItineraryPoint.fromJson(Map<String, dynamic> json) =>
       _$ItineraryPointFromJson(json);
 
   final double? heading;
   @JsonKey(includeFromJson: true, includeToJson: true)
-  final String id;
+  final String _id;
   final Place place;
 
   Map<String, dynamic> toJson() => _$ItineraryPointToJson(this);
