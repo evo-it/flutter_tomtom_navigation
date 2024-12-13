@@ -354,6 +354,10 @@ class FlutterTomtomNavigationView(
         navigationFragment.navigationView.hideSpeedView()
     }
 
+    private fun overviewCamera() {
+        tomTomMap?.cameraTrackingMode = CameraTrackingMode.RouteOverview
+    }
+
     /**
      * Called when the current location button is tapped.
      * During navigation, this locks the camera onto the route again,
@@ -388,6 +392,14 @@ class FlutterTomtomNavigationView(
         throw IllegalStateException("Unable to find activity")
     }
 
+    private val compassButtonClickListener = { overviewCamera() }
+
+    private val recenterFromOverviewListener = {
+        if (tomTomMap?.cameraTrackingMode == CameraTrackingMode.RouteOverview || tomTomMap?.cameraTrackingMode == CameraTrackingMode.None) {
+            recenterCamera()
+        }
+    }
+
     /**
      * Listen to the status of the navigation listener.
      * When started, the camera is set to follow the route, the location marker is changed to a chevron and the bottom padding is applied.
@@ -407,11 +419,22 @@ class FlutterTomtomNavigationView(
                 )
                 val padding = Padding(0, 0, 0, (263 * density).toInt())
                 tomTomMap?.setPadding(padding)
+
+                mapFragment.compassButton.addCompassButtonClickListener(
+                    compassButtonClickListener
+                )
+                navigationFragment.navigationView.setCurrentSpeedClickListener { recenterFromOverviewListener() }
+                navigationFragment.navigationView.setSpeedLimitClickListener { recenterFromOverviewListener() }
+                navigationVisualization?.addRouteClickedListener { _, _ -> recenterFromOverviewListener() }
             }
 
             override fun onStopped() {
                 navigationStatusPublisher.publish(NavigationStatusPublisher.NavigationStatus.STOPPED)
                 log("navigation stopped!")
+                mapFragment.compassButton.removeCompassButtonClickListener(
+                    compassButtonClickListener
+                )
+                navigationVisualization?.removeRouteClickedListener { _, _ -> recenterFromOverviewListener() }
                 stopNavigation()
             }
         }
@@ -507,8 +530,12 @@ class FlutterTomtomNavigationView(
 
                     /// If multiple routes were planned attach listener for the user to select routes
                     if (result.routes.size > 1) {
-                        navigationVisualization?.removeRouteClickedListener(routeClickedListener)
-                        navigationVisualization?.addRouteClickedListener(routeClickedListener)
+                        navigationVisualization?.removeRouteClickedListener(
+                            routeClickedListener
+                        )
+                        navigationVisualization?.addRouteClickedListener(
+                            routeClickedListener
+                        )
                     }
 
                     setRoutePlan(routes!!.first())
@@ -629,17 +656,18 @@ class FlutterTomtomNavigationView(
             defaultCurrentLocationButtonMargin!!
     }
 
-    private val routeClickedListener = { route: Route, _: com.tomtom.sdk.map.display.route.Route ->
-        navigationVisualization?.selectRoute(route.id)
+    private val routeClickedListener =
+        { route: Route, _: com.tomtom.sdk.map.display.route.Route ->
+            navigationVisualization?.selectRoute(route.id)
 
-        val selectedRoute = routes!!.find { it.id == route.id }
+            val selectedRoute = routes!!.find { it.id == route.id }
 
-        if (selectedRoute != null) {
-            setRoutePlan(selectedRoute)
-        } else {
-            log("Selected routeID is not found in the planned routes")
+            if (selectedRoute != null) {
+                setRoutePlan(selectedRoute)
+            } else {
+                log("Selected routeID is not found in the planned routes")
+            }
         }
-    }
 }
 
 
