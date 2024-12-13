@@ -35,7 +35,7 @@ abstract class FlutterTomtomNavigationPlatform extends PlatformInterface {
   }
 
   /// Build the TomtomNavigationView.
-  Widget buildView(MapOptions mapOptions, {required bool debug}) {
+  Widget buildView(MapOptions mapOptions, {required bool debug, required bool initialSoundEnabled}) {
     throw UnimplementedError('buildView() has not been implemented.');
   }
 

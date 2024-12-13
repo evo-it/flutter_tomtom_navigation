@@ -1,6 +1,6 @@
 name: flutter_tomtom_navigation_android
 description: The Android implementation of Flutter TomTom Navigation.
-version: 0.1.6
+version: 0.2.0
 publish_to: none
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.1.8
-  flutter_tomtom_navigation_platform_interface: ^1.0.2
+  flutter_tomtom_navigation_platform_interface: ^1.2.0
 
 dev_dependencies:
   flutter_test:

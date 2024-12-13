@@ -62,13 +62,14 @@ class MethodChannelFlutterTomtomNavigation
   // buildView should be overridden by each platform!
   // TODO(Frank): move this into the platform-specific platform interfaces...
   @override
-  Widget buildView(MapOptions mapOptions, {required bool debug}) {
+  Widget buildView(MapOptions mapOptions, {required bool debug, required bool initialSoundEnabled}) {
     // This is used in the platform side to register the view.
     const viewType = '<tomtom-navigation>';
     // Pass parameters to the platform side.
     final creationParams = <String, dynamic>{
       'mapOptions': jsonEncode(mapOptions),
       'debug': debug,
+      'soundEnabled': initialSoundEnabled,
     };
 
     return PlatformViewLink(

@@ -22,13 +22,15 @@ class FlutterTomtomNavigationAndroid
   }
 
   @override
-  Widget buildView(MapOptions mapOptions, {required bool debug}) {
+  Widget buildView(MapOptions mapOptions,
+      {required bool debug, required bool initialSoundEnabled}) {
     // This is used in the platform side to register the view.
     const String viewType = '<tomtom-navigation>';
     // Pass parameters to the platform side.
     final creationParams = <String, dynamic>{
       'mapOptions': jsonEncode(mapOptions),
       'debug': debug,
+      'soundEnabled': initialSoundEnabled,
     };
 
     return PlatformViewLink(
