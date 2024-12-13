@@ -41,6 +41,7 @@ class _MyAppState extends State<MyApp> {
       ),
     ),
     debug: true,
+    initialSoundEnabled: true,
   );
   DateTime? eta;
 

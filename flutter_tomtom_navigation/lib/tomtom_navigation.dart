@@ -9,6 +9,7 @@ class TomtomNavigation extends StatelessWidget {
   const TomtomNavigation({
     required this.mapOptions,
     this.debug = false,
+    this.initialSoundEnabled = true,
     super.key,
   });
 
@@ -19,10 +20,16 @@ class TomtomNavigation extends StatelessWidget {
   /// a route and tap this route to start basic simulated navigation.
   final bool debug;
 
+  /// Is the sound enabled when initially starting the app?
+  final bool initialSoundEnabled;
+
   @override
   Widget build(BuildContext context) {
-    return FlutterTomtomNavigationPlatform.instance
-        .buildView(mapOptions, debug: debug);
+    return FlutterTomtomNavigationPlatform.instance.buildView(
+      mapOptions,
+      debug: debug,
+      initialSoundEnabled: initialSoundEnabled,
+    );
   }
 
   /// Synchronously plans a route
@@ -47,40 +54,34 @@ class TomtomNavigation extends StatelessWidget {
 
   /// Listen to events about the lifecycle of this [TomtomNavigation] Widget.
   void registerNavigationEventListener(
-    void Function(NavigationStatus) onNavigationEvent,
-  ) {
+      void Function(NavigationStatus) onNavigationEvent,) {
     FlutterTomtomNavigationPlatform.instance
         .registerNavigationEventListener(onNavigationEvent);
   }
 
   /// Used to inform caller about progress on Route.
-  void registerRouteEventListener(
-    void Function(RouteProgress) onRouteEvent,
-  ) {
+  void registerRouteEventListener(void Function(RouteProgress) onRouteEvent,) {
     FlutterTomtomNavigationPlatform.instance
         .registerRouteEventListener(onRouteEvent);
   }
 
   /// Called when each route is successfully calculated.
   void registerPlannedRouteEventListener(
-    void Function(Summary) onPlannedRouteEvent,
-  ) {
+      void Function(Summary) onPlannedRouteEvent,) {
     FlutterTomtomNavigationPlatform.instance
         .registerPlannedRouteEventListener(onPlannedRouteEvent);
   }
 
   /// Called when destination arrival is detected by the ArrivalDetectionEngine.
   void registerDestinationArrivalEventListener(
-    void Function(dynamic) onDestinationArrivalEvent,
-  ) {
+      void Function(dynamic) onDestinationArrivalEvent,) {
     FlutterTomtomNavigationPlatform.instance
         .registerDestinationArrivalEventListener(onDestinationArrivalEvent);
   }
 
   /// Triggered when new [GeoLocation] has been received from LocationProvider.
   void registerLocationEventListener(
-    void Function(GeoLocation) onLocationEvent,
-  ) {
+      void Function(GeoLocation) onLocationEvent,) {
     FlutterTomtomNavigationPlatform.instance
         .registerLocationEventListener(onLocationEvent);
   }

@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_tomtom_navigation: ^0.1.6
+  flutter_tomtom_navigation: ^0.2.0
   permission_handler: ^11.3.1
 
 dev_dependencies:

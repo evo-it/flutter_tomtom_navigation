@@ -122,7 +122,7 @@ class FlutterTomtomNavigationView(
 
     // Routes which have been computed by the route planner
     private var routePlanningOptions: RoutePlanningOptions? = null
-    private var routes: List<Route>?  = null
+    private var routes: List<Route>? = null
 
     private val density = context.resources.displayMetrics.density
 
@@ -161,6 +161,9 @@ class FlutterTomtomNavigationView(
             creationParams["binaryMessenger"] as BinaryMessenger
         channel = MethodChannel(binaryMessenger, "flutter_tomtom_navigation")
         channel.setMethodCallHandler(this)
+
+        // Get the default audio muted from the creation params
+        val soundEnabled = if (creationParams.containsKey("soundEnabled")) creationParams["soundEnabled"] as Boolean else true
 
         // Get the publish method from the creation params and initialize the publishers
         @Suppress("UNCHECKED_CAST")
@@ -230,7 +233,11 @@ class FlutterTomtomNavigationView(
 
         // Add the navigation container
         navigationFragment =
-            NavigationFragment.newInstance(NavigationUiOptions())
+            NavigationFragment.newInstance(
+                NavigationUiOptions(
+                    isSoundEnabled = soundEnabled
+                )
+            )
         val navigationView = FragmentContainerView(context)
         navigationView.id = Random.nextInt()
         navigationView.foregroundGravity = Gravity.BOTTOM
@@ -287,7 +294,7 @@ class FlutterTomtomNavigationView(
                 tomTomNavigation,
                 styleConfiguration = StyleConfiguration(
                     routeTrafficIncident = RouteTrafficIncidentStyle(),
-                     safetyLocationStyle = SafetyLocationStyle(),
+                    safetyLocationStyle = SafetyLocationStyle(),
                 ),
             )
 
@@ -572,7 +579,7 @@ class FlutterTomtomNavigationView(
     }
 
     private fun setRoutePlan(route: Route) {
-        if (routePlanningOptions == null ) {
+        if (routePlanningOptions == null) {
             log("Can't set route plan without routePlanningOptions")
         }
         //TODO: rework this to publish route selected event.
@@ -625,9 +632,9 @@ class FlutterTomtomNavigationView(
     private val routeClickedListener = { route: Route, _: com.tomtom.sdk.map.display.route.Route ->
         navigationVisualization?.selectRoute(route.id)
 
-        val selectedRoute =  routes!!.find { it.id == route.id }
+        val selectedRoute = routes!!.find { it.id == route.id }
 
-        if (selectedRoute != null ) {
+        if (selectedRoute != null) {
             setRoutePlan(selectedRoute)
         } else {
             log("Selected routeID is not found in the planned routes")
